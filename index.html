@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      /* Universal cycle-safe JSON.stringify patch to prevent circular structure errors */
+      (function() {
+        var nativeStringify = JSON.stringify;
+        function cycleSafeReplacer(replacer) {
+          var seen = new WeakSet();
+          return function(key, val) {
+            if (typeof val === 'object' && val !== null) {
+              if (
+                seen.has(val) ||
+                (typeof Node !== 'undefined' && val instanceof Node) ||
+                (typeof Window !== 'undefined' && val instanceof Window) ||
+                (typeof Document !== 'undefined' && val instanceof Document)
+              ) {
+                return undefined;
+              }
+              try {
+                seen.add(val);
+              } catch (_) {}
+            }
+            if (typeof replacer === 'function') {
+              return replacer.call(this, key, val);
+            }
+            return val;
+          };
+        }
+
+        function safeStringify(value, replacer, space) {
+          try {
+            var rep = cycleSafeReplacer(replacer);
+            return nativeStringify.call(JSON, value, rep, space);
+          } catch (err) {
+            try {
+              if (typeof value === 'object' && value !== null) {
+                var simple = {};
+                for (var k in value) {
+                  try {
+                    if (typeof value[k] !== 'object' && typeof value[k] !== 'function') {
+                      simple[k] = value[k];
+                    }
+                  } catch (_) {}
+                }
+                return nativeStringify.call(JSON, simple, null, space);
+              }
+              return nativeStringify.call(JSON, String(value));
+            } catch (_) {
+              return '"{}"';
+            }
+          }
+        }
+
+        try {
+          window.JSON.stringify = safeStringify;
+          JSON.stringify = safeStringify;
+        } catch (_) {}
+
+        window.addEventListener('error', function(e) {
+          if (e && e.message && e.message.indexOf('Converting circular structure to JSON') !== -1) {
+            e.preventDefault && e.preventDefault();
+            e.stopImmediatePropagation && e.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+      })();
+    </script>
+    <title>LYI Tech Pvt. Ltd. | India's 360° AI &amp; Intellectual Property Consulting</title>
+    <meta name="description" content="LYI Tech Pvt. Ltd. — India's 360° AI &amp; Intellectual Property Consulting with real-time consultation booking, AI Hub, and IP Hub services." />
+    <meta property="og:title" content="LYI Tech Pvt. Ltd. | India's 360° AI &amp; Intellectual Property Consulting" />
+    <meta property="og:description" content="LYI Tech Pvt. Ltd. — India's 360° AI &amp; Intellectual Property Consulting with real-time consultation booking, AI Hub, and IP Hub services." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased selection:bg-cyan-500 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60">
+  <defs>
+    <linearGradient id="lyi-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+  </defs>
+  <rect x="6" y="8" width="44" height="44" rx="12" fill="url(#lyi-grad)" />
+  <!-- Lock and AI Neural Node Motif inside badge -->
+  <path d="M28 20 C24.5 20 22 22.5 22 26 L22 28 L20 28 C18.9 28 18 28.9 18 30 L18 40 C18 41.1 18.9 42 20 42 L36 42 C37.1 42 38 41.1 38 40 L38 30 C38 28.9 37.1 28 36 28 L34 28 L34 26 C34 22.5 31.5 20 28 20 Z M28 22 C30.2 22 32 23.8 32 26 L32 28 L24 28 L24 26 C24 23.8 25.8 22 28 22 Z" fill="#ffffff" opacity="0.95" />
+  <circle cx="28" cy="34" r="2.5" fill="#2563EB" />
+  <path d="M28 36.5 L28 39" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round" />
+  <!-- Brand text in Poppins/Manrope -->
+  <text x="60" y="27" font-family="'Poppins', 'Manrope', sans-serif" font-weight="800" font-size="17" fill="#0F172A" letter-spacing="-0.3">LockYourIdea</text>
+  <text x="60" y="44" font-family="'Inter', sans-serif" font-weight="600" font-size="11" fill="#64748B" letter-spacing="0.2">Tech Pvt. Ltd. · AI &amp; IP (HQ Pune)</text>
+</svg>
