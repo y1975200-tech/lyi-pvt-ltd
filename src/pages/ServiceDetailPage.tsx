@@ -97,7 +97,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
     <div className="space-y-0">
       {/* SERVICE HERO */}
       <section
-        className={`relative overflow-hidden py-16 sm:py-24 border-b transition-colors duration-200 ${
+        className={`relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b transition-colors duration-200 ${
           isDarkHero
             ? 'border-slate-800 text-white min-h-[440px] flex items-center bg-slate-950'
             : isAi

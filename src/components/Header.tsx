@@ -147,33 +147,33 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             id="brand-home-btn"
             onClick={() => handleNav('home')}
-            className="flex items-center gap-3 text-left group focus:outline-none cursor-pointer"
+            className="flex items-center gap-2 sm:gap-3 text-left group focus:outline-none cursor-pointer min-w-0"
           >
             {siteSettings?.logoUrl && siteSettings.logoUrl !== '/assets/logo.svg' ? (
               <img
                 key={siteSettings.logoUrl}
                 src={siteSettings.logoUrl}
                 alt={siteSettings?.companyName || 'LYI Tech Pvt. Ltd.'}
-                className="max-h-10 max-w-[180px] w-auto h-auto object-contain transition-transform group-hover:scale-105"
+                className="max-h-8 sm:max-h-10 max-w-[120px] sm:max-w-[180px] w-auto h-auto object-contain transition-transform group-hover:scale-105"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src = '/assets/logo.svg';
                 }}
               />
             ) : (
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform shrink-0">
                 LYI
               </div>
             )}
-            <div>
+            <div className="min-w-0">
               <span
                 style={applyFieldStyle(siteSettings?.companyName_style)}
-                className={brandTitleClass}
+                className={`${brandTitleClass} truncate max-w-[130px] xs:max-w-[200px] sm:max-w-none text-xs sm:text-lg`}
               >
                 {siteSettings?.companyName || 'LockYourIdea Tech Pvt. Ltd.'}
               </span>
               <small
                 style={applyFieldStyle(siteSettings?.tagline_style)}
-                className={taglineClass}
+                className={`${taglineClass} truncate max-w-[130px] xs:max-w-[200px] sm:max-w-none hidden xs:block`}
               >
                 {siteSettings?.tagline || "India's 360° AI & IP Consulting"}
               </small>

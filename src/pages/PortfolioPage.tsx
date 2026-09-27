@@ -59,7 +59,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
   return (
     <div className="space-y-0">
       {/* Portfolio Header with Relevant Background Image */}
-      <section className="relative overflow-hidden py-18 md:py-24 border-b border-slate-800 text-white min-h-[400px] flex items-center">
+      <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b border-slate-800 text-white min-h-[400px] flex items-center">
         {/* Background Image Layer */}
         <div className="absolute inset-0 z-0">
           <img
@@ -94,7 +94,7 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
             </div>
             <h1
               style={applyFieldStyle(pageData?.headline_style)}
-              className="text-4xl sm:text-5xl font-normal text-white tracking-tight font-heading leading-tight drop-shadow-sm"
+              className="text-2xl xs:text-3xl sm:text-5xl font-normal text-white tracking-tight font-heading leading-tight drop-shadow-sm"
             >
               {headline}
             </h1>

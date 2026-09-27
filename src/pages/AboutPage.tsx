@@ -75,7 +75,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
   return (
     <div className="space-y-0">
       {/* HERO SECTION WITH RELEVANT BACKGROUND IMAGE */}
-      <section className="relative overflow-hidden py-20 md:py-24 border-b border-slate-800 text-white min-h-[400px] flex items-center">
+      <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b border-slate-800 text-white min-h-[400px] flex items-center">
         {/* Background Image Layer */}
         <div className="absolute inset-0 z-0">
           <img
@@ -115,7 +115,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
 
             <h1
               style={applyFieldStyle(pageData?.headline_style)}
-              className="text-4xl sm:text-5xl font-normal text-white tracking-tight font-heading leading-tight drop-shadow-sm"
+              className="text-2xl xs:text-3xl sm:text-5xl font-normal text-white tracking-tight font-heading leading-tight drop-shadow-sm"
             >
               {headline}
             </h1>
@@ -186,7 +186,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {timeline.map((t, idx) => (
               <div
                 key={idx}

@@ -41,7 +41,7 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({
   return (
     <div className="space-y-0">
       {/* HERO SECTION WITH RELEVANT BACKGROUND IMAGE - High Contrast Black Text */}
-      <section className="relative overflow-hidden py-20 md:py-24 border-b border-slate-200 text-slate-900 min-h-[380px] flex items-center">
+      <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b border-slate-200 text-slate-900 min-h-[380px] flex items-center">
         {/* Background Image Layer with light-protective overlay for black text */}
         <div className="absolute inset-0 z-0">
           <img
@@ -76,7 +76,7 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({
 
             <h1
               style={applyFieldStyle(pageData?.headline_style)}
-              className="text-4xl sm:text-5xl font-normal text-slate-950 tracking-tight font-heading leading-tight drop-shadow-xs"
+              className="text-2xl xs:text-3xl sm:text-5xl font-normal text-slate-950 tracking-tight font-heading leading-tight drop-shadow-xs"
             >
               {headline}
             </h1>

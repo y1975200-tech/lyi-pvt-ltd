@@ -174,7 +174,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="space-y-0">
       {/* HERO SECTION WITH BACKGROUND IMAGE STARTING AT TOP EDGE UNDER HEADER */}
-      <section className="relative overflow-hidden pt-28 pb-20 md:pt-36 md:pb-28 border-b border-slate-800 text-white min-h-[85vh] sm:min-h-screen flex items-center justify-center">
+      <section className="relative overflow-hidden pt-24 pb-16 sm:pt-36 sm:pb-28 border-b border-slate-800 text-white min-h-[560px] sm:min-h-screen flex items-center justify-center">
         {/* Background Image Layer with Slow-Motion Cinematic Movement */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img
@@ -188,36 +188,36 @@ export const HomePage: React.FC<HomePageProps> = ({
             }}
           />
           {/* Dual Overlay: Top Vignette for Header Contrast + Horizontal Depth for Hero Text */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950/85 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/70 to-slate-900/50 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/40 to-slate-950/85 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/75 to-slate-900/50 pointer-events-none" />
           <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-          <div className="max-w-3xl space-y-6">
+          <div className="max-w-3xl space-y-4 sm:space-y-6">
             <div
               style={applyFieldStyle(pageData?.badge_style)}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/80 border border-slate-700/80 text-xs font-medium text-slate-200 shadow-md backdrop-blur-md"
+              className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-slate-900/80 border border-slate-700/80 text-[11px] sm:text-xs font-medium text-slate-200 shadow-md backdrop-blur-md max-w-full"
             >
-              <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
-              <span>{heroBadge}</span>
+              <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse shrink-0" />
+              <span className="truncate">{heroBadge}</span>
             </div>
 
             <h1
               style={applyFieldStyle(pageData?.headline_style, { color: 'var(--color-text-on-dark, #ffffff)' })}
-              className={`text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.12] font-heading drop-shadow-sm font-normal ${headlineItalic} ${headlineUnderline}`}
+              className={`text-2xl xs:text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-[1.18] sm:leading-[1.12] font-heading drop-shadow-sm font-normal ${headlineItalic} ${headlineUnderline}`}
             >
               {headline}
             </h1>
 
             <p
               style={applyFieldStyle(pageData?.subheadline_style)}
-              className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed font-normal"
+              className="text-sm sm:text-lg text-slate-300 max-w-2xl leading-relaxed font-normal"
             >
               {subhead}
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
               <button
                 id="hero-book-consultation-btn"
                 onClick={() => onOpenBooking()}
@@ -225,7 +225,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   backgroundColor: primaryButtonColor,
                   color: primaryButtonTextColor,
                 })}
-                className={`px-7 py-3.5 rounded-full shadow-xl shadow-purple-600/35 hover:opacity-95 active:scale-95 transition-all flex items-center gap-2 cursor-pointer text-sm ${buttonWeight} ${buttonItalic} ${buttonUnderline}`}
+                className={`w-full sm:w-auto justify-center px-6 sm:px-7 py-3 sm:py-3.5 rounded-full shadow-xl shadow-purple-600/35 hover:opacity-95 active:scale-95 transition-all flex items-center gap-2 cursor-pointer text-sm ${buttonWeight} ${buttonItalic} ${buttonUnderline}`}
               >
                 <span>{heroCta1Text}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -240,22 +240,22 @@ export const HomePage: React.FC<HomePageProps> = ({
                   backgroundColor: theme?.secondaryButtonColor || undefined,
                   color: theme?.secondaryButtonTextColor || undefined,
                 })}
-                className={`px-6 py-3.5 rounded-full border border-purple-400/40 hover:border-purple-300 bg-purple-950/40 hover:bg-purple-900/60 text-purple-200 hover:text-white text-sm backdrop-blur-md transition-all cursor-pointer ${buttonWeight} ${buttonItalic} ${buttonUnderline}`}
+                className={`w-full sm:w-auto justify-center px-6 sm:px-7 py-3 sm:py-3.5 rounded-full border border-purple-400/40 hover:border-purple-300 bg-purple-950/40 hover:bg-purple-900/60 text-purple-200 hover:text-white text-sm backdrop-blur-md transition-all cursor-pointer ${buttonWeight} ${buttonItalic} ${buttonUnderline}`}
               >
                 {heroCta2Text}
               </button>
             </div>
 
             {/* Quick trust bullet points */}
-            <div className="pt-4 flex flex-wrap items-center gap-6 text-xs text-slate-300 font-normal">
+            <div className="pt-3 sm:pt-4 flex flex-col xs:flex-row flex-wrap items-start xs:items-center gap-3 sm:gap-6 text-xs text-slate-300 font-normal">
               <span style={applyFieldStyle(pageData?.trustPoint1_style)} className="flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-emerald-400" /> {heroTrustPoint1}
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> <span>{heroTrustPoint1}</span>
               </span>
               <span style={applyFieldStyle(pageData?.trustPoint2_style)} className="flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-cyan-400" /> {heroTrustPoint2}
+                <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" /> <span>{heroTrustPoint2}</span>
               </span>
               <span style={applyFieldStyle(pageData?.trustPoint3_style)} className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-rose-400" /> {heroTrustPoint3}
+                <MapPin className="w-4 h-4 text-rose-400 shrink-0" /> <span>{heroTrustPoint3}</span>
               </span>
             </div>
           </div>
