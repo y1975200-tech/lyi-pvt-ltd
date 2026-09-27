@@ -167,15 +167,18 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="min-w-0">
               <span
                 style={applyFieldStyle(siteSettings?.companyName_style)}
-                className={`${brandTitleClass} truncate max-w-[130px] xs:max-w-[200px] sm:max-w-none text-xs sm:text-lg`}
+                className={`${brandTitleClass} truncate max-w-[150px] xs:max-w-[220px] sm:max-w-none text-xs sm:text-lg`}
               >
                 {siteSettings?.companyName || 'LYI Tech Pvt. Ltd.'}
               </span>
               <small
                 style={applyFieldStyle(siteSettings?.tagline_style)}
-                className={`${taglineClass} truncate max-w-[130px] xs:max-w-[200px] sm:max-w-none hidden xs:block`}
+                className={`${taglineClass} block text-[10px] sm:text-xs font-normal leading-none mt-0.5`}
               >
-                {siteSettings?.tagline || '360° AI & IP Consulting'}
+                {siteSettings?.headerSubtitle ||
+                  (siteSettings?.tagline && siteSettings.tagline.length <= 40
+                    ? siteSettings.tagline
+                    : '360° AI & IP Consulting')}
               </small>
             </div>
           </button>

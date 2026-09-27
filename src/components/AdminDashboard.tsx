@@ -649,7 +649,11 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       if (content.subheadline && pageId === 'home') updatedSettings.heroSubhead = content.subheadline;
       if (pageId === 'home') {
         if (content.companyName) updatedSettings.companyName = content.companyName;
-        if (content.tagline) updatedSettings.tagline = content.tagline;
+        if (content.tagline) {
+          updatedSettings.tagline = content.tagline;
+          updatedSettings.headerSubtitle = content.tagline;
+        }
+        if (content.headerSubtitle) updatedSettings.headerSubtitle = content.headerSubtitle;
         if (content.logoUrl) updatedSettings.logoUrl = content.logoUrl;
         if (content.hqAddress) updatedSettings.hqAddress = content.hqAddress;
         if (content.phone) updatedSettings.phone = content.phone;
@@ -2292,11 +2296,12 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
 
                             <AdminStyledField
                               label="Header Subtitle (Tagline)"
-                              value={cur.tagline || formData.tagline || ''}
+                              value={cur.tagline || cur.headerSubtitle || formData.tagline || formData.headerSubtitle || ''}
                               styleValue={cur.tagline_style || formData.tagline_style}
                               onChange={(val) => {
                                 updateCurField('tagline', val);
-                                setFormData((prev) => ({ ...prev, tagline: val }));
+                                updateCurField('headerSubtitle', val);
+                                setFormData((prev) => ({ ...prev, tagline: val, headerSubtitle: val }));
                               }}
                               onStyleChange={(style) => updateCurField('tagline_style', style)}
                               placeholder="e.g. 360° AI & IP Consulting"
