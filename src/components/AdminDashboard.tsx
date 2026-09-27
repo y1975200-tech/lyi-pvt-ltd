@@ -1502,7 +1502,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 )}
               </div>
 
-              {/* Option 2: Services & Products Manager */}
+              {/* Option 2: AI & IP Services */}
               <button
                 type="button"
                 onClick={() => {
@@ -1516,10 +1516,10 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 }`}
               >
                 <Layers className="w-4 h-4 text-blue-400" />
-                <span>Services &amp; Products Manager</span>
+                <span>AI &amp; IP Services</span>
               </button>
 
-              {/* Option 3: Portfolio Cards & Photos */}
+              {/* Option 3: Portfolios Cards */}
               <button
                 type="button"
                 onClick={() => {
@@ -1534,14 +1534,14 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
               >
                 <div className="flex items-center gap-2.5">
                   <ImageIcon className="w-4 h-4 text-purple-400" />
-                  <span>Portfolio Cards &amp; Photos</span>
+                  <span>Portfolios Cards</span>
                 </div>
                 <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono">
                   {portfolioItems.length}
                 </span>
               </button>
 
-              {/* Option 4: Industries Page & Sector Cards */}
+              {/* Option 4: Industries Cards */}
               <button
                 type="button"
                 onClick={() => {
@@ -1556,7 +1556,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
               >
                 <div className="flex items-center gap-2.5">
                   <Building2 className="w-4 h-4 text-cyan-400" />
-                  <span>Industries Page &amp; Sectors</span>
+                  <span>Industries Cards</span>
                 </div>
                 <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono">
                   {(formData.industries || INDUSTRIES_LIST).length}
