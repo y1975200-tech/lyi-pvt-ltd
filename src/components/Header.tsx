@@ -135,6 +135,30 @@ export const Header: React.FC<HeaderProps> = ({
     }`;
   };
 
+  const homeContent = siteSettings?.pageContent?.home;
+
+  const displayCompanyName =
+    homeContent?.companyName ||
+    siteSettings?.companyName ||
+    'LYI Tech Pvt. Ltd.';
+
+  const displayCompanyNameStyle =
+    homeContent?.companyName_style ||
+    siteSettings?.companyName_style;
+
+  const displayTagline =
+    homeContent?.tagline ||
+    homeContent?.headerSubtitle ||
+    siteSettings?.headerSubtitle ||
+    siteSettings?.tagline ||
+    "India's 360° AI & IP Company";
+
+  const displayTaglineStyle =
+    homeContent?.tagline_style ||
+    homeContent?.headerSubtitle_style ||
+    siteSettings?.tagline_style ||
+    siteSettings?.headerSubtitle_style;
+
   return (
     <>
       {/* Main Header (Overlay on Homepage Hero, Sticky on Scroll/Pages) */}
@@ -153,7 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
               <img
                 key={siteSettings.logoUrl}
                 src={siteSettings.logoUrl}
-                alt={siteSettings?.companyName || 'LYI Tech Pvt. Ltd.'}
+                alt={displayCompanyName}
                 className="max-h-8 sm:max-h-10 max-w-[120px] sm:max-w-[180px] w-auto h-auto object-contain transition-transform group-hover:scale-105"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src = '/assets/logo.svg';
@@ -166,19 +190,16 @@ export const Header: React.FC<HeaderProps> = ({
             )}
             <div className="min-w-0">
               <span
-                style={applyFieldStyle(siteSettings?.companyName_style)}
+                style={applyFieldStyle(displayCompanyNameStyle)}
                 className={`${brandTitleClass} truncate max-w-[150px] xs:max-w-[220px] sm:max-w-none text-xs sm:text-lg`}
               >
-                {siteSettings?.companyName || 'LYI Tech Pvt. Ltd.'}
+                {displayCompanyName}
               </span>
               <small
-                style={applyFieldStyle(siteSettings?.tagline_style)}
-                className={`${taglineClass} block text-[10px] sm:text-xs font-normal leading-none mt-0.5`}
+                style={applyFieldStyle(displayTaglineStyle)}
+                className={`${taglineClass} block text-[10px] sm:text-xs font-normal leading-tight mt-0.5`}
               >
-                {siteSettings?.headerSubtitle ||
-                  (siteSettings?.tagline && siteSettings.tagline.length <= 40
-                    ? siteSettings.tagline
-                    : '360° AI & IP Consulting')}
+                {displayTagline}
               </small>
             </div>
           </button>

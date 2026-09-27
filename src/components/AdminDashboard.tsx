@@ -649,11 +649,17 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       if (content.subheadline && pageId === 'home') updatedSettings.heroSubhead = content.subheadline;
       if (pageId === 'home') {
         if (content.companyName) updatedSettings.companyName = content.companyName;
+        if (content.companyName_style) updatedSettings.companyName_style = content.companyName_style;
         if (content.tagline) {
           updatedSettings.tagline = content.tagline;
           updatedSettings.headerSubtitle = content.tagline;
         }
+        if (content.tagline_style) {
+          updatedSettings.tagline_style = content.tagline_style;
+          updatedSettings.headerSubtitle_style = content.tagline_style;
+        }
         if (content.headerSubtitle) updatedSettings.headerSubtitle = content.headerSubtitle;
+        if (content.headerSubtitle_style) updatedSettings.headerSubtitle_style = content.headerSubtitle_style;
         if (content.logoUrl) updatedSettings.logoUrl = content.logoUrl;
         if (content.hqAddress) updatedSettings.hqAddress = content.hqAddress;
         if (content.phone) updatedSettings.phone = content.phone;
@@ -2288,7 +2294,10 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                                 updateCurField('companyName', val);
                                 setFormData((prev) => ({ ...prev, companyName: val }));
                               }}
-                              onStyleChange={(style) => updateCurField('companyName_style', style)}
+                              onStyleChange={(style) => {
+                                updateCurField('companyName_style', style);
+                                setFormData((prev) => ({ ...prev, companyName_style: style }));
+                              }}
                               placeholder="e.g. LYI Tech Pvt. Ltd."
                               helperText="Main company name shown in header next to logo"
                               headingLevel="h1"
@@ -2297,14 +2306,18 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                             <AdminStyledField
                               label="Header Subtitle (Tagline)"
                               value={cur.tagline || cur.headerSubtitle || formData.tagline || formData.headerSubtitle || ''}
-                              styleValue={cur.tagline_style || formData.tagline_style}
+                              styleValue={cur.tagline_style || cur.headerSubtitle_style || formData.tagline_style || formData.headerSubtitle_style}
                               onChange={(val) => {
                                 updateCurField('tagline', val);
                                 updateCurField('headerSubtitle', val);
                                 setFormData((prev) => ({ ...prev, tagline: val, headerSubtitle: val }));
                               }}
-                              onStyleChange={(style) => updateCurField('tagline_style', style)}
-                              placeholder="e.g. 360° AI & IP Consulting"
+                              onStyleChange={(style) => {
+                                updateCurField('tagline_style', style);
+                                updateCurField('headerSubtitle_style', style);
+                                setFormData((prev) => ({ ...prev, tagline_style: style, headerSubtitle_style: style }));
+                              }}
+                              placeholder="e.g. India's 360° AI & IP Company"
                               helperText="Subtitle text shown right below the company name in header"
                               headingLevel="badge"
                             />
