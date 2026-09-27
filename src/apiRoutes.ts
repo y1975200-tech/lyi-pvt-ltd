@@ -152,6 +152,67 @@ apiRouter.get("/all-data", async (req, res) => {
   return (apiRouter as any).handle(Object.assign(req, { url: '/site-data' }), res);
 });
 
+// Helper to keep individual Mongo collections (ClientLogo, Industry, Testimonial) 100% in sync with Settings
+async function syncSettingsWithCollections(updates: any) {
+  try {
+    if (Array.isArray(updates.clientLogos)) {
+      await ClientLogo.deleteMany({});
+      const logosToInsert = updates.clientLogos.map((l: any, idx: number) => ({
+        id: l.id || `logo_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 6)}`,
+        name: l.name || '',
+        logoUrl: l.logoUrl || l.imageUrl || '',
+        imageUrl: l.logoUrl || l.imageUrl || '',
+        tag: l.tag || 'Enterprise Client',
+        websiteUrl: l.websiteUrl || l.link || '',
+        link: l.websiteUrl || l.link || '',
+        altText: l.altText || l.name || '',
+        title: l.title || l.name || '',
+        accentColor: l.accentColor || '#7c3aed',
+        width: Number(l.width) || 140,
+        height: Number(l.height) || 48,
+        fit: l.fit || 'contain',
+        order: l.order !== undefined ? l.order : idx,
+        active: l.active !== undefined ? l.active : true,
+      }));
+      if (logosToInsert.length > 0) {
+        try {
+          const inserted = await ClientLogo.insertMany(logosToInsert, { ordered: false });
+          console.log(`[Sync] Successfully synchronized ${inserted.length} ClientLogo documents in MongoDB Atlas.`);
+        } catch (insertErr: any) {
+          console.error("[Sync insertMany Error]:", insertErr.message || insertErr);
+          if (insertErr.insertedDocs) {
+            console.log(`[Sync Partial] Inserted ${insertErr.insertedDocs.length} documents despite error.`);
+          }
+        }
+      }
+    }
+
+    if (Array.isArray(updates.industries)) {
+      await Industry.deleteMany({});
+      const industriesToInsert = updates.industries.map((ind: any, idx: number) => ({
+        ...ind,
+        order: ind.order !== undefined ? ind.order : idx,
+      }));
+      if (industriesToInsert.length > 0) {
+        await Industry.insertMany(industriesToInsert);
+      }
+    }
+
+    if (Array.isArray(updates.testimonials)) {
+      await Testimonial.deleteMany({});
+      const testimonialsToInsert = updates.testimonials.map((t: any, idx: number) => ({
+        ...t,
+        order: t.order !== undefined ? t.order : idx,
+      }));
+      if (testimonialsToInsert.length > 0) {
+        await Testimonial.insertMany(testimonialsToInsert);
+      }
+    }
+  } catch (err) {
+    console.error("[Sync Error] Failed to synchronize collections with Settings:", err);
+  }
+}
+
 // -------------------------------------------------------------
 // Brand Settings & Theme Configuration
 // -------------------------------------------------------------
@@ -170,6 +231,9 @@ apiRouter.put("/settings", async (req, res) => {
     } else {
       settings = await Settings.findOneAndUpdate({}, { $set: updates }, { new: true, upsert: true });
     }
+    
+    // Synchronize individual MongoDB collections (ClientLogo, Industry, Testimonial)
+    await syncSettingsWithCollections(updates);
     
     // Create revision snapshot
     await createRevisionSnapshot("settings", "global", settings.toObject(), "Updated site settings & brand identity");
@@ -305,6 +369,13 @@ apiRouter.delete("/cms/pages/:slug/sections/:sectionId", async (req, res) => {
 // -------------------------------------------------------------
 // Client Logos CMS (Ordering, Dimensions, Links)
 // -------------------------------------------------------------
+async function syncLogosToSettingsDocument() {
+  try {
+    const logos = await ClientLogo.find().sort({ order: 1 });
+    await Settings.findOneAndUpdate({}, { $set: { clientLogos: logos } }, { upsert: true });
+  } catch (_) {}
+}
+
 apiRouter.get("/cms/logos", async (_req, res) => {
   const logos = await ClientLogo.find().sort({ order: 1 });
   res.json({ success: true, count: logos.length, logos });
@@ -314,6 +385,7 @@ apiRouter.post("/cms/logos", async (req, res) => {
   try {
     const logo = new ClientLogo({ ...req.body });
     await logo.save();
+    await syncLogosToSettingsDocument();
     const count = await ClientLogo.countDocuments();
     res.status(201).json({ success: true, logo, totalLogos: count });
   } catch (e: any) {
@@ -330,6 +402,7 @@ apiRouter.put("/cms/logos/reorder", async (req, res) => {
       }
     }
     const logos = await ClientLogo.find().sort({ order: 1 });
+    await Settings.findOneAndUpdate({}, { $set: { clientLogos: logos } }, { upsert: true });
     res.json({ success: true, logos });
   } catch (e: any) {
     res.status(500).json({ error: e.message });
@@ -339,6 +412,7 @@ apiRouter.put("/cms/logos/reorder", async (req, res) => {
 apiRouter.put("/cms/logos/:id", async (req, res) => {
   try {
     const logo = await ClientLogo.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+    await syncLogosToSettingsDocument();
     res.json({ success: true, logo });
   } catch (e: any) {
     res.status(500).json({ error: e.message });
@@ -348,6 +422,7 @@ apiRouter.put("/cms/logos/:id", async (req, res) => {
 apiRouter.delete("/cms/logos/:id", async (req, res) => {
   try {
     await ClientLogo.findByIdAndDelete(req.params.id);
+    await syncLogosToSettingsDocument();
     res.json({ success: true });
   } catch (e: any) {
     res.status(500).json({ error: e.message });

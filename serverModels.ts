@@ -114,6 +114,7 @@ const PortfolioSchema = new mongoose.Schema({
 export const Portfolio = mongoose.models.Portfolio || mongoose.model('Portfolio', PortfolioSchema);
 
 const ClientLogoSchema = new mongoose.Schema({
+  id: String,
   name: String,
   logoUrl: String,
   imageUrl: String,
@@ -133,6 +134,7 @@ const ClientLogoSchema = new mongoose.Schema({
 export const ClientLogo = mongoose.models.ClientLogo || mongoose.model('ClientLogo', ClientLogoSchema);
 
 const IndustrySchema = new mongoose.Schema({
+  id: String,
   name: String,
   image: String,
   backgroundImage: String,
