@@ -43,9 +43,13 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
 
   const isAi = service.division === 'AI Hub';
 
+  const defaultBg = isAi
+    ? (siteSettings?.aiHubBgImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=85')
+    : (siteSettings?.ipHubBgImage || 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=2400&q=85');
+
   // 2. Determine background image & contrast mode
-  const bgImg = service.bgImage || service.backgroundImageUrl;
-  const overlayType = service.overlayType || (bgImg ? 'dark' : 'none');
+  const bgImg = service.bgImage || service.backgroundImageUrl || defaultBg;
+  const overlayType = service.overlayType || 'dark';
   const overlayOpacity = service.overlayOpacity !== undefined ? service.overlayOpacity : 80;
   const textMode = service.textMode || 'auto';
 

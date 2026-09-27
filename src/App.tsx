@@ -138,8 +138,31 @@ export default function App() {
     }
     return DEFAULT_SETTINGS;
   });
-  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(DEFAULT_PORTFOLIO);
-  const [services, setServices] = useState<ServiceItem[]>(ALL_SERVICES);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('lyi_portfolio_items');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return DEFAULT_PORTFOLIO;
+  });
+
+  const [services, setServices] = useState<ServiceItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('lyi_services');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+    }
+    return ALL_SERVICES;
+  });
 
   // Modals
   const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
@@ -192,10 +215,16 @@ export default function App() {
 
         if (Array.isArray(data.services) && data.services.length > 0) {
           setServices(data.services);
+          try {
+            localStorage.setItem('lyi_services', JSON.stringify(data.services));
+          } catch (e) {}
         }
 
         if (Array.isArray(data.portfolio) && data.portfolio.length > 0) {
           setPortfolioItems(data.portfolio);
+          try {
+            localStorage.setItem('lyi_portfolio_items', JSON.stringify(data.portfolio));
+          } catch (e) {}
         }
 
         if (Array.isArray(data.bookings)) {
