@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ALL_SERVICES } from '../data/services.ts';
 import { BookingData, SiteSettings } from '../types.ts';
 import { CheckCircle2, Sparkles, Clock, Mail, ExternalLink, Calendar } from 'lucide-react';
-import { saveBookingToFirestore } from '../lib/firebaseDb.ts';
 
 interface EnquiryBookingSectionProps {
   defaultService?: string;
@@ -171,8 +170,6 @@ Meeting Link: ${finalBooking.meetingLink}`,
       if (emailInfo) {
         setEmailSentInfo(emailInfo);
       }
-      // Save directly to Firebase Firestore
-      saveBookingToFirestore(finalBooking).catch((e) => console.warn('Firestore booking note:', e));
 
       // Also persist to localStorage for instant client recovery
       try {

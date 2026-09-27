@@ -19,6 +19,14 @@ import path from "path";
 
 export const apiRouter = Router();
 
+// Ensure dynamic CMS API routes are never cached by browser or CDN
+apiRouter.use((_req, res, next) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  next();
+});
+
 // -------------------------------------------------------------
 // Helper: Snapshot Creator for Versioning & Revisions
 // -------------------------------------------------------------

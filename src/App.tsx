@@ -163,21 +163,21 @@ export default function App() {
     }
   }, [selectedEmailId]);
 
-  // Load site settings, services, and portfolio directly from MongoDB Atlas via Express API
+  // Load site settings, services, and portfolio directly from MongoDB Atlas via aggregated Express API
   const loadSiteData = async () => {
     try {
-      // 1. Fetch live settings from MongoDB
-      const sRes = await fetch('/api/settings');
-      if (sRes.ok) {
-        const settingsData = await sRes.json();
-        if (settingsData && settingsData.companyName) {
+      const res = await fetch('/api/site-data', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        
+        if (data.settings && data.settings.companyName) {
           setSiteSettings((prev) => {
             const merged = {
               ...prev,
-              ...settingsData,
+              ...data.settings,
               pageContent: {
                 ...(prev.pageContent || {}),
-                ...(settingsData.pageContent || {}),
+                ...(data.settings.pageContent || {}),
               },
             };
             try {
@@ -189,32 +189,69 @@ export default function App() {
             return merged;
           });
         }
-      }
 
-      // 2. Fetch live services from MongoDB
-      const srvRes = await fetch('/api/services');
-      if (srvRes.ok) {
-        const srvData = await srvRes.json();
-        if (Array.isArray(srvData) && srvData.length > 0) {
-          setServices(srvData);
+        if (Array.isArray(data.services) && data.services.length > 0) {
+          setServices(data.services);
         }
-      }
 
-      // 3. Fetch live portfolio from MongoDB
-      const portRes = await fetch('/api/portfolio');
-      if (portRes.ok) {
-        const portData = await portRes.json();
-        if (Array.isArray(portData) && portData.length > 0) {
-          setPortfolioItems(portData);
+        if (Array.isArray(data.portfolio) && data.portfolio.length > 0) {
+          setPortfolioItems(data.portfolio);
         }
-      }
 
-      // 4. Fetch live bookings count from MongoDB
-      const bRes = await fetch('/api/bookings');
-      if (bRes.ok) {
-        const bData = await bRes.json();
-        if (Array.isArray(bData)) {
-          setBookingCount(bData.length);
+        if (Array.isArray(data.bookings)) {
+          setBookingCount(data.bookings.length);
+        }
+      } else {
+        // Fallback parallel fetch if aggregated route is unavailable
+        const [sRes, srvRes, portRes, bRes] = await Promise.allSettled([
+          fetch('/api/settings', { cache: 'no-store' }),
+          fetch('/api/services', { cache: 'no-store' }),
+          fetch('/api/portfolio', { cache: 'no-store' }),
+          fetch('/api/bookings', { cache: 'no-store' }),
+        ]);
+
+        if (sRes.status === 'fulfilled' && sRes.value.ok) {
+          const settingsData = await sRes.value.json();
+          if (settingsData && settingsData.companyName) {
+            setSiteSettings((prev) => {
+              const merged = {
+                ...prev,
+                ...settingsData,
+                pageContent: {
+                  ...(prev.pageContent || {}),
+                  ...(settingsData.pageContent || {}),
+                },
+              };
+              try {
+                localStorage.setItem('lyi_site_settings', JSON.stringify(merged));
+              } catch (e) {}
+              if (merged.theme) {
+                applyThemeToCssVariables(merged.theme);
+              }
+              return merged;
+            });
+          }
+        }
+
+        if (srvRes.status === 'fulfilled' && srvRes.value.ok) {
+          const srvData = await srvRes.value.json();
+          if (Array.isArray(srvData) && srvData.length > 0) {
+            setServices(srvData);
+          }
+        }
+
+        if (portRes.status === 'fulfilled' && portRes.value.ok) {
+          const portData = await portRes.value.json();
+          if (Array.isArray(portData) && portData.length > 0) {
+            setPortfolioItems(portData);
+          }
+        }
+
+        if (bRes.status === 'fulfilled' && bRes.value.ok) {
+          const bData = await bRes.value.json();
+          if (Array.isArray(bData)) {
+            setBookingCount(bData.length);
+          }
         }
       }
     } catch (err) {
@@ -235,7 +272,7 @@ export default function App() {
       applyThemeToCssVariables(newSettings.theme);
     }
 
-    // 1. Optimistically update local React state and instant localStorage
+    // 1. Update local React state & localStorage
     setSiteSettings((prev) => {
       const updated = {
         ...prev,
@@ -251,7 +288,7 @@ export default function App() {
       return updated;
     });
 
-    // 2. PERMANENTLY SAVE DIRECTLY TO MONGODB DATABASE
+    // 2. Persist to MongoDB API if not already persisted
     try {
       const res = await fetch('/api/settings', {
         method: 'PUT',

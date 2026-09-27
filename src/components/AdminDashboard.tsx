@@ -65,20 +65,6 @@ import { AdminStyledField } from './AdminStyledField.tsx';
 import { applyFieldStyle, getFieldClassName } from '../lib/styleHelper.ts';
 import { INDUSTRIES_LIST } from '../data/generalData.ts';
 import { IndustryItem } from '../types.ts';
-import {
-  savePageContentToFirestore,
-  saveSiteSettingsToFirestore,
-  savePortfolioToFirestore,
-  saveSinglePortfolioItemToFirestore,
-  deletePortfolioItemFromFirestore,
-  updateBookingInFirestore,
-  deleteBookingFromFirestore,
-  saveServiceToFirestore,
-  deleteServiceFromFirestore,
-  getBookingsFromFirestore,
-  getPortfolioFromFirestore,
-  getServicesFromFirestore,
-} from '../lib/firebaseDb.ts';
 
 interface SuccessPopupState {
   isOpen: boolean;
@@ -348,14 +334,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
     if (!loaded) {
       try {
-        const remote = await getBookingsFromFirestore();
-        if (remote && remote.length > 0) {
-          setBookings(remote);
-          return;
-        }
-      } catch (_) {}
-
-      try {
         const cached = localStorage.getItem('lyi_stored_bookings');
         if (cached) {
           setBookings(JSON.parse(cached));
@@ -393,32 +371,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const fetchPortfolio = async () => {
-    let loaded = false;
     try {
       const res = await fetch('/api/portfolio');
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
           setPortfolioItems(data);
-          loaded = true;
         }
       }
     } catch (e) {
-      console.warn('Notice: API portfolio fetch unfulfilled, checking Firestore.');
-    }
-
-    if (!loaded) {
-      try {
-        const remote = await getPortfolioFromFirestore();
-        if (remote && remote.length > 0) {
-          setPortfolioItems(remote);
-        }
-      } catch (_) {}
+      console.warn('Notice: API portfolio fetch unfulfilled.');
     }
   };
 
   const fetchCustomServices = async () => {
-    let loaded = false;
     try {
       const res = await fetch('/api/services');
       if (res.ok) {
@@ -429,24 +395,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             [...prev, ...data].forEach((s) => map.set(s.id, s));
             return Array.from(map.values());
           });
-          loaded = true;
         }
       }
     } catch (e) {
-      console.warn('Notice: API services fetch unfulfilled, checking Firestore.');
-    }
-
-    if (!loaded) {
-      try {
-        const remote = await getServicesFromFirestore();
-        if (remote && remote.length > 0) {
-          setAllServices((prev) => {
-            const map = new Map<string, ServiceItem>();
-            [...prev, ...remote].forEach((s) => map.set(s.id, s));
-            return Array.from(map.values());
-          });
-        }
-      } catch (_) {}
+      console.warn('Notice: API services fetch unfulfilled.');
     }
   };
 
@@ -629,7 +581,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
     }
   };
 
-  // Handle Instant Save for Individual Photos with immediate Firestore & localStorage backup
+  // Handle Instant Save for Individual Photos with immediate MongoDB persistence
   const handleInstantSaveImage = async (
     field: keyof SiteSettings,
     newUrl: string,
@@ -640,23 +592,16 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
     try {
       const updated = { ...formData, [field]: newUrl };
       setFormData(updated);
-      try {
-        localStorage.setItem('lyi_site_settings', JSON.stringify(updated));
-      } catch (e) {}
 
-      // 1. Direct write to Firebase Firestore database (cross-device sync)
-      await saveSiteSettingsToFirestore({ [field]: newUrl });
-
-      // 2. Local state & server synchronization
+      // Single write to backend MongoDB API
       await onUpdateSettings({ [field]: newUrl });
 
       setSuccessPopup({
         isOpen: true,
         title: `${label} Published to Database!`,
-        message: `Your image has been permanently stored in Firebase Firestore and is live across all devices.`,
+        message: `Your image URL has been saved to MongoDB and is live across all pages.`,
         targetPage: targetRoute,
       });
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Instant photo save failed:', err);
       alert('Failed to save image: ' + (err.message || err));
@@ -687,7 +632,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
         pageContent: updatedPageContent,
       };
 
-      // Also sync specific page image back to legacy field if applicable
       if (content.bgImage) {
         if (pageId === 'home') updatedSettings.heroBgImage = content.bgImage;
         if (pageId === 'ai-hub') updatedSettings.aiHubBgImage = content.bgImage;
@@ -716,38 +660,28 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
         }
       }
 
-      // 1. Direct write to Firebase Firestore collection and main doc
-      await savePageContentToFirestore(pageId, content);
-      await saveSiteSettingsToFirestore(updatedSettings);
+      // Single write to Express server API (which updates Page collection and syncs to Settings)
+      const res = await fetch(`/api/pages/${pageId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(content),
+      });
 
-      // 2. Direct update to server API
-      try {
-        await fetch(`/api/pages/${pageId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(content),
-        });
-      } catch (e) {
-        console.warn('Server pages API notice:', e);
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
       setFormData(updatedSettings as SiteSettings);
-      try {
-        localStorage.setItem('lyi_site_settings', JSON.stringify(updatedSettings));
-      } catch (e) {}
-
       await onUpdateSettings(updatedSettings);
 
       setSuccessPopup({
         isOpen: true,
-        title: `${pageLabel} Stored in Firebase!`,
-        message: `Headings, description copy, and images for ${pageLabel} are permanently saved in the Firebase database and synchronized across all devices.`,
+        title: `${pageLabel} Saved to Database!`,
+        message: `Headings, description copy, and images for ${pageLabel} are permanently saved in MongoDB.`,
         targetPage: targetRoute,
       });
-
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
-      console.error('Failed to save page content to Firebase:', err);
+      console.error('Failed to save page content:', err);
       alert('Error saving page: ' + (err.message || err));
     } finally {
       setSavingPageContent(false);
@@ -757,39 +691,28 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
   // Handle Editing & Saving Service/Product
   const handleSaveEditedService = async (serviceToSave: ServiceItem) => {
     try {
-      // 1. Direct write to Express MongoDB API
-      try {
-        await fetch(`/api/services/${serviceToSave.slug || serviceToSave.id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(serviceToSave),
-        });
-      } catch (e) {
-        console.warn('Server service PUT notice:', e);
+      const res = await fetch(`/api/services/${serviceToSave.slug || serviceToSave.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(serviceToSave),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
-      // 2. Direct write to Firebase Firestore (non-blocking fallback)
-      try {
-        await saveServiceToFirestore(serviceToSave);
-      } catch (fbErr) {
-        console.warn('Firebase service save notice:', fbErr);
-      }
-
-      // 3. Update local state & notify parent state
       const updated = allServices.map((s) => (s.id === serviceToSave.id || s.slug === serviceToSave.slug ? serviceToSave : s));
       setAllServices(updated);
       if (onUpdateServices) onUpdateServices(updated);
-      await onUpdateSettings({ services: updated });
       setFormData((prev) => ({ ...prev, services: updated }));
 
       setEditingService(null);
       setSuccessPopup({
         isOpen: true,
         title: 'Service Updated Successfully!',
-        message: `"${serviceToSave.title}" has been saved to MongoDB and is updated live on all pages.`,
+        message: `"${serviceToSave.title}" has been saved to MongoDB and is updated live across all pages.`,
         targetPage: serviceToSave.division === 'AI Hub' ? 'ai-hub' : 'ip-hub',
       });
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to update service:', err);
       alert('Error updating service: ' + (err.message || err));
@@ -802,25 +725,14 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       return;
     }
     try {
-      // 1. Delete from Server MongoDB API
-      try {
-        await fetch(`/api/services/${serviceId}`, { method: 'DELETE' });
-      } catch (e) {
-        console.warn('Server service DELETE notice:', e);
+      const res = await fetch(`/api/services/${serviceId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
-      // 2. Delete from Firebase Firestore (non-blocking fallback)
-      try {
-        await deleteServiceFromFirestore(serviceId);
-      } catch (fbErr) {
-        console.warn('Firebase delete notice:', fbErr);
-      }
-
-      // 3. Update local state & notify parent
       const remaining = allServices.filter((s) => s.id !== serviceId && s.slug !== serviceId);
       setAllServices(remaining);
       if (onUpdateServices) onUpdateServices(remaining);
-      await onUpdateSettings({ services: remaining });
       setFormData((prev) => ({ ...prev, services: remaining }));
 
       if (editingService?.id === serviceId) {
@@ -829,9 +741,8 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       setSuccessPopup({
         isOpen: true,
         title: 'Service Deleted Successfully',
-        message: `"${serviceTitle}" was deleted from the database.`,
+        message: `"${serviceTitle}" was deleted from MongoDB.`,
       });
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to delete service:', err);
       alert('Error deleting service: ' + (err.message || err));
@@ -881,29 +792,19 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
         ],
       };
 
-      // 1. Save directly to Firebase Firestore
-      try {
-        await saveServiceToFirestore(constructed);
-      } catch (fbErr) {
-        console.warn('Firebase direct save notice:', fbErr);
+      const res = await fetch('/api/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(constructed),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
-      // 2. Post to Express server API
-      try {
-        await fetch('/api/services', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(constructed),
-        });
-      } catch (srvErr) {
-        console.warn('Express server API save notice:', srvErr);
-      }
-
-      // 3. Update local state & notify parent
       const updated = [constructed, ...allServices];
       setAllServices(updated);
       if (onUpdateServices) onUpdateServices(updated);
-      await onUpdateSettings({ services: updated });
       setFormData((prev) => ({ ...prev, services: updated }));
 
       setIsAddServiceModalOpen(false);
@@ -923,8 +824,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
         message: `"${constructed.title}" is now published in ${constructed.division}${constructed.subCategory ? ` (${constructed.subCategory})` : ''} and saved to MongoDB.`,
         targetPage: constructed.division === 'AI Hub' ? 'ai-hub' : 'ip-hub',
       });
-
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to create service:', err);
       alert('Error creating service: ' + (err.message || err));
@@ -957,29 +856,19 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
         description_style: newPortfolioItem.description_style,
       };
 
-      // 1. Post to Express Server MongoDB API
-      try {
-        await fetch('/api/portfolio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(itemToSave),
-        });
-      } catch (srvErr) {
-        console.warn('Express server API portfolio save notice:', srvErr);
+      const res = await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(itemToSave),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
-      // 2. Direct write to Firebase Firestore (optional fallback)
-      try {
-        await saveSinglePortfolioItemToFirestore(itemToSave);
-      } catch (fbErr) {
-        console.warn('Firebase portfolio direct save notice:', fbErr);
-      }
-
-      // 3. Update local state & parent state
       const updated = [itemToSave, ...portfolioItems];
       setPortfolioItems(updated);
       if (onUpdatePortfolio) onUpdatePortfolio(updated);
-      await onUpdateSettings({ portfolio: updated });
 
       setIsAddPortfolioModalOpen(false);
       setNewPortfolioItem({
@@ -1000,8 +889,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
         message: `Project "${itemToSave.title}" has been published to the portfolio and saved to MongoDB.`,
         targetPage: 'portfolio',
       });
-
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to create portfolio item:', err);
       alert('Error creating portfolio item: ' + (err.message || err));
@@ -1011,29 +898,19 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
   // Handle Editing & Saving Portfolio Item
   const handleSaveEditedPortfolioItem = async (itemToSave: PortfolioItem) => {
     try {
-      // 1. Post to Express Server MongoDB API
-      try {
-        await fetch(`/api/portfolio/${itemToSave.id || (itemToSave as any)._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(itemToSave),
-        });
-      } catch (srvErr) {
-        console.warn('Express server API portfolio update notice:', srvErr);
+      const res = await fetch(`/api/portfolio/${itemToSave.id || (itemToSave as any)._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(itemToSave),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
-      // 2. Direct write to Firebase Firestore (non-blocking fallback)
-      try {
-        await saveSinglePortfolioItemToFirestore(itemToSave);
-      } catch (fbErr) {
-        console.warn('Firebase portfolio direct save notice:', fbErr);
-      }
-
-      // 3. Update local state & parent state
       const updated = portfolioItems.map((p) => (p.id === itemToSave.id ? itemToSave : p));
       setPortfolioItems(updated);
       if (onUpdatePortfolio) onUpdatePortfolio(updated);
-      await onUpdateSettings({ portfolio: updated });
 
       setEditingPortfolioItem(null);
       setSuccessPopup({
@@ -1042,8 +919,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
         message: `Project "${itemToSave.title}" has been saved to MongoDB and updated live on the website.`,
         targetPage: 'portfolio',
       });
-
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to update portfolio item:', err);
       alert('Error updating portfolio item: ' + (err.message || err));
@@ -1056,25 +931,14 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       return;
     }
     try {
-      // 1. Delete from Server MongoDB API
-      try {
-        await fetch(`/api/portfolio/${portfolioId}`, { method: 'DELETE' });
-      } catch (srvErr) {
-        console.warn('Express server API portfolio delete notice:', srvErr);
+      const res = await fetch(`/api/portfolio/${portfolioId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
-      // 2. Delete from Firebase Firestore (non-blocking fallback)
-      try {
-        await deletePortfolioItemFromFirestore(portfolioId);
-      } catch (fbErr) {
-        console.warn('Firebase portfolio delete notice:', fbErr);
-      }
-
-      // 3. Update local state & parent state
       const updated = portfolioItems.filter((p) => p.id !== portfolioId);
       setPortfolioItems(updated);
       if (onUpdatePortfolio) onUpdatePortfolio(updated);
-      await onUpdateSettings({ portfolio: updated });
 
       if (editingPortfolioItem?.id === portfolioId) {
         setEditingPortfolioItem(null);
@@ -1083,11 +947,9 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       setSuccessPopup({
         isOpen: true,
         title: 'Project Deleted Successfully',
-        message: `"${portfolioTitle}" was removed from the portfolio and database.`,
+        message: `"${portfolioTitle}" was removed from MongoDB.`,
         targetPage: 'portfolio',
       });
-
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to delete portfolio item:', err);
       alert('Error deleting portfolio item: ' + (err.message || err));
@@ -1119,18 +981,16 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       setTestimonials(updatedList);
       setFormData((prev) => ({ ...prev, testimonials: updatedList }));
 
-      // 1. Direct write to MongoDB
-      try {
-        await fetch('/api/settings', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ testimonials: updatedList }),
-        });
-      } catch (apiErr) {
-        console.warn('Testimonial MongoDB API sync warning:', apiErr);
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ testimonials: updatedList }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
-      // 2. Notify parent state
       await onUpdateSettings({ testimonials: updatedList });
 
       setIsAddTestimonialModalOpen(false);
@@ -1150,8 +1010,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
         message: `Testimonial from "${testimonialToSave.author}" (${testimonialToSave.company || 'Client'}) is saved to MongoDB and live on the website.`,
         targetPage: 'home',
       });
-
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to save testimonial:', err);
       alert('Error saving testimonial: ' + (err.message || err));
@@ -1168,18 +1026,16 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       setTestimonials(updatedList);
       setFormData((prev) => ({ ...prev, testimonials: updatedList }));
 
-      // 1. Direct write to MongoDB
-      try {
-        await fetch('/api/settings', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ testimonials: updatedList }),
-        });
-      } catch (apiErr) {
-        console.warn('Testimonial delete MongoDB API sync warning:', apiErr);
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ testimonials: updatedList }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
-      // 2. Notify parent state
       await onUpdateSettings({ testimonials: updatedList });
 
       if (editingTestimonial?.id === testimonialId) {
@@ -1192,8 +1048,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
         message: `Testimonial from "${author}" was removed from MongoDB.`,
         targetPage: 'home',
       });
-
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to delete testimonial:', err);
       alert('Error deleting testimonial: ' + (err.message || err));
@@ -1211,22 +1065,24 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       setFormData(updatedFormData);
       setThemeData(themeToSave);
 
-      // Save to Firebase Firestore and API
-      await saveSiteSettingsToFirestore({ theme: themeToSave });
-      await fetch('/api/settings', {
+      const res = await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ theme: themeToSave }),
       });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
+      }
+
       await onUpdateSettings(updatedFormData);
 
       setSuccessPopup({
         isOpen: true,
         title: 'Theme & Typography Saved!',
-        message: 'Your custom button colors, typography (bold, italic, underline), and card colors were saved and applied across the entire website.',
+        message: 'Your custom button colors, typography, and theme styling were saved to MongoDB.',
         targetPage: 'home',
       });
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to save theme:', err);
       alert('Error saving theme: ' + (err.message || err));
@@ -1246,21 +1102,24 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       setFormData(updatedFormData);
       setClientLogos(updatedLogos);
 
-      await saveSiteSettingsToFirestore({ clientLogos: updatedLogos });
-      await fetch('/api/settings', {
+      const res = await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clientLogos: updatedLogos }),
       });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
+      }
+
       await onUpdateSettings(updatedFormData);
 
       setSuccessPopup({
         isOpen: true,
         title: 'Client Logos Scroller Saved!',
-        message: 'The infinite colorful client logo slider has been updated and is live on the home page.',
+        message: 'The infinite client logo slider has been saved to MongoDB.',
         targetPage: 'home',
       });
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to save client logos:', err);
       alert('Error saving client logos: ' + (err.message || err));
@@ -1284,30 +1143,24 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       };
       setFormData(updatedFormData);
 
-      await saveSiteSettingsToFirestore({
-        industries: updatedIndustries,
-        ...(pageContentUpdate?.industriesBgImage ? { industriesBgImage: pageContentUpdate.industriesBgImage } : {}),
-        pageContent: {
-          ...(formData.pageContent || {}),
-          ...(pageContentUpdate?.industries ? { industries: pageContentUpdate.industries } : {}),
-        },
-      });
-
-      await fetch('/api/settings', {
+      const res = await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFormData),
       });
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
+      }
 
       await onUpdateSettings(updatedFormData);
 
       setSuccessPopup({
         isOpen: true,
         title: 'Industries Page & Sectors Saved!',
-        message: 'Your industry sectors, challenges, solutions, and hero styling are now live on the website.',
+        message: 'Your industry sectors and hero styling are now live on the website and saved in MongoDB.',
         targetPage: 'industries',
       });
-      if (onRefreshData) onRefreshData();
     } catch (err: any) {
       console.error('Failed to save industries:', err);
       alert('Error saving industries: ' + (err.message || err));
@@ -1321,34 +1174,29 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
     e.preventDefault();
     setSavingSettings(true);
     try {
-      // 1. Direct write to Firebase Firestore database
-      await saveSiteSettingsToFirestore(formData);
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-      // 2. Direct write to Server API database
-      try {
-        await fetch('/api/settings', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
-      } catch (srvErr) {
-        console.warn('Server settings update notice:', srvErr);
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
       }
 
-      // 3. Parent state sync
       await onUpdateSettings(formData);
 
-      setSaveSuccessMsg('All details & images saved to Firebase database!');
+      setSaveSuccessMsg('All details & images saved to MongoDB!');
       setTimeout(() => setSaveSuccessMsg(null), 4000);
       setSuccessPopup({
         isOpen: true,
-        title: 'Saved to Firebase Database!',
-        message: 'All company details, background photos, numbers, and settings have been written to Firebase Firestore and are visible on any device.',
+        title: 'Saved to MongoDB Database!',
+        message: 'All company details, background photos, numbers, and settings have been written to MongoDB.',
         targetPage: 'home',
       });
-      if (onRefreshData) onRefreshData();
-    } catch (err) {
-      console.error('Save to Firestore failed:', err);
+    } catch (err: any) {
+      console.error('Save to MongoDB failed:', err);
+      alert('Error saving settings: ' + (err.message || err));
     } finally {
       setSavingSettings(false);
     }
@@ -1357,7 +1205,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
   // Handle Booking Status Change
   const handleUpdateBookingStatus = async (id: string, newStatus: string) => {
     try {
-      await updateBookingInFirestore(id, { status: newStatus as any });
       const res = await fetch(`/api/bookings/${id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -1380,11 +1227,10 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
 
   // Handle Single Booking Delete
   const handleDeleteBooking = async (id: string, reference: string) => {
-    if (!window.confirm(`Are you sure you want to remove consultation booking "${reference}"? This will delete it from Firebase and server.`)) {
+    if (!window.confirm(`Are you sure you want to remove consultation booking "${reference}"? This will delete it from MongoDB.`)) {
       return;
     }
     try {
-      await deleteBookingFromFirestore(id);
       await fetch(`/api/bookings/${id}`, { method: 'DELETE' });
       const remaining = bookings.filter((b) => b.id !== id);
       setBookings(remaining);
@@ -1409,9 +1255,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       return;
     }
     try {
-      for (const b of bookings) {
-        await deleteBookingFromFirestore(b.id);
-      }
       await fetch('/api/bookings', { method: 'DELETE' });
       setBookings([]);
       try {

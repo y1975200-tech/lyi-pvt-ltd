@@ -102,20 +102,13 @@ export const ImageSourceSelector: React.FC<ImageSourceSelectorProps> = ({
     setUploadFileName(file.name);
 
     try {
-      // 1. Compress image to clean, database-ready data URL
+      // 1. Compress image for efficient network transfer
       const databaseReadyDataUrl = await compressImageForDatabase(file);
 
-      // 2. Direct apply & database persistence
-      onChange(databaseReadyDataUrl);
-      if (onInstantSave) {
-        onInstantSave(databaseReadyDataUrl);
-        setJustApplied(true);
-        setTimeout(() => setJustApplied(false), 3500);
-      }
-
-      // 3. Also send to server upload endpoint as dual backup
+      // 2. Upload to server storage first to obtain clean file URL
+      let finalUrl = databaseReadyDataUrl;
       try {
-        await fetch('/api/upload-image', {
+        const res = await fetch('/api/upload-image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -124,8 +117,22 @@ export const ImageSourceSelector: React.FC<ImageSourceSelectorProps> = ({
             target: label,
           }),
         });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.url) {
+            finalUrl = data.url;
+          }
+        }
       } catch (e) {
-        console.warn('Server upload backup non-blocking notice:', e);
+        console.warn('Server image upload endpoint notice:', e);
+      }
+
+      // 3. Apply clean image URL and save
+      onChange(finalUrl);
+      if (onInstantSave) {
+        onInstantSave(finalUrl);
+        setJustApplied(true);
+        setTimeout(() => setJustApplied(false), 3500);
       }
     } catch (err: any) {
       console.error('Failed to process image for database:', err);

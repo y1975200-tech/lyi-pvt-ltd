@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ALL_SERVICES } from '../data/services.ts';
 import { BookingData, DispatchedEmail, SiteSettings } from '../types.ts';
-import { saveBookingToFirestore } from '../lib/firebaseDb.ts';
 import {
   Calendar,
   Clock,
@@ -249,9 +248,6 @@ Assigned Specialist: ${finalBooking.assignedConsultant.name}`,
       }
 
       setConfirmedBooking(finalBooking);
-
-      // Save directly to Firebase Firestore
-      saveBookingToFirestore(finalBooking).catch((e) => console.warn('Firestore booking note:', e));
 
       // Also persist to localStorage for instant client recovery
       try {
