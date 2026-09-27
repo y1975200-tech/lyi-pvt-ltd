@@ -102,7 +102,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<
     'crm' | 'styling' | 'header-logo' | 'logos' | 'industries' | 'pages' | 'settings' | 'services' | 'portfolio' | 'testimonials' | 'emails'
-  >('crm');
+  >('pages');
+  const [isCmsDropdownOpen, setIsCmsDropdownOpen] = useState<boolean>(true);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
   // Admin Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -1358,32 +1360,36 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/80 backdrop-blur-sm flex justify-center items-center p-2 sm:p-4">
       <div className="bg-white w-full max-w-7xl h-[95vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200">
-        {/* Top Bar */}
-        <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800">
+        {/* Top Header Bar */}
+        <div className="bg-slate-900 text-white px-4 sm:px-6 py-3.5 flex items-center justify-between border-b border-slate-800 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-500 flex items-center justify-center font-extrabold text-sm shadow-md">
+            {/* Mobile Sidebar Toggle Button */}
+            <button
+              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+              className="md:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white cursor-pointer"
+              title="Toggle Navigation Menu"
+            >
+              <Sliders className="w-5 h-5" />
+            </button>
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-500 flex items-center justify-center font-extrabold text-xs shadow-md">
               LYI
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-extrabold tracking-tight font-heading">
-                  Admin Command Center &amp; Portal
+                <h2 className="text-base sm:text-lg font-extrabold tracking-tight font-heading">
+                  Admin Control Panel
                 </h2>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
-                  HQ: Pune, Maharashtra
-                </span>
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                  <span>Admin Endpoint:</span>
-                  <code className="text-purple-200">/#admin</code>
+                <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                  HQ: Pune
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
-                Live CRM Slots · Styling &amp; Typography · Colorful Client Logos · Services CMS · Basic Details
+              <p className="text-[11px] text-slate-400 hidden sm:block">
+                CMS &amp; Data Management Portal · MongoDB Atlas Connected
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => {
                 navigator.clipboard.writeText(`${window.location.origin}/#admin`);
@@ -1393,7 +1399,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                   message: `Admin Endpoint URL copied: ${window.location.origin}/#admin`,
                 });
               }}
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-900/60 hover:bg-purple-800 text-purple-200 text-xs font-bold border border-purple-700/50 transition-colors cursor-pointer"
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-900/60 hover:bg-purple-800 text-purple-200 text-xs font-bold border border-purple-700/50 transition-colors cursor-pointer"
               title="Copy Admin Endpoint URL"
             >
               <Copy className="w-3.5 h-3.5" />
@@ -1408,181 +1414,267 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
             </button>
             <button
               onClick={handleAdminLogout}
-              className="px-3 py-2 rounded-xl bg-amber-950/60 hover:bg-amber-900 border border-amber-800/60 text-amber-200 font-bold text-xs transition-colors cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-amber-950/60 hover:bg-amber-900 border border-amber-800/60 text-amber-200 font-bold text-xs transition-colors cursor-pointer"
               title="Lock and Log Out"
             >
-              Lock &amp; Logout
+              Logout
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors cursor-pointer"
             >
               Exit Dashboard ✕
             </button>
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="bg-slate-100 border-b border-slate-200 px-6 flex items-center gap-2 overflow-x-auto py-2">
-          <button
-            onClick={() => setActiveTab('crm')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'crm'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
+        {/* Main Content Layout: Vertical Sidebar + Right Content */}
+        <div className="flex-1 flex overflow-hidden relative">
+          {/* Vertical Sidebar Navigation */}
+          <aside
+            className={`w-64 sm:w-72 bg-slate-900 text-slate-300 border-r border-slate-800 flex flex-col shrink-0 overflow-y-auto transition-all duration-300 absolute md:relative z-40 inset-y-0 left-0 ${
+              isMobileSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
             }`}
           >
-            <Calendar className="w-4 h-4" />
-            <span>Real-Time Slots &amp; CRM</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-white/20 text-white">
-              {bookings.length}
-            </span>
-          </button>
+            <div className="p-3.5 space-y-1 font-sans">
+              <div className="px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-400 font-mono flex items-center justify-between">
+                <span>ADMIN SIDEBAR MENU</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              </div>
 
-          <button
-            onClick={() => setActiveTab('styling')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'styling'
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-500/25'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <Palette className="w-4 h-4 text-purple-500" />
-            <span>Theme, Colors &amp; Typography</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-purple-100 text-purple-800 font-bold">
-              Customizer
-            </span>
-          </button>
+              {/* Option 1: All Pages (CMS) Dropdown */}
+              <div className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => setIsCmsDropdownOpen(!isCmsDropdownOpen)}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                    activeTab === 'pages'
+                      ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
+                      : 'hover:bg-slate-800 text-slate-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <FileSpreadsheet className="w-4 h-4 text-cyan-400" />
+                    <span>All Pages (CMS)</span>
+                  </div>
+                  <ChevronRight
+                    className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                      isCmsDropdownOpen ? 'rotate-90 text-cyan-400' : ''
+                    }`}
+                  />
+                </button>
 
-          <button
-            onClick={() => setActiveTab('header-logo')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'header-logo'
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-500/25'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <ImageIcon className="w-4 h-4 text-purple-500" />
-            <span>Header Logo</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-purple-100 text-purple-800 font-bold">
-              Navbar
-            </span>
-          </button>
+                {/* Dropdown Menu Items */}
+                {isCmsDropdownOpen && (
+                  <div className="ml-3 pl-3 border-l-2 border-slate-800 space-y-1 py-1">
+                    {[
+                      { id: 'home', label: '1. Home Page' },
+                      { id: 'ai-hub', label: '2. AI Hub' },
+                      { id: 'ip-hub', label: '3. IP Hub' },
+                      { id: 'portfolio', label: '4. Portfolio' },
+                      { id: 'industries', label: '5. Industries' },
+                      { id: 'case-studies', label: '6. Case Studies' },
+                      { id: 'about', label: '7. About Us' },
+                      { id: 'contact', label: '8. Contact' },
+                    ].map((p) => {
+                      const isSelected = activeTab === 'pages' && selectedCmsPage === p.id;
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => {
+                            setActiveTab('pages');
+                            setSelectedCmsPage(p.id as any);
+                            setIsMobileSidebarOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-lg font-medium text-xs transition-all cursor-pointer flex items-center justify-between ${
+                            isSelected
+                              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-md shadow-blue-500/25'
+                              : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                          }`}
+                        >
+                          <span>{p.label}</span>
+                          {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 shadow-xs shadow-cyan-300" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
 
-          <button
-            onClick={() => setActiveTab('logos')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'logos'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <Sparkles className="w-4 h-4 text-emerald-500" />
-            <span>Client Logos Scroller</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-bold">
-              {clientLogos.length} Logos
-            </span>
-          </button>
+              {/* Option 2: Services & Products Manager */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('services');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'services'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <Layers className="w-4 h-4 text-blue-400" />
+                <span>Services &amp; Products Manager</span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('industries')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'industries'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <Building2 className="w-4 h-4 text-cyan-500" />
-            <span>Industries Page &amp; Sectors</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-cyan-100 text-cyan-800 font-bold">
-              {(formData.industries || INDUSTRIES_LIST).length} Sectors
-            </span>
-          </button>
+              {/* Option 3: Portfolio Cards & Photos */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('portfolio');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'portfolio'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <ImageIcon className="w-4 h-4 text-purple-400" />
+                  <span>Portfolio Cards &amp; Photos</span>
+                </div>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono">
+                  {portfolioItems.length}
+                </span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('pages')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'pages'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <FileSpreadsheet className="w-4 h-4 text-cyan-500" />
-            <span>Pages Content &amp; Images (CMS)</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-cyan-100 text-cyan-800 font-bold">
-              7 Pages
-            </span>
-          </button>
+              {/* Option 4: Industries Page & Sector Cards */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('industries');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'industries'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Building2 className="w-4 h-4 text-cyan-400" />
+                  <span>Industries Page &amp; Sectors</span>
+                </div>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono">
+                  {(formData.industries || INDUSTRIES_LIST).length}
+                </span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'settings'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            <span>Basic Details &amp; Photos</span>
-          </button>
+              {/* Option 5: Client Logos Scroller */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('logos');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'logos'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  <span>Client Logos Scroller</span>
+                </div>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">
+                  {clientLogos.length}
+                </span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('services')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap ${
-              activeTab === 'services'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span>Services &amp; Products Manager</span>
-          </button>
+              {/* Option 6: Client Testimonials */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('testimonials');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'testimonials'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <MessageSquareQuote className="w-4 h-4 text-amber-400" />
+                  <span>Client Testimonials</span>
+                </div>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-950 text-amber-300 border border-amber-800 font-mono">
+                  {testimonials.length}
+                </span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('portfolio')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap ${
-              activeTab === 'portfolio'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <ImageIcon className="w-4 h-4" />
-            <span>Portfolio Cards &amp; Photos</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700">
-              {portfolioItems.length}
-            </span>
-          </button>
+              {/* Option 7: Theme, Colors & Typography */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('styling');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'styling'
+                    ? 'bg-purple-600 text-white shadow-md shadow-purple-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <Palette className="w-4 h-4 text-purple-400" />
+                <span>Theme, Colors &amp; Typography</span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('testimonials')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === 'testimonials'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <MessageSquareQuote className="w-4 h-4 text-amber-500" />
-            <span>Client Testimonials</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 font-bold">
-              {testimonials.length}
-            </span>
-          </button>
+              {/* Option 8: Real-Time Slots & CRM */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('crm');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'crm'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Calendar className="w-4 h-4 text-blue-400" />
+                  <span>Real-Time Slots &amp; CRM</span>
+                </div>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-blue-950 text-blue-300 border border-blue-800 font-mono">
+                  {bookings.length}
+                </span>
+              </button>
 
-          <button
-            onClick={() => setActiveTab('emails')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all whitespace-nowrap ${
-              activeTab === 'emails'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-white text-slate-700 hover:bg-slate-200/80 border border-slate-200'
-            }`}
-          >
-            <Mail className="w-4 h-4" />
-            <span>Email Dispatch Audit</span>
-          </button>
-        </div>
+              {/* Option 9: Email Dispatch Audit */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('emails');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'emails'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <Mail className="w-4 h-4 text-indigo-400" />
+                <span>Email Dispatch Audit</span>
+              </button>
+            </div>
+          </aside>
 
-        {/* Tab Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50">
+          {/* Mobile backdrop */}
+          {isMobileSidebarOpen && (
+            <div
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="md:hidden fixed inset-0 bg-slate-950/60 z-30 backdrop-blur-xs"
+            />
+          )}
+
+          {/* Right Main Content Panel */}
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50">
           {/* TAB 1: REAL-TIME SLOTS & CRM PORTAL */}
           {activeTab === 'crm' && (
             <div className="space-y-6">
@@ -3900,8 +3992,9 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
               </div>
             </div>
           )}
-        </div>
+        </main>
       </div>
+    </div>
 
       {/* MODAL: View Single Booking Details */}
       {selectedBooking && (

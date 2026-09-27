@@ -409,27 +409,46 @@ export const ImageSourceSelector: React.FC<ImageSourceSelectorProps> = ({
             </div>
           </div>
 
-          {onInstantSave && (
-            <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center justify-between pt-1 gap-2 flex-wrap">
               <span className="text-[11px] text-slate-500 font-medium">
                 {justApplied ? (
                   <span className="text-emerald-600 font-bold flex items-center gap-1">
                     <Check className="w-3.5 h-3.5" /> Published live to website!
                   </span>
                 ) : (
-                  'Click to apply this photo directly to website'
+                  'Click to apply or remove photo'
                 )}
               </span>
-              <button
-                type="button"
-                onClick={handleApplyClick}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-colors cursor-pointer shadow-xs active:scale-95"
-              >
-                <Save className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Save &amp; Apply Photo</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Are you sure you want to remove this image from the database?')) {
+                      setUploadFileName(null);
+                      onChange('');
+                      if (onInstantSave) {
+                        onInstantSave('');
+                      }
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 transition-colors cursor-pointer"
+                  title="Remove photo from database"
+                >
+                  <X className="w-3.5 h-3.5 text-rose-600" />
+                  <span>Remove Image</span>
+                </button>
+                {onInstantSave && (
+                  <button
+                    type="button"
+                    onClick={handleApplyClick}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-colors cursor-pointer shadow-xs active:scale-95"
+                  >
+                    <Save className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Save &amp; Apply Photo</span>
+                  </button>
+                )}
+              </div>
             </div>
-          )}
         </div>
       ) : (
         <div className={`mt-2 rounded-xl border border-dashed border-slate-200 bg-slate-100/60 ${previewHeightClass} flex items-center justify-center text-slate-400 text-xs`}>
