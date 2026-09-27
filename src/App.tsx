@@ -11,6 +11,7 @@ import { RealTimeBookingModal } from './components/RealTimeBookingModal.tsx';
 import { AdminDashboard } from './components/AdminDashboard.tsx';
 import { WhatsAppWidget } from './components/WhatsAppWidget.tsx';
 import { SEOHead } from './components/SEOHead.tsx';
+import { SiteLoadingScreen } from './components/SiteLoadingScreen.tsx';
 import { Check } from 'lucide-react';
 import { applyThemeToCssVariables, DEFAULT_ORIGINAL_THEME, DEFAULT_PURPLE_THEME } from './lib/themeEngine.ts';
 
@@ -120,9 +121,58 @@ const DEFAULT_SETTINGS: SiteSettings = {
   },
 };
 
+const parseRouteFromLocation = (): { route: PageRoute; serviceSlug: string } => {
+  if (typeof window === 'undefined') {
+    return { route: 'home', serviceSlug: 'custom-ai-solutions' };
+  }
+  const cleanHash = window.location.hash.toLowerCase().replace(/^#\/?/, '');
+  const cleanPath = window.location.pathname.toLowerCase().replace(/^\//, '');
+
+  if (
+    cleanHash === 'admin' ||
+    cleanHash === 'admin-dashboard' ||
+    cleanHash === 'admin-crm' ||
+    cleanPath === 'admin' ||
+    cleanPath === 'admin-dashboard'
+  ) {
+    return { route: 'admin-dashboard', serviceSlug: 'custom-ai-solutions' };
+  }
+
+  if (!cleanHash) {
+    return { route: 'home', serviceSlug: 'custom-ai-solutions' };
+  }
+
+  if (cleanHash.startsWith('service/')) {
+    const slug = cleanHash.split('service/')[1];
+    return { route: 'service-detail', serviceSlug: slug || 'custom-ai-solutions' };
+  }
+
+  const validRoutes: PageRoute[] = [
+    'home',
+    'ai-hub',
+    'ip-hub',
+    'portfolio',
+    'industries',
+    'case-studies',
+    'blog',
+    'about',
+    'contact',
+    'resources',
+    'privacy',
+  ];
+
+  if (validRoutes.includes(cleanHash as PageRoute)) {
+    return { route: cleanHash as PageRoute, serviceSlug: 'custom-ai-solutions' };
+  }
+
+  return { route: 'home', serviceSlug: 'custom-ai-solutions' };
+};
+
 export default function App() {
-  const [currentRoute, setCurrentRoute] = useState<PageRoute>('home');
-  const [currentServiceSlug, setCurrentServiceSlug] = useState<string>('custom-ai-solutions');
+  const initialLocation = parseRouteFromLocation();
+  const [currentRoute, setCurrentRoute] = useState<PageRoute>(initialLocation.route);
+  const [currentServiceSlug, setCurrentServiceSlug] = useState<string>(initialLocation.serviceSlug);
+  const [isDataLoaded, setIsDataLoaded] = useState<boolean>(false);
 
   // Site Dynamic State initialized from cache, updated immediately from Firestore
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => {
@@ -285,6 +335,8 @@ export default function App() {
       }
     } catch (err) {
       console.warn('MongoDB site data load notice:', err);
+    } finally {
+      setIsDataLoaded(true);
     }
   };
 
@@ -480,6 +532,15 @@ export default function App() {
     window.addEventListener('lyi-theme-toast', handleToastEvent);
     return () => window.removeEventListener('lyi-theme-toast', handleToastEvent);
   }, []);
+
+  if (!isDataLoaded) {
+    return (
+      <SiteLoadingScreen
+        companyName={siteSettings?.companyName}
+        logoUrl={siteSettings?.logoUrl}
+      />
+    );
+  }
 
   return (
     <div
