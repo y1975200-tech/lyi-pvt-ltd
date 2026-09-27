@@ -169,13 +169,13 @@ export const Header: React.FC<HeaderProps> = ({
                 style={applyFieldStyle(siteSettings?.companyName_style)}
                 className={`${brandTitleClass} truncate max-w-[130px] xs:max-w-[200px] sm:max-w-none text-xs sm:text-lg`}
               >
-                {siteSettings?.companyName || 'LockYourIdea Tech Pvt. Ltd.'}
+                {siteSettings?.companyName || 'LYI Tech Pvt. Ltd.'}
               </span>
               <small
                 style={applyFieldStyle(siteSettings?.tagline_style)}
                 className={`${taglineClass} truncate max-w-[130px] xs:max-w-[200px] sm:max-w-none hidden xs:block`}
               >
-                {siteSettings?.tagline || "India's 360° AI & IP Consulting"}
+                {siteSettings?.tagline || '360° AI & IP Consulting'}
               </small>
             </div>
           </button>
@@ -204,10 +204,10 @@ export const Header: React.FC<HeaderProps> = ({
                 />
               </button>
 
-              {/* Mega menu: Explicit Two Parts: LYI Services | LYI Products */}
+              {/* Mega menu: Explicit Two Parts: LYI Services | LYI Products (Safely anchored inside viewport) */}
               {openDropdown === 'ai' && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-[760px] max-w-[95vw] animate-in fade-in slide-in-from-top-2 duration-150 z-50">
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl p-5 overflow-y-auto max-h-[calc(100vh-5.5rem)] custom-scrollbar">
+                <div className="absolute top-full left-0 sm:-left-4 lg:left-0 pt-2 w-[760px] max-w-[calc(100vw-2rem)] animate-in fade-in slide-in-from-top-2 duration-150 z-50">
+                  <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl p-5 overflow-y-auto max-h-[calc(100vh-6rem)] custom-scrollbar">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       {/* PART 1: LYI SERVICES (with dedicated scroller) */}
                       <div className="bg-blue-50/40 rounded-xl p-3 border border-blue-100/60 flex flex-col">

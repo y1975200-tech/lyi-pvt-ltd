@@ -246,16 +246,19 @@ export const HomePage: React.FC<HomePageProps> = ({
               </button>
             </div>
 
-            {/* Quick trust bullet points */}
-            <div className="pt-3 sm:pt-4 flex flex-col xs:flex-row flex-wrap items-start xs:items-center gap-3 sm:gap-6 text-xs text-slate-300 font-normal">
-              <span style={applyFieldStyle(pageData?.trustPoint1_style)} className="flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" /> <span>{heroTrustPoint1}</span>
+            {/* Quick trust bullet points matching Image 2 horizontal alignment */}
+            <div className="pt-4 sm:pt-6 flex flex-wrap items-center justify-start gap-4 sm:gap-8 text-xs sm:text-sm text-slate-200 font-medium">
+              <span style={applyFieldStyle(pageData?.trustPoint1_style)} className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{heroTrustPoint1}</span>
               </span>
-              <span style={applyFieldStyle(pageData?.trustPoint2_style)} className="flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" /> <span>{heroTrustPoint2}</span>
+              <span style={applyFieldStyle(pageData?.trustPoint2_style)} className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
+                <span>{heroTrustPoint2}</span>
               </span>
-              <span style={applyFieldStyle(pageData?.trustPoint3_style)} className="flex items-center gap-1.5">
-                <MapPin className="w-4 h-4 text-rose-400 shrink-0" /> <span>{heroTrustPoint3}</span>
+              <span style={applyFieldStyle(pageData?.trustPoint3_style)} className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
+                <span>{heroTrustPoint3}</span>
               </span>
             </div>
           </div>

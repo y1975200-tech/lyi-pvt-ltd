@@ -67,10 +67,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBooking, siteS
               </span>
             </div>
             <p
-              style={applyFieldStyle(siteSettings?.tagline_style)}
+              style={applyFieldStyle(siteSettings?.footerDesc_style || siteSettings?.companyDescription_style)}
               className="text-xs text-slate-400 max-w-sm leading-relaxed font-normal"
             >
-              {siteSettings?.tagline || "India's 360° AI & Intellectual Property Transformation Company empowering enterprises, startups, and governments to build scalable AI systems and defend high-value patents, trademarks & copyrights under one roof."}
+              {siteSettings?.footerDescription ||
+                siteSettings?.companyDescription ||
+                "India's 360° AI & Intellectual Property Transformation Company empowering enterprises, startups, and governments to build scalable AI systems and defend high-value patents, trademarks & copyrights under one roof."}
             </p>
 
             {/* Newsletter */}

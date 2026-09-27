@@ -648,8 +648,10 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
       if (content.headline && pageId === 'home') updatedSettings.heroHeadline = content.headline;
       if (content.subheadline && pageId === 'home') updatedSettings.heroSubhead = content.subheadline;
       if (pageId === 'home') {
-        if (content.hqAddress) updatedSettings.hqAddress = content.hqAddress;
+        if (content.companyName) updatedSettings.companyName = content.companyName;
         if (content.tagline) updatedSettings.tagline = content.tagline;
+        if (content.logoUrl) updatedSettings.logoUrl = content.logoUrl;
+        if (content.hqAddress) updatedSettings.hqAddress = content.hqAddress;
         if (content.phone) updatedSettings.phone = content.phone;
         if (content.stat1Value || content.stat2Value || content.stat3Value || content.stat4Value || content.stat5Value) {
           updatedSettings.stats = {
@@ -1502,7 +1504,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 )}
               </div>
 
-              {/* Option 2: AI & IP Services */}
+              {/* Option 2: AI & IP Services Cards */}
               <button
                 type="button"
                 onClick={() => {
@@ -1516,7 +1518,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 }`}
               >
                 <Layers className="w-4 h-4 text-blue-400" />
-                <span>AI &amp; IP Services</span>
+                <span>AI &amp; IP Services Cards</span>
               </button>
 
               {/* Option 3: Portfolios Cards */}
@@ -2262,35 +2264,88 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                     {/* Specific Extra Fields for Home Page */}
                     {selectedCmsPage === 'home' && (
                       <div className="pt-6 border-t border-slate-200 space-y-6">
-                        {/* Section A: Top Notification Bar & Branding */}
-                        <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block font-heading">
-                            Section 1: Top Notification Bar &amp; Direct Helplines
-                          </span>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {/* Section A: Header Logo, Company Name & Branding */}
+                        <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block font-heading">
+                              Section 1: Header Brand Logo, Company Name &amp; Direct Helplines
+                            </span>
+                            <span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-2.5 py-0.5 rounded-full">
+                              Header &amp; Navbar Settings
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <AdminStyledField
+                              label="Company Name (Header Main Title)"
+                              value={cur.companyName || formData.companyName || ''}
+                              styleValue={cur.companyName_style || formData.companyName_style}
+                              onChange={(val) => {
+                                updateCurField('companyName', val);
+                                setFormData((prev) => ({ ...prev, companyName: val }));
+                              }}
+                              onStyleChange={(style) => updateCurField('companyName_style', style)}
+                              placeholder="e.g. LYI Tech Pvt. Ltd."
+                              helperText="Main company name shown in header next to logo"
+                              headingLevel="h1"
+                            />
+
+                            <AdminStyledField
+                              label="Header Subtitle (Tagline)"
+                              value={cur.tagline || formData.tagline || ''}
+                              styleValue={cur.tagline_style || formData.tagline_style}
+                              onChange={(val) => {
+                                updateCurField('tagline', val);
+                                setFormData((prev) => ({ ...prev, tagline: val }));
+                              }}
+                              onStyleChange={(style) => updateCurField('tagline_style', style)}
+                              placeholder="e.g. 360° AI & IP Consulting"
+                              helperText="Subtitle text shown right below the company name in header"
+                              headingLevel="badge"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <AdminStyledField
                               label="HQ Office Location Text"
                               value={cur.hqAddress || formData.hqAddress || ''}
                               styleValue={cur.hqAddress_style}
-                              onChange={(val) => updateCurField('hqAddress', val)}
+                              onChange={(val) => {
+                                updateCurField('hqAddress', val);
+                                setFormData((prev) => ({ ...prev, hqAddress: val }));
+                              }}
                               onStyleChange={(style) => updateCurField('hqAddress_style', style)}
                               placeholder="HQ: Baner, Pune, Maharashtra 411045"
                             />
-                            <AdminStyledField
-                              label="Company Tagline"
-                              value={cur.tagline || formData.tagline || ''}
-                              styleValue={cur.tagline_style}
-                              onChange={(val) => updateCurField('tagline', val)}
-                              onStyleChange={(style) => updateCurField('tagline_style', style)}
-                              placeholder="India's 360° AI & Intellectual Property Transformation Company"
-                            />
+
                             <AdminStyledField
                               label="Direct Phone Helpline"
                               value={cur.phone || formData.phone || ''}
                               styleValue={cur.phone_style}
-                              onChange={(val) => updateCurField('phone', val)}
+                              onChange={(val) => {
+                                updateCurField('phone', val);
+                                setFormData((prev) => ({ ...prev, phone: val }));
+                              }}
                               onStyleChange={(style) => updateCurField('phone_style', style)}
                               placeholder="+91 75586 31355"
+                            />
+                          </div>
+
+                          {/* Company Logo Image Selector & Upload */}
+                          <div className="pt-2 border-t border-slate-200">
+                            <ImageSourceSelector
+                              label="Company Brand Logo (Header & Footer)"
+                              value={cur.logoUrl || formData.logoUrl || '/assets/logo.svg'}
+                              onChange={(newUrl) => {
+                                updateCurField('logoUrl', newUrl);
+                                setFormData((prev) => ({ ...prev, logoUrl: newUrl }));
+                              }}
+                              onInstantSave={(url) => {
+                                updateCurField('logoUrl', url);
+                                setFormData((prev) => ({ ...prev, logoUrl: url }));
+                                onUpdateSettings({ logoUrl: url });
+                              }}
+                              helperText="Upload or enter image link for company logo. Appears in header and footer."
                             />
                           </div>
                         </div>
