@@ -2993,33 +2993,227 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
 
                     {/* Specific Extra Fields for About Us Page */}
                     {selectedCmsPage === 'about' && (
-                      <div className="pt-6 border-t border-slate-200 space-y-4">
-                        <h4 className="font-bold text-sm text-slate-900 font-heading">
-                          About Us Details: Vision, Mission &amp; Sole Pune HQ
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                      <div className="pt-6 border-t border-slate-200 space-y-6">
+                        <div className="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl space-y-3">
+                          <span className="text-xs font-bold text-blue-900 uppercase tracking-wider block font-heading">
+                            Header Sub-Taglines &amp; Core Pillars
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <AdminStyledField
+                              label="Headquarters Location Sub-Tagline"
+                              value={cur.hqTagline || 'Headquarters: Baner, Pune, Maharashtra (Sole Office Location)'}
+                              styleValue={cur.hqTagline_style}
+                              onChange={(val) => updateCurField('hqTagline', val)}
+                              onStyleChange={(style) => updateCurField('hqTagline_style', style)}
+                              placeholder="Headquarters: Baner, Pune, Maharashtra (Sole Office Location)"
+                            />
+                            <AdminStyledField
+                              label="Team Composition Tagline"
+                              value={cur.teamTagline || 'Specialists, Engineers & Attorneys Under One Roof'}
+                              styleValue={cur.teamTagline_style}
+                              onChange={(val) => updateCurField('teamTagline', val)}
+                              onStyleChange={(style) => updateCurField('teamTagline_style', style)}
+                              placeholder="Specialists, Engineers & Attorneys Under One Roof"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block font-heading">
+                            Vision &amp; Mission Statements
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <AdminStyledField
                               label="Vision Statement"
                               value={cur.visionText || ''}
                               styleValue={cur.visionText_style}
                               onChange={(val) => updateCurField('visionText', val)}
                               onStyleChange={(style) => updateCurField('visionText_style', style)}
-                              placeholder="To be India's most trusted partner for organizations that need to build with cutting-edge AI..."
+                              placeholder="To be India's most trusted partner for organizations that need to build with cutting-edge AI and protect what they build..."
                               isTextarea
                               rows={3}
                             />
-                          </div>
-                          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                             <AdminStyledField
                               label="Mission Statement"
                               value={cur.missionText || ''}
                               styleValue={cur.missionText_style}
                               onChange={(val) => updateCurField('missionText', val)}
                               onStyleChange={(style) => updateCurField('missionText_style', style)}
-                              placeholder="To bridge engineering excellence with rigorous IP balance-sheet protection..."
+                              placeholder="To equip Indian enterprise, startups, and public bodies with production-grade AI systems..."
                               isTextarea
                               rows={3}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Milestones Section */}
+                        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block font-heading">
+                            Our Journey Milestones (01 to 05)
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <AdminStyledField
+                              label="Milestones Section Badge"
+                              value={cur.milestonesHeader || 'OUR MILESTONES'}
+                              styleValue={cur.milestonesHeader_style}
+                              onChange={(val) => updateCurField('milestonesHeader', val)}
+                              onStyleChange={(style) => updateCurField('milestonesHeader_style', style)}
+                              placeholder="OUR MILESTONES"
+                              headingLevel="badge"
+                            />
+                            <AdminStyledField
+                              label="Milestones Section Title"
+                              value={cur.milestonesSubhead || 'Our Journey of Innovation & IP Protection'}
+                              styleValue={cur.milestonesSubhead_style}
+                              onChange={(val) => updateCurField('milestonesSubhead', val)}
+                              onStyleChange={(style) => updateCurField('milestonesSubhead_style', style)}
+                              placeholder="Our Journey of Innovation & IP Protection"
+                              headingLevel="h2"
+                            />
+                          </div>
+
+                          <div className="space-y-3 pt-2">
+                            {/* Milestone 01 */}
+                            <div className="p-3 bg-white border border-slate-200 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <AdminStyledField
+                                label="Milestone 01 Title"
+                                value={cur.milestone1Title || 'Founded in Pune with a Dual Mandate'}
+                                onChange={(val) => updateCurField('milestone1Title', val)}
+                                placeholder="Founded in Pune with a Dual Mandate"
+                              />
+                              <div className="md:col-span-2">
+                                <AdminStyledField
+                                  label="Milestone 01 Description"
+                                  value={cur.milestone1Desc || 'LockYourIdea Tech was founded in Baner, Pune to bridge the gap between building software and legally defending proprietary intellectual property.'}
+                                  onChange={(val) => updateCurField('milestone1Desc', val)}
+                                  placeholder="Description..."
+                                  isTextarea
+                                  rows={2}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Milestone 02 */}
+                            <div className="p-3 bg-white border border-slate-200 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <AdminStyledField
+                                label="Milestone 02 Title"
+                                value={cur.milestone2Title || 'IP Hub Scale-Up'}
+                                onChange={(val) => updateCurField('milestone2Title', val)}
+                                placeholder="IP Hub Scale-Up"
+                              />
+                              <div className="md:col-span-2">
+                                <AdminStyledField
+                                  label="Milestone 02 Description"
+                                  value={cur.milestone2Desc || 'Built out end-to-end patent drafting, search, prosecution, and international PCT filing practices with registered patent attorneys.'}
+                                  onChange={(val) => updateCurField('milestone2Desc', val)}
+                                  placeholder="Description..."
+                                  isTextarea
+                                  rows={2}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Milestone 03 */}
+                            <div className="p-3 bg-white border border-slate-200 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <AdminStyledField
+                                label="Milestone 03 Title"
+                                value={cur.milestone3Title || 'AI Hub Launch'}
+                                onChange={(val) => updateCurField('milestone3Title', val)}
+                                placeholder="AI Hub Launch"
+                              />
+                              <div className="md:col-span-2">
+                                <AdminStyledField
+                                  label="Milestone 03 Description"
+                                  value={cur.milestone3Desc || 'Expanded into production AI engineering — building custom models, Agentic CRM architectures, and enterprise business automation suites.'}
+                                  onChange={(val) => updateCurField('milestone3Desc', val)}
+                                  placeholder="Description..."
+                                  isTextarea
+                                  rows={2}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Milestone 04 */}
+                            <div className="p-3 bg-white border border-slate-200 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <AdminStyledField
+                                label="Milestone 04 Title"
+                                value={cur.milestone4Title || 'Government Capacity Programs'}
+                                onChange={(val) => updateCurField('milestone4Title', val)}
+                                placeholder="Government Capacity Programs"
+                              />
+                              <div className="md:col-span-2">
+                                <AdminStyledField
+                                  label="Milestone 04 Description"
+                                  value={cur.milestone4Desc || 'Selected by state municipal and urban development departments to conduct executive AI capacity building programs.'}
+                                  onChange={(val) => updateCurField('milestone4Desc', val)}
+                                  placeholder="Description..."
+                                  isTextarea
+                                  rows={2}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Milestone 05 */}
+                            <div className="p-3 bg-white border border-slate-200 rounded-xl grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <AdminStyledField
+                                label="Milestone 05 Title"
+                                value={cur.milestone5Title || 'Unified 360° Platform'}
+                                onChange={(val) => updateCurField('milestone5Title', val)}
+                                placeholder="Unified 360° Platform"
+                              />
+                              <div className="md:col-span-2">
+                                <AdminStyledField
+                                  label="Milestone 05 Description"
+                                  value={cur.milestone5Desc || 'Serving 50+ enterprise and institutional clients with synchronized innovation development and balance-sheet IP asset defense from our Pune headquarters.'}
+                                  onChange={(val) => updateCurField('milestone5Desc', val)}
+                                  placeholder="Description..."
+                                  isTextarea
+                                  rows={2}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Headquarters Spotlight Card */}
+                        <div className="p-4 bg-slate-900 text-white border border-slate-800 rounded-2xl space-y-3">
+                          <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider block font-heading">
+                            Headquarters &amp; Labs Spotlight Section
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <AdminStyledField
+                              label="Spotlight Badge"
+                              value={cur.hqBadge || 'HEADQUARTERS & LABS'}
+                              onChange={(val) => updateCurField('hqBadge', val)}
+                              placeholder="HEADQUARTERS & LABS"
+                            />
+                            <AdminStyledField
+                              label="Spotlight Headline"
+                              value={cur.hqHeadline || 'Exclusively Located in Pune, Maharashtra'}
+                              onChange={(val) => updateCurField('hqHeadline', val)}
+                              placeholder="Exclusively Located in Pune, Maharashtra"
+                            />
+                          </div>
+                          <AdminStyledField
+                            label="Spotlight Description"
+                            value={cur.hqDesc || 'All engineering architecture, machine learning model fine-tuning, Agentic CRM development, and patent prosecution workflows are conducted directly from our unified headquarters in Baner, Pune. We welcome clients for in-person strategy sessions and live technical demonstrations.'}
+                            onChange={(val) => updateCurField('hqDesc', val)}
+                            placeholder="HQ Description..."
+                            isTextarea
+                            rows={3}
+                          />
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                            <AdminStyledField
+                              label="HQ Address Line"
+                              value={cur.hqAddress || 'Baner, Pune, Maharashtra 411045, India'}
+                              onChange={(val) => updateCurField('hqAddress', val)}
+                              placeholder="Baner, Pune, Maharashtra 411045, India"
+                            />
+                            <AdminStyledField
+                              label="Booking CTA Button Text"
+                              value={cur.hqCtaText || 'Book In-Person Pune Slot'}
+                              onChange={(val) => updateCurField('hqCtaText', val)}
+                              placeholder="Book In-Person Pune Slot"
                             />
                           </div>
                         </div>
@@ -3028,27 +3222,167 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
 
                     {/* Specific Extra Fields for Contact Page */}
                     {selectedCmsPage === 'contact' && (
-                      <div className="pt-6 border-t border-slate-200 space-y-4">
-                        <h4 className="font-medium text-sm text-slate-900 font-heading">
-                          Contact Page: Baner, Pune Headquarters &amp; Helplines
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="pt-6 border-t border-slate-200 space-y-6">
+                        {/* Section A: Hero Badges */}
+                        <div className="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl space-y-3">
+                          <span className="text-xs font-bold text-blue-900 uppercase tracking-wider block font-heading">
+                            Contact Hero Sub-Badges
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <AdminStyledField
+                              label="Location Badge 1"
+                              value={cur.locationBadge1 || 'Single Office Location: Baner, Pune, Maharashtra'}
+                              onChange={(val) => updateCurField('locationBadge1', val)}
+                              placeholder="Single Office Location: Baner, Pune, Maharashtra"
+                            />
+                            <AdminStyledField
+                              label="Location Badge 2"
+                              value={cur.locationBadge2 || 'Online & In-Person Consultations'}
+                              onChange={(val) => updateCurField('locationBadge2', val)}
+                              placeholder="Online & In-Person Consultations"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Section B: Exclusive Pune Office Banner */}
+                        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block font-heading">
+                            Exclusive Pune Office Location Banner
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <AdminStyledField
+                              label="Banner Category Badge"
+                              value={cur.officeBadge || 'OFFICE LOCATION (EXCLUSIVE TO PUNE)'}
+                              onChange={(val) => updateCurField('officeBadge', val)}
+                              placeholder="OFFICE LOCATION (EXCLUSIVE TO PUNE)"
+                            />
+                            <AdminStyledField
+                              label="Banner Headline"
+                              value={cur.officeHeadline || `${formData.companyName || 'LockYourIdea Tech'} Corporate Headquarters`}
+                              onChange={(val) => updateCurField('officeHeadline', val)}
+                              placeholder="LockYourIdea Tech Corporate Headquarters"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <AdminStyledField
+                              label="Banner Address"
+                              value={cur.officeAddress || formData.address || 'Baner, Pune, Maharashtra 411045, India'}
+                              onChange={(val) => updateCurField('officeAddress', val)}
+                              placeholder="Baner, Pune, Maharashtra 411045, India"
+                            />
+                            <AdminStyledField
+                              label="Banner Pune Note"
+                              value={cur.officeNote || 'Note: Our sole physical office and development labs are located exclusively in Pune.'}
+                              onChange={(val) => updateCurField('officeNote', val)}
+                              placeholder="Note: Our sole physical office and development labs are located exclusively in Pune."
+                            />
+                          </div>
                           <AdminStyledField
-                            label="HQ Address Line"
-                            value={cur.hqAddress || ''}
-                            styleValue={cur.hqAddress_style}
-                            onChange={(val) => updateCurField('hqAddress', val)}
-                            onStyleChange={(style) => updateCurField('hqAddress_style', style)}
-                            placeholder="Baner, Pune, Maharashtra 411045, India"
+                            label="Banner CTA Button Text"
+                            value={cur.officeCtaText || 'Book Pune In-Person Slot'}
+                            onChange={(val) => updateCurField('officeCtaText', val)}
+                            placeholder="Book Pune In-Person Slot"
                           />
-                          <AdminStyledField
-                            label="Direct Phone"
-                            value={cur.phone || ''}
-                            styleValue={cur.phone_style}
-                            onChange={(val) => updateCurField('phone', val)}
-                            onStyleChange={(style) => updateCurField('phone_style', style)}
-                            placeholder="+91 75586 31355"
-                          />
+                        </div>
+
+                        {/* Section C: Contact Cards (4 Cards) */}
+                        <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
+                          <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block font-heading">
+                            4 Key Contact Cards
+                          </span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Card 1: Phone */}
+                            <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-2">
+                              <span className="text-xs font-bold text-blue-600 block">Card 1: Direct Phone</span>
+                              <AdminStyledField
+                                label="Card Title"
+                                value={cur.phoneTitle || 'Direct Phone Desk'}
+                                onChange={(val) => updateCurField('phoneTitle', val)}
+                                placeholder="Direct Phone Desk"
+                              />
+                              <AdminStyledField
+                                label="Phone Number"
+                                value={cur.phone || formData.phone || '+91 75586 31355'}
+                                onChange={(val) => updateCurField('phone', val)}
+                                placeholder="+91 75586 31355"
+                              />
+                              <AdminStyledField
+                                label="Note"
+                                value={cur.phoneNote || 'Dedicated desk at Pune headquarters'}
+                                onChange={(val) => updateCurField('phoneNote', val)}
+                                placeholder="Dedicated desk at Pune headquarters"
+                              />
+                            </div>
+
+                            {/* Card 2: WhatsApp */}
+                            <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-2">
+                              <span className="text-xs font-bold text-emerald-600 block">Card 2: WhatsApp Business</span>
+                              <AdminStyledField
+                                label="Card Title"
+                                value={cur.whatsappTitle || 'WhatsApp Business'}
+                                onChange={(val) => updateCurField('whatsappTitle', val)}
+                                placeholder="WhatsApp Business"
+                              />
+                              <AdminStyledField
+                                label="Link Text"
+                                value={cur.whatsappText || 'Chat on WhatsApp →'}
+                                onChange={(val) => updateCurField('whatsappText', val)}
+                                placeholder="Chat on WhatsApp →"
+                              />
+                              <AdminStyledField
+                                label="Note"
+                                value={cur.whatsappNote || 'Fast response within 15 minutes'}
+                                onChange={(val) => updateCurField('whatsappNote', val)}
+                                placeholder="Fast response within 15 minutes"
+                              />
+                            </div>
+
+                            {/* Card 3: Official Email */}
+                            <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-2">
+                              <span className="text-xs font-bold text-cyan-700 block">Card 3: Official Email</span>
+                              <AdminStyledField
+                                label="Card Title"
+                                value={cur.emailTitle || 'Official Email'}
+                                onChange={(val) => updateCurField('emailTitle', val)}
+                                placeholder="Official Email"
+                              />
+                              <AdminStyledField
+                                label="Email Address"
+                                value={cur.contactEmail || formData.contactEmail || 'support@lockyourideatech.com'}
+                                onChange={(val) => updateCurField('contactEmail', val)}
+                                placeholder="support@lockyourideatech.com"
+                              />
+                              <AdminStyledField
+                                label="Note"
+                                value={cur.emailNote || 'Proposals, NDAs & RFPs'}
+                                onChange={(val) => updateCurField('emailNote', val)}
+                                placeholder="Proposals, NDAs & RFPs"
+                              />
+                            </div>
+
+                            {/* Card 4: Working Hours */}
+                            <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-2">
+                              <span className="text-xs font-bold text-slate-700 block">Card 4: Working Hours</span>
+                              <AdminStyledField
+                                label="Card Title"
+                                value={cur.hoursTitle || 'Working Hours'}
+                                onChange={(val) => updateCurField('hoursTitle', val)}
+                                placeholder="Working Hours"
+                              />
+                              <AdminStyledField
+                                label="Hours Detail"
+                                value={cur.hoursText || 'Mon – Sat: 9:30 AM – 7:00 PM IST'}
+                                onChange={(val) => updateCurField('hoursText', val)}
+                                placeholder="Mon – Sat: 9:30 AM – 7:00 PM IST"
+                              />
+                              <AdminStyledField
+                                label="Note"
+                                value={cur.hoursNote || 'Online consultations available 24/7'}
+                                onChange={(val) => updateCurField('hoursNote', val)}
+                                placeholder="Online consultations available 24/7"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )}

@@ -26,38 +26,49 @@ export const AboutPage: React.FC<AboutPageProps> = ({
     siteSettings?.aboutBgImage ||
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2000&q=80';
 
-  const badgeText = pageData?.badge || 'ABOUT LOCKYOURIDEA TECH · BANER, PUNE';
+  const badgeText = pageData?.badge || 'ABOUT LOCKYOURIDEA TECH PUNE';
   const headline =
-    pageData?.headline || "India's 360° AI & Intellectual Property Transformation Company";
+    pageData?.headline || 'Bridging the Gap Between Engineering & Intellectual Property';
   const subheadline =
     pageData?.subheadline ||
-    'LockYourIdea Tech helps businesses, startups, enterprises, educational institutions, and governments accelerate growth through Artificial Intelligence, Business Automation, and rigorous Intellectual Property Protection.';
+    'LockYourIdea Tech was founded in Pune with a single conviction: the companies that build groundbreaking software must also legally own and protect it from day one.';
+
+  const hqTagline = pageData?.hqTagline || 'Headquarters: Baner, Pune, Maharashtra (Sole Office Location)';
+  const teamTagline = pageData?.teamTagline || 'Specialists, Engineers & Attorneys Under One Roof';
+  const milestonesHeader = pageData?.milestonesHeader || 'OUR MILESTONES';
+  const milestonesSubhead = pageData?.milestonesSubhead || 'Our Journey of Innovation & IP Protection';
+
+  const hqBadge = pageData?.hqBadge || 'HEADQUARTERS & LABS';
+  const hqHeadline = pageData?.hqHeadline || 'Exclusively Located in Pune, Maharashtra';
+  const hqDesc = pageData?.hqDesc || 'All engineering architecture, machine learning model fine-tuning, Agentic CRM development, and patent prosecution workflows are conducted directly from our unified headquarters in Baner, Pune. We welcome clients for in-person strategy sessions and live technical demonstrations.';
+  const hqAddress = pageData?.hqAddress || siteSettings?.address || 'Baner, Pune, Maharashtra 411045, India';
+  const hqCtaText = pageData?.hqCtaText || 'Book In-Person Pune Slot';
 
   const timeline = [
     {
       num: '01',
-      title: 'Founded in Pune with a Dual Mandate',
-      desc: 'LockYourIdea Tech was founded in Baner, Pune to bridge the gap between building software and legally defending proprietary intellectual property.',
+      title: pageData?.milestone1Title || 'Founded in Pune with a Dual Mandate',
+      desc: pageData?.milestone1Desc || 'LockYourIdea Tech was founded in Baner, Pune to bridge the gap between building software and legally defending proprietary intellectual property.',
     },
     {
       num: '02',
-      title: 'IP Hub Scale-Up',
-      desc: 'Built out end-to-end patent drafting, search, prosecution, and international PCT filing practices with registered patent attorneys.',
+      title: pageData?.milestone2Title || 'IP Hub Scale-Up',
+      desc: pageData?.milestone2Desc || 'Built out end-to-end patent drafting, search, prosecution, and international PCT filing practices with registered patent attorneys.',
     },
     {
       num: '03',
-      title: 'AI Hub Launch',
-      desc: 'Expanded into production AI engineering — building custom models, Agentic CRM architectures, and enterprise business automation suites.',
+      title: pageData?.milestone3Title || 'AI Hub Launch',
+      desc: pageData?.milestone3Desc || 'Expanded into production AI engineering — building custom models, Agentic CRM architectures, and enterprise business automation suites.',
     },
     {
       num: '04',
-      title: 'Government Capacity Programs',
-      desc: 'Selected by state municipal and urban development departments to conduct executive AI capacity building programs.',
+      title: pageData?.milestone4Title || 'Government Capacity Programs',
+      desc: pageData?.milestone4Desc || 'Selected by state municipal and urban development departments to conduct executive AI capacity building programs.',
     },
     {
       num: '05',
-      title: 'Unified 360° Platform',
-      desc: 'Serving 50+ enterprise and institutional clients with synchronized innovation development and balance-sheet IP asset defense from our Pune headquarters.',
+      title: pageData?.milestone5Title || 'Unified 360° Platform',
+      desc: pageData?.milestone5Desc || 'Serving 50+ enterprise and institutional clients with synchronized innovation development and balance-sheet IP asset defense from our Pune headquarters.',
     },
   ];
 
@@ -119,11 +130,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({
             <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-300 font-normal">
               <span className="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-700">
                 <MapPin className="w-3.5 h-3.5 text-rose-400" />
-                <span>Headquarters: Baner, Pune, Maharashtra (Sole Office Location)</span>
+                <span>{hqTagline}</span>
               </span>
               <span className="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-700">
                 <Users className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Specialists, Engineers &amp; Attorneys Under One Roof</span>
+                <span>{teamTagline}</span>
               </span>
             </div>
           </div>
@@ -168,10 +179,10 @@ export const AboutPage: React.FC<AboutPageProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-medium uppercase tracking-widest text-blue-600 block mb-1 font-heading">
-              OUR MILESTONES
+              {milestonesHeader}
             </span>
             <h2 className="text-3xl font-normal text-slate-900 tracking-tight font-heading">
-              Our Journey of Innovation &amp; IP Protection
+              {milestonesSubhead}
             </h2>
           </div>
 
@@ -202,24 +213,24 @@ export const AboutPage: React.FC<AboutPageProps> = ({
           <div className="rounded-3xl bg-slate-900 text-white p-8 md:p-12 relative overflow-hidden border border-slate-800">
             <div className="max-w-2xl space-y-4 relative z-10">
               <span className="text-xs font-medium text-cyan-400 uppercase tracking-widest font-heading">
-                HEADQUARTERS &amp; LABS
+                {hqBadge}
               </span>
               <h3 className="text-2xl md:text-3xl font-normal text-white font-heading">
-                Exclusively Located in Pune, Maharashtra
+                {hqHeadline}
               </h3>
               <p className="text-slate-300 text-sm leading-relaxed font-normal">
-                All engineering architecture, machine learning model fine-tuning, Agentic CRM development, and patent prosecution workflows are conducted directly from our unified headquarters in Baner, Pune. We welcome clients for in-person strategy sessions and live technical demonstrations.
+                {hqDesc}
               </p>
               <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-normal">
                 <div className="flex items-center gap-2 text-cyan-300">
                   <MapPin className="w-4 h-4 text-rose-400" />
-                  <span>Baner, Pune, Maharashtra 411045, India</span>
+                  <span>{hqAddress}</span>
                 </div>
                 <button
                   onClick={() => onOpenBooking('In-Person HQ Consultation')}
                   className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-md shadow-blue-500/25 transition-all cursor-pointer"
                 >
-                  Book In-Person Pune Slot
+                  {hqCtaText}
                 </button>
               </div>
             </div>

@@ -26,11 +26,35 @@ export const ContactPage: React.FC<ContactPageProps> = ({
     siteSettings?.contactBgImage ||
     'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=80';
 
-  const badgeText = pageData?.badge || 'GET IN TOUCH · BANER, PUNE HQ';
+  const badgeText = pageData?.badge || 'GET IN TOUCH WITH OUR SPECIALISTS';
   const headline = pageData?.headline || 'Start Your AI & IP Transformation';
   const subheadline =
     pageData?.subheadline ||
-    'Connect directly with our engineering architects, patent attorneys, and enterprise delivery teams at our Pune headquarters.';
+    'Schedule a confidential consultation at our Pune headquarters or via Google Meet. NDA executed upon request prior to discussion.';
+  const locationBadge1 = pageData?.locationBadge1 || 'Single Office Location: Baner, Pune, Maharashtra';
+  const locationBadge2 = pageData?.locationBadge2 || 'Online & In-Person Consultations';
+
+  const officeBadge = pageData?.officeBadge || 'OFFICE LOCATION (EXCLUSIVE TO PUNE)';
+  const officeHeadline = pageData?.officeHeadline || `${siteSettings?.companyName || 'LockYourIdea Tech'} Corporate Headquarters`;
+  const officeAddress = pageData?.officeAddress || siteSettings?.address || 'Baner, Pune, Maharashtra 411045, India';
+  const officeNote = pageData?.officeNote || 'Note: Our sole physical office and development labs are located exclusively in Pune.';
+  const officeCtaText = pageData?.officeCtaText || 'Book Pune In-Person Slot';
+
+  const phoneTitle = pageData?.phoneTitle || 'Direct Phone Desk';
+  const phone = pageData?.phone || siteSettings?.phone || '+91 75586 31355';
+  const phoneNote = pageData?.phoneNote || 'Dedicated desk at Pune headquarters';
+
+  const whatsappTitle = pageData?.whatsappTitle || 'WhatsApp Business';
+  const whatsappText = pageData?.whatsappText || 'Chat on WhatsApp →';
+  const whatsappNote = pageData?.whatsappNote || 'Fast response within 15 minutes';
+
+  const emailTitle = pageData?.emailTitle || 'Official Email';
+  const contactEmail = pageData?.contactEmail || siteSettings?.contactEmail || 'support@lockyourideatech.com';
+  const emailNote = pageData?.emailNote || 'Proposals, NDAs & RFPs';
+
+  const hoursTitle = pageData?.hoursTitle || 'Working Hours';
+  const hoursText = pageData?.hoursText || 'Mon – Sat: 9:30 AM – 7:00 PM IST';
+  const hoursNote = pageData?.hoursNote || 'Online consultations available 24/7';
 
   return (
     <div className="space-y-0">
@@ -87,11 +111,11 @@ export const ContactPage: React.FC<ContactPageProps> = ({
             <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-300 font-normal">
               <span className="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-700">
                 <MapPin className="w-3.5 h-3.5 text-rose-400" />
-                <span>Single Office Location: Baner, Pune, Maharashtra</span>
+                <span>{locationBadge1}</span>
               </span>
               <span className="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-700">
                 <Clock className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Online &amp; In-Person Consultations</span>
+                <span>{locationBadge2}</span>
               </span>
             </div>
           </div>
@@ -109,13 +133,13 @@ export const ContactPage: React.FC<ContactPageProps> = ({
               </div>
               <div>
                 <span className="text-[11px] font-medium uppercase tracking-wider text-blue-700 block font-heading">
-                  OFFICE LOCATION (EXCLUSIVE TO PUNE)
+                  {officeBadge}
                 </span>
                 <h3 className="text-base font-normal text-slate-900 font-heading">
-                  {siteSettings?.companyName || 'LockYourIdea Tech'} Corporate Headquarters
+                  {officeHeadline}
                 </h3>
                 <p className="text-xs text-slate-600 mt-0.5 font-normal">
-                  {siteSettings?.address || 'Baner, Pune, Maharashtra 411045, India'} · <span className="font-normal text-slate-800">Note: Our sole physical office and development labs are located exclusively in Pune.</span>
+                  {officeAddress} · <span className="font-normal text-slate-800">{officeNote}</span>
                 </p>
               </div>
             </div>
@@ -123,7 +147,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
               onClick={() => onOpenBooking('In-Person HQ Consultation')}
               className="self-start sm:self-auto px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-md shadow-blue-500/20 transition-all shrink-0 cursor-pointer"
             >
-              Book Pune In-Person Slot
+              {officeCtaText}
             </button>
           </div>
 
@@ -132,47 +156,47 @@ export const ContactPage: React.FC<ContactPageProps> = ({
               <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-medium">
                 <Phone className="w-5 h-5" />
               </div>
-              <h3 className="font-medium text-slate-900 text-sm font-heading">Direct Phone Desk</h3>
-              <a href={`tel:${siteSettings?.phone || '+917558631355'}`} className="text-xs text-blue-600 font-medium hover:underline block">
-                {siteSettings?.phone || '+91 75586 31355'}
+              <h3 className="font-medium text-slate-900 text-sm font-heading">{phoneTitle}</h3>
+              <a href={`tel:${phone}`} className="text-xs text-blue-600 font-medium hover:underline block">
+                {phone}
               </a>
-              <p className="text-[11px] text-slate-500">Dedicated desk at Pune headquarters</p>
+              <p className="text-[11px] text-slate-500">{phoneNote}</p>
             </div>
 
             <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 hover:shadow-md transition-shadow">
               <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-medium">
                 <MessageSquare className="w-5 h-5" />
               </div>
-              <h3 className="font-medium text-slate-900 text-sm font-heading">WhatsApp Business</h3>
+              <h3 className="font-medium text-slate-900 text-sm font-heading">{whatsappTitle}</h3>
               <a
-                href={`https://wa.me/${(siteSettings?.whatsappNumber || siteSettings?.phone || '917558631355').replace(/\D/g, '')}`}
+                href={`https://wa.me/${(phone || '917558631355').replace(/\D/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-emerald-600 font-medium hover:underline block"
               >
-                Chat on WhatsApp →
+                {whatsappText}
               </a>
-              <p className="text-[11px] text-slate-500">Fast response within 15 minutes</p>
+              <p className="text-[11px] text-slate-500">{whatsappNote}</p>
             </div>
 
             <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 hover:shadow-md transition-shadow">
               <div className="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center font-medium">
                 <Mail className="w-5 h-5" />
               </div>
-              <h3 className="font-medium text-slate-900 text-sm font-heading">Official Email</h3>
-              <a href={`mailto:${siteSettings?.contactEmail || 'support@lockyourideatech.com'}`} className="text-xs text-cyan-700 font-medium hover:underline block">
-                {siteSettings?.contactEmail || 'support@lockyourideatech.com'}
+              <h3 className="font-medium text-slate-900 text-sm font-heading">{emailTitle}</h3>
+              <a href={`mailto:${contactEmail}`} className="text-xs text-cyan-700 font-medium hover:underline block">
+                {contactEmail}
               </a>
-              <p className="text-[11px] text-slate-500">Proposals, NDAs &amp; RFPs</p>
+              <p className="text-[11px] text-slate-500">{emailNote}</p>
             </div>
 
             <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 hover:shadow-md transition-shadow">
               <div className="w-10 h-10 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-medium">
                 <Clock className="w-5 h-5" />
               </div>
-              <h3 className="font-medium text-slate-900 text-sm font-heading">Working Hours</h3>
-              <p className="text-xs text-slate-800 font-normal">Mon – Sat: 9:30 AM – 7:00 PM IST</p>
-              <p className="text-[11px] text-slate-500">Online consultations available 24/7</p>
+              <h3 className="font-medium text-slate-900 text-sm font-heading">{hoursTitle}</h3>
+              <p className="text-xs text-slate-800 font-normal">{hoursText}</p>
+              <p className="text-[11px] text-slate-500">{hoursNote}</p>
             </div>
           </div>
 

@@ -9,7 +9,7 @@ interface AdminStyledFieldProps {
   value: string;
   onChange: (val: string) => void;
   styleValue?: TextStyle;
-  onStyleChange: (style: TextStyle) => void;
+  onStyleChange?: (style: TextStyle) => void;
   isTextarea?: boolean;
   rows?: number;
   className?: string;
@@ -51,7 +51,7 @@ export const AdminStyledField: React.FC<AdminStyledFieldProps> = ({
   value,
   onChange,
   styleValue = {},
-  onStyleChange,
+  onStyleChange = () => {},
   isTextarea = false,
   rows = 3,
   className = '',
