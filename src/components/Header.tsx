@@ -42,8 +42,19 @@ export const Header: React.FC<HeaderProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileAiOpen, setMobileAiOpen] = useState(false);
   const [mobileIpOpen, setMobileIpOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const dropdownContainerRef = useRef<HTMLDivElement>(null);
+
+  // Track scroll position for transparent hero header on Homepage
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 30);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -80,10 +91,54 @@ export const Header: React.FC<HeaderProps> = ({
     (s: ServiceItem) => !s.subCategory || !s.subCategory.toLowerCase().includes('product')
   );
 
+  const isHeroOverlay = currentRoute === 'home' && !isScrolled;
+
+  const headerContainerClass = isHeroOverlay
+    ? 'fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-950/90 via-slate-950/60 to-transparent backdrop-blur-[3px] border-b border-white/10 text-white transition-all duration-300'
+    : 'fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm text-slate-900 transition-all duration-300';
+
+  const brandTitleClass = isHeroOverlay
+    ? 'block font-medium text-white tracking-tight text-lg leading-tight group-hover:text-cyan-300 transition-colors font-heading drop-shadow-sm'
+    : 'block font-medium text-slate-900 tracking-tight text-lg leading-tight group-hover:text-purple-600 transition-colors font-heading';
+
+  const taglineClass = isHeroOverlay
+    ? 'block text-xs font-normal text-slate-300 tracking-normal'
+    : 'block text-xs font-normal text-slate-500 tracking-normal';
+
+  const navItemClass = (isActive: boolean, activeColorClass: string) => {
+    if (isHeroOverlay) {
+      return `flex items-center gap-1.5 px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
+        isActive
+          ? 'text-cyan-300 bg-white/20 font-medium'
+          : 'text-slate-100 hover:text-white hover:bg-white/15'
+      }`;
+    }
+    return `flex items-center gap-1.5 px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
+      isActive
+        ? `${activeColorClass} bg-blue-50/70`
+        : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100/70'
+    }`;
+  };
+
+  const simpleNavItemClass = (isActive: boolean) => {
+    if (isHeroOverlay) {
+      return `px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
+        isActive
+          ? 'text-cyan-300 bg-white/20 font-medium'
+          : 'text-slate-100 hover:text-white hover:bg-white/15'
+      }`;
+    }
+    return `px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
+      isActive
+        ? 'text-blue-600 bg-blue-50/70'
+        : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100/70'
+    }`;
+  };
+
   return (
     <>
-      {/* Main Sticky Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-shadow duration-200">
+      {/* Main Header (Overlay on Homepage Hero, Sticky on Scroll/Pages) */}
+      <header className={headerContainerClass}>
         <div
           ref={dropdownContainerRef}
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4"
@@ -112,13 +167,13 @@ export const Header: React.FC<HeaderProps> = ({
             <div>
               <span
                 style={applyFieldStyle(siteSettings?.companyName_style)}
-                className="block font-medium text-slate-900 tracking-tight text-lg leading-tight group-hover:text-purple-600 transition-colors font-heading"
+                className={brandTitleClass}
               >
                 {siteSettings?.companyName || 'LockYourIdea Tech Pvt. Ltd.'}
               </span>
               <small
                 style={applyFieldStyle(siteSettings?.tagline_style)}
-                className="block text-xs font-normal text-slate-500 tracking-normal"
+                className={taglineClass}
               >
                 {siteSettings?.tagline || "India's 360° AI & IP Consulting"}
               </small>
@@ -138,17 +193,13 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => {
                   setOpenDropdown((prev) => (prev === 'ai' ? null : 'ai'));
                 }}
-                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
-                  currentRoute === 'ai-hub' || openDropdown === 'ai'
-                    ? 'text-blue-600 bg-blue-50/70'
-                    : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100/70'
-                }`}
+                className={navItemClass(currentRoute === 'ai-hub' || openDropdown === 'ai', 'text-blue-600')}
               >
-                <Bot className="w-4 h-4 text-blue-600" />
+                <Bot className={`w-4 h-4 ${isHeroOverlay ? 'text-cyan-300' : 'text-blue-600'}`} />
                 <span>AI Hub</span>
                 <ChevronDown
                   className={`w-4 h-4 opacity-60 transition-transform duration-200 ${
-                    openDropdown === 'ai' ? 'rotate-180 text-blue-600' : ''
+                    openDropdown === 'ai' ? 'rotate-180' : ''
                   }`}
                 />
               </button>
@@ -261,17 +312,13 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => {
                   setOpenDropdown((prev) => (prev === 'ip' ? null : 'ip'));
                 }}
-                className={`flex items-center gap-1.5 px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
-                  currentRoute === 'ip-hub' || openDropdown === 'ip'
-                    ? 'text-cyan-600 bg-cyan-50/70'
-                    : 'text-slate-700 hover:text-cyan-600 hover:bg-slate-100/70'
-                }`}
+                className={navItemClass(currentRoute === 'ip-hub' || openDropdown === 'ip', 'text-cyan-600')}
               >
-                <Shield className="w-4 h-4 text-cyan-600" />
+                <Shield className={`w-4 h-4 ${isHeroOverlay ? 'text-cyan-300' : 'text-cyan-600'}`} />
                 <span>IP Hub</span>
                 <ChevronDown
                   className={`w-4 h-4 opacity-60 transition-transform duration-200 ${
-                    openDropdown === 'ip' ? 'rotate-180 text-cyan-600' : ''
+                    openDropdown === 'ip' ? 'rotate-180' : ''
                   }`}
                 />
               </button>
@@ -323,55 +370,35 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               onClick={() => handleNav('portfolio')}
-              className={`px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
-                currentRoute === 'portfolio'
-                  ? 'text-blue-600 bg-blue-50/70'
-                  : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100/70'
-              }`}
+              className={simpleNavItemClass(currentRoute === 'portfolio')}
             >
               Portfolio
             </button>
 
             <button
               onClick={() => handleNav('industries')}
-              className={`px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
-                currentRoute === 'industries'
-                  ? 'text-blue-600 bg-blue-50/70'
-                  : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100/70'
-              }`}
+              className={simpleNavItemClass(currentRoute === 'industries')}
             >
               Industries
             </button>
 
             <button
               onClick={() => handleNav('case-studies')}
-              className={`px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
-                currentRoute === 'case-studies'
-                  ? 'text-blue-600 bg-blue-50/70'
-                  : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100/70'
-              }`}
+              className={simpleNavItemClass(currentRoute === 'case-studies')}
             >
               Case Studies
             </button>
 
             <button
               onClick={() => handleNav('about')}
-              className={`px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
-                currentRoute === 'about'
-                  ? 'text-blue-600 bg-blue-50/70'
-                  : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100/70'
-              }`}
+              className={simpleNavItemClass(currentRoute === 'about')}
             >
               About
             </button>
 
             <button
               onClick={() => handleNav('contact')}
-              className={`px-3 py-2 text-sm font-normal rounded-lg transition-colors cursor-pointer ${
-                currentRoute === 'contact'
-                  ? 'text-blue-600 bg-blue-50/70'
-                  : 'text-slate-700 hover:text-blue-600 hover:bg-slate-100/70'
-              }`}
+              className={simpleNavItemClass(currentRoute === 'contact')}
             >
               Contact
             </button>
@@ -397,7 +424,11 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="mobile-menu-toggle-btn"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer"
+              className={
+                isHeroOverlay
+                  ? 'lg:hidden p-2.5 rounded-xl border border-white/30 text-white bg-white/10 hover:bg-white/20 cursor-pointer'
+                  : 'lg:hidden p-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 cursor-pointer'
+              }
               aria-label="Toggle navigation"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

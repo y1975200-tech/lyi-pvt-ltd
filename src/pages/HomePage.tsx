@@ -173,8 +173,8 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div className="space-y-0">
-      {/* HERO SECTION WITH BACKGROUND IMAGE */}
-      <section className="relative overflow-hidden py-20 md:py-28 border-b border-slate-800 text-white min-h-[580px] flex items-center">
+      {/* HERO SECTION WITH BACKGROUND IMAGE STARTING AT TOP EDGE UNDER HEADER */}
+      <section className="relative overflow-hidden pt-28 pb-20 md:pt-36 md:pb-28 border-b border-slate-800 text-white min-h-[85vh] sm:min-h-screen flex items-center justify-center">
         {/* Background Image Layer with Slow-Motion Cinematic Movement */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img
@@ -187,8 +187,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=85';
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/65 to-slate-900/40" />
-          <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:32px_32px] opacity-15" />
+          {/* Dual Overlay: Top Vignette for Header Contrast + Horizontal Depth for Hero Text */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950/85 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/70 to-slate-900/50 pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
