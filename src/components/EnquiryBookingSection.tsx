@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ALL_SERVICES } from '../data/services.ts';
 import { BookingData, SiteSettings } from '../types.ts';
 import { CheckCircle2, Sparkles, Clock, Mail, ExternalLink, Calendar } from 'lucide-react';
+import { ImageWithEffects } from './ImageWithEffects.tsx';
+import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface EnquiryBookingSectionProps {
   defaultService?: string;
@@ -196,13 +198,12 @@ Meeting Link: ${finalBooking.meetingLink}`,
     <div id="enquiry" className="rounded-3xl bg-slate-950 text-white p-6 sm:p-10 border border-cyan-500/30 shadow-2xl relative overflow-hidden">
       {/* Homepage Theme Background Image Layer */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <img
+        <ImageWithEffects
           src={heroBg}
           alt=""
-          className="w-full h-full object-cover object-center opacity-30 filter saturate-150"
+          effects={getImageEffects(siteSettings, 'section_enquiry_bg')}
+          className="w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-950/85 to-[#0b1d3a]/80 backdrop-blur-[2px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
       </div>
 
       {/* Glow decorations */}

@@ -3,6 +3,8 @@ import { PageRoute, SiteSettings } from '../types.ts';
 import { AI_SERVICES, IP_SERVICES } from '../data/services.ts';
 import { Send, CheckCircle2 } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
+import { ImageWithEffects } from './ImageWithEffects.tsx';
+import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface FooterProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -34,13 +36,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBooking, siteS
     <footer className="relative overflow-hidden bg-slate-950 text-slate-300 pt-16 pb-8 border-t border-slate-800">
       {/* Homepage Theme Background Image Layer */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <img
+        <ImageWithEffects
           src={heroBg}
           alt=""
-          className="w-full h-full object-cover object-bottom opacity-25 filter saturate-150"
+          effects={getImageEffects(siteSettings, 'section_footer_bg')}
+          className="w-full h-full object-cover object-bottom"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/80" />
-        <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:28px_28px] opacity-10" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

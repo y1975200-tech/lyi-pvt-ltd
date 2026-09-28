@@ -4,6 +4,8 @@ import { PORTFOLIO_ITEMS as DEFAULT_ITEMS } from '../data/generalData.ts';
 import { EnquiryBookingSection } from '../components/EnquiryBookingSection.tsx';
 import { ArrowRight, CheckCircle2, Building, Sparkles, Eye, ExternalLink, X, MapPin } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
+import { ImageWithEffects } from '../components/ImageWithEffects.tsx';
+import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface PortfolioPageProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -61,19 +63,19 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
       {/* Portfolio Header with Relevant Background Image */}
       <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b border-slate-800 text-white min-h-[400px] flex items-center">
         {/* Background Image Layer */}
-        <div className="absolute inset-0 z-0">
-          <img
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <ImageWithEffects
             key={portfolioBg}
             src={portfolioBg}
             alt="LockYourIdea Tech Deployed Work Portfolio"
-            className="w-full h-full object-cover object-center transition-all duration-700"
+            effects={getImageEffects(siteSettings, 'page_portfolio_hero')}
+            className="w-full h-full object-cover object-center"
+            containerClassName="relative w-full h-full"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
                 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=2000&q=80';
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/70 to-slate-900/50" />
-          <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:28px_28px] opacity-15" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
@@ -137,16 +139,15 @@ export const PortfolioPage: React.FC<PortfolioPageProps> = ({
                 <div>
                   {/* Photo Container */}
                   <div className="aspect-16/10 relative overflow-hidden bg-slate-900">
-                    <img
+                    <ImageWithEffects
                       src={
                         item.imageUrl ||
                         'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80'
                       }
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
+                      effects={getImageEffects(siteSettings, `portfolio_card_${item.id}`)}
+                      className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-black/20" />
 
                     {/* Tag badge */}
                     <span

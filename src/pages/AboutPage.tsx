@@ -3,6 +3,8 @@ import { PageRoute, SiteSettings, BookingData } from '../types.ts';
 import { EnquiryBookingSection } from '../components/EnquiryBookingSection.tsx';
 import { Target, Compass, Sparkles, Award, MapPin, Building, ShieldCheck, Users } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
+import { ImageWithEffects } from '../components/ImageWithEffects.tsx';
+import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface AboutPageProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -77,19 +79,19 @@ export const AboutPage: React.FC<AboutPageProps> = ({
       {/* HERO SECTION WITH RELEVANT BACKGROUND IMAGE */}
       <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b border-slate-800 text-white min-h-[400px] flex items-center">
         {/* Background Image Layer */}
-        <div className="absolute inset-0 z-0">
-          <img
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <ImageWithEffects
             key={bgImage}
             src={bgImage}
             alt="About LockYourIdea Tech Pune"
-            className="w-full h-full object-cover object-center filter saturate-150"
+            effects={getImageEffects(siteSettings, 'page_about_hero')}
+            className="w-full h-full object-cover object-center"
+            containerClassName="relative w-full h-full"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
                 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2000&q=80';
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/85 to-[#0b1d3a]/75 backdrop-blur-[2px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:28px_28px] opacity-15" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">

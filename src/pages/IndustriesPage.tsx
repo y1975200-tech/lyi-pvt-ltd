@@ -4,6 +4,8 @@ import { INDUSTRIES_LIST } from '../data/generalData.ts';
 import { EnquiryBookingSection } from '../components/EnquiryBookingSection.tsx';
 import { Building2, ArrowRight, ShieldCheck, Cpu, MapPin } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
+import { ImageWithEffects } from '../components/ImageWithEffects.tsx';
+import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface IndustriesPageProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -40,17 +42,17 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({
 
   return (
     <div className="space-y-0">
-      {/* HERO SECTION WITH RELEVANT BACKGROUND IMAGE - High Contrast Black Text */}
+      {/* HERO SECTION WITH RELEVANT BACKGROUND IMAGE */}
       <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b border-slate-200 text-slate-900 min-h-[380px] flex items-center">
-        {/* Background Image Layer with light-protective overlay for black text */}
-        <div className="absolute inset-0 z-0">
-          <img
+        {/* Background Image Layer */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <ImageWithEffects
             src={bgImage}
             alt="Sector Expertise & Industry AI Transformation"
-            className="w-full h-full object-cover object-center animate-slow-motion"
+            effects={getImageEffects(siteSettings, 'page_industries_hero')}
+            className="w-full h-full object-cover object-center"
+            containerClassName="relative w-full h-full"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/88 to-white/75 backdrop-blur-[2px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(#0284c7_1px,transparent_1px)] [background-size:28px_28px] opacity-10" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">

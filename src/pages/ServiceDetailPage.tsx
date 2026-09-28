@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PageRoute, ServiceItem, BookingData } from '../types.ts';
+import { PageRoute, ServiceItem, BookingData, SiteSettings } from '../types.ts';
 import { ALL_SERVICES } from '../data/services.ts';
 import { EnquiryBookingSection } from '../components/EnquiryBookingSection.tsx';
 import {
@@ -12,6 +12,8 @@ import {
   FileText,
 } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
+import { ImageWithEffects } from '../components/ImageWithEffects.tsx';
+import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface ServiceDetailPageProps {
   slug: string;
@@ -105,37 +107,20 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
             : 'border-slate-200 bg-gradient-to-br from-cyan-50/70 via-white to-slate-50 text-slate-900'
         }`}
       >
-        {/* Dynamic Background Image & Overlay Layer */}
+        {/* Dynamic Background Image Layer */}
         {bgImg && (
-          <div className="absolute inset-0 z-0">
-            <img
+          <div className="absolute inset-0 z-0 overflow-hidden">
+            <ImageWithEffects
               src={bgImg}
               alt={service.title}
-              className="w-full h-full object-cover object-center filter saturate-125"
+              effects={getImageEffects(siteSettings, `service_card_${service.id}`)}
+              className="w-full h-full object-cover object-center"
+              containerClassName="relative w-full h-full"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).src =
                   'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=85';
               }}
             />
-            {overlayType === 'dark' && (
-              <div
-                className="absolute inset-0 bg-slate-950 transition-opacity"
-                style={{ opacity: overlayOpacity / 100 }}
-              />
-            )}
-            {overlayType === 'gradient' && (
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-[#082a3d]/80 transition-opacity"
-                style={{ opacity: overlayOpacity / 100 }}
-              />
-            )}
-            {overlayType === 'light' && (
-              <div
-                className="absolute inset-0 bg-white transition-opacity"
-                style={{ opacity: overlayOpacity / 100 }}
-              />
-            )}
-            <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:28px_28px] opacity-15" />
           </div>
         )}
 

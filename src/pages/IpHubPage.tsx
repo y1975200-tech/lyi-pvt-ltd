@@ -4,6 +4,8 @@ import { IP_SERVICES } from '../data/services.ts';
 import { EnquiryBookingSection } from '../components/EnquiryBookingSection.tsx';
 import { Shield, ArrowRight } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
+import { ImageWithEffects } from '../components/ImageWithEffects.tsx';
+import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface IpHubPageProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -51,19 +53,19 @@ export const IpHubPage: React.FC<IpHubPageProps> = ({
       {/* Hero with dynamic background image and homepage theme styling */}
       <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b border-slate-800 text-white min-h-[460px] flex items-center">
         {/* Background Image Layer */}
-        <div className="absolute inset-0 z-0">
-          <img
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <ImageWithEffects
             key={bgImage}
             src={bgImage}
             alt="IP Hub"
-            className="w-full h-full object-cover object-center filter saturate-150"
+            effects={getImageEffects(siteSettings, 'page_ip_hub_hero')}
+            className="w-full h-full object-cover object-center"
+            containerClassName="relative w-full h-full"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
                 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=85';
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-[#082a3d]/70" />
-          <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:28px_28px] opacity-15" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">

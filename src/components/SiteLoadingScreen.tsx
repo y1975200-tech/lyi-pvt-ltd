@@ -49,14 +49,14 @@ export const SiteLoadingScreen: React.FC<SiteLoadingScreenProps> = ({
             {companyName}
           </h2>
           <span className="inline-block px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-[11px] font-bold text-blue-700 tracking-wide font-mono">
-            India's 360° AI &amp; IP Platform · HQ Baner, Pune
+            India's 360° AI &amp; IP Platform · HQ Pune
           </span>
         </div>
 
         {/* Spinner & Loading Message */}
         <div className="pt-2 flex items-center justify-center gap-2.5 text-slate-500 font-medium text-xs">
           <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <span>Synchronizing live CMS data...</span>
+          <span>Synchronizing live ...</span>
         </div>
       </div>
     </div>
