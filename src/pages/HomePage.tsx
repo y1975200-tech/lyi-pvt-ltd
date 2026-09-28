@@ -6,8 +6,6 @@ import { CountUpNumber } from '../components/CountUpNumber.tsx';
 import { DEFAULT_CLIENT_LOGOS } from '../data/generalData.ts';
 import { ArrowRight, Shield, Cpu, Award, Users, CheckCircle, MapPin } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
-import { ImageWithEffects } from '../components/ImageWithEffects.tsx';
-import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface HomePageProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -177,15 +175,13 @@ export const HomePage: React.FC<HomePageProps> = ({
     <div className="space-y-0">
       {/* HERO SECTION WITH BACKGROUND IMAGE STARTING AT TOP EDGE UNDER HEADER */}
       <section className="relative overflow-hidden pt-24 pb-16 sm:pt-36 sm:pb-28 border-b border-slate-800 text-white min-h-[560px] sm:min-h-screen flex items-center justify-center">
-        {/* Background Image Layer */}
+        {/* Background Image Layer with Slow-Motion Cinematic Movement (Raw original image, no overlays) */}
         <div className="absolute inset-0 z-0 overflow-hidden">
-          <ImageWithEffects
+          <img
             key={heroImage}
             src={heroImage}
             alt="LockYourIdea Tech Innovation Canvas"
-            effects={getImageEffects(siteSettings, 'page_home_hero')}
             className="w-full h-full object-cover object-center animate-slow-motion pointer-events-none select-none"
-            containerClassName="relative w-full h-full"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
                 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=85';
@@ -332,12 +328,13 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="rounded-3xl relative overflow-hidden text-white p-8 sm:p-10 border border-blue-500/40 shadow-2xl flex flex-col justify-between group">
               {/* Homepage Theme Background Image Layer */}
               <div className="absolute inset-0 z-0 pointer-events-none">
-                <ImageWithEffects
+                <img
                   src={aiCardBg}
                   alt="AI Hub"
-                  effects={getImageEffects(siteSettings, 'ai_card_bg')}
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover object-center opacity-30 group-hover:scale-105 transition-transform duration-700 filter saturate-150"
                 />
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-900/90 to-[#0e2246]/85 backdrop-blur-[2px]" />
+                <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
               </div>
 
               {/* Glowing corner orb */}
@@ -384,12 +381,13 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="rounded-3xl relative overflow-hidden text-white p-8 sm:p-10 border border-cyan-500/40 shadow-2xl flex flex-col justify-between group">
               {/* Homepage Theme Background Image Layer */}
               <div className="absolute inset-0 z-0 pointer-events-none">
-                <ImageWithEffects
+                <img
                   src={ipCardBg}
                   alt="IP Hub"
-                  effects={getImageEffects(siteSettings, 'ip_card_bg')}
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover object-center opacity-30 group-hover:scale-105 transition-transform duration-700 filter saturate-150"
                 />
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-900/90 to-[#082a3d]/85 backdrop-blur-[2px]" />
+                <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
               </div>
 
               {/* Glowing corner orb */}
