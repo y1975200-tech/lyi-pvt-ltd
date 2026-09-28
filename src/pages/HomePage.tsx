@@ -184,7 +184,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             src={heroImage}
             alt="LockYourIdea Tech Innovation Canvas"
             effects={getImageEffects(siteSettings, 'page_home_hero')}
-            className="w-full h-full object-cover object-center pointer-events-none select-none"
+            className="w-full h-full object-cover object-center animate-slow-motion pointer-events-none select-none"
             containerClassName="relative w-full h-full"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
