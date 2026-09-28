@@ -1,13 +1,21 @@
 import mongoose from 'mongoose';
 
+// Disable Mongoose command buffering so queries fail-fast to fallback instead of crashing on timeout
+mongoose.set('bufferCommands', false);
+
+export const isMongoConnected = () => mongoose.connection.readyState === 1;
+
 // Ensure we connect only once
 export const connectDB = async (uri: string) => {
   if (mongoose.connection.readyState >= 1) return;
   try {
-    await mongoose.connect(uri);
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
+    });
     console.log("MongoDB connected successfully");
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
+  } catch (error: any) {
+    console.warn("MongoDB connection failed or timed out. Operating with local file database fallback:", error.message || error);
   }
 };
 
@@ -264,4 +272,38 @@ const MediaAssetSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 export const MediaAsset = mongoose.models.MediaAsset || mongoose.model('MediaAsset', MediaAssetSchema);
+
+// Page-Based SEO, GEO, and LLM Optimization Schema
+const SeoConfigSchema = new mongoose.Schema({
+  page: { type: String, required: true, unique: true },
+  metaTitle: { type: String, default: '' },
+  metaDescription: { type: String, default: '' },
+  slug: { type: String, default: '' },
+  canonicalUrl: { type: String, default: '' },
+  robots: { type: String, default: 'index, follow' },
+  customRobots: { type: String, default: '' },
+  ogTitle: { type: String, default: '' },
+  ogDescription: { type: String, default: '' },
+  ogImage: { type: String, default: '' },
+  ogUrl: { type: String, default: '' },
+  twitterCard: { type: String, default: 'summary_large_image' },
+  twitterTitle: { type: String, default: '' },
+  twitterDescription: { type: String, default: '' },
+  twitterImage: { type: String, default: '' },
+  images: [mongoose.Schema.Types.Mixed],
+  headings: mongoose.Schema.Types.Mixed,
+  schemaType: { type: String, default: 'WebPage' },
+  customJsonLd: { type: String, default: '' },
+  faqs: [mongoose.Schema.Types.Mixed],
+  structuredLists: [mongoose.Schema.Types.Mixed],
+  structuredTables: [mongoose.Schema.Types.Mixed],
+  internalLinks: [mongoose.Schema.Types.Mixed],
+  entities: mongoose.Schema.Types.Mixed,
+  keywords: mongoose.Schema.Types.Mixed,
+  geo: mongoose.Schema.Types.Mixed,
+  updatedBy: { type: String, default: 'admin' },
+}, { timestamps: true, strict: false });
+
+export const SeoConfig = mongoose.models.SeoConfig || mongoose.model('SeoConfig', SeoConfigSchema);
+
 

@@ -1841,10 +1841,105 @@ app.post("/api/enquiry", (req, res, next) => {
   app._router.handle(req, res, next);
 });
 
+// -------------------------------------------------------------
+// Dynamic Sitemap.xml & Robots.txt for SEO & LLM Indexing
+// -------------------------------------------------------------
+app.get("/sitemap.xml", async (req, res) => {
+  try {
+    const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
+    const host = req.get("host") || "lockyourideatech.com";
+    const baseUrl = `${protocol}://${host}`;
+
+    const publicPages = [
+      { path: "", priority: "1.0", changefreq: "daily" },
+      { path: "#/ai-hub", priority: "0.9", changefreq: "weekly" },
+      { path: "#/ip-hub", priority: "0.9", changefreq: "weekly" },
+      { path: "#/portfolio", priority: "0.8", changefreq: "weekly" },
+      { path: "#/industries", priority: "0.8", changefreq: "monthly" },
+      { path: "#/case-studies", priority: "0.8", changefreq: "weekly" },
+      { path: "#/about", priority: "0.7", changefreq: "monthly" },
+      { path: "#/contact", priority: "0.8", changefreq: "monthly" },
+      { path: "#/privacy", priority: "0.3", changefreq: "yearly" },
+    ];
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+    publicPages.forEach(p => {
+      const loc = p.path ? `${baseUrl}/${p.path}` : `${baseUrl}/`;
+      xml += `  <url>\n`;
+      xml += `    <loc>${loc}</loc>\n`;
+      xml += `    <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>\n`;
+      xml += `    <changefreq>${p.changefreq}</changefreq>\n`;
+      xml += `    <priority>${p.priority}</priority>\n`;
+      xml += `  </url>\n`;
+    });
+
+    // Add service pages if available
+    try {
+      const servicesList = storedData?.services || [];
+      servicesList.forEach(s => {
+        if (s.slug) {
+          xml += `  <url>\n`;
+          xml += `    <loc>${baseUrl}/#/service/${s.slug}</loc>\n`;
+          xml += `    <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>\n`;
+          xml += `    <changefreq>weekly</changefreq>\n`;
+          xml += `    <priority>0.85</priority>\n`;
+          xml += `  </url>\n`;
+        }
+      });
+    } catch (_) {}
+
+    xml += `</urlset>`;
+
+    res.header("Content-Type", "application/xml; charset=utf-8");
+    res.send(xml);
+  } catch (err: any) {
+    res.status(500).send("Error generating sitemap");
+  }
+});
+
+app.get("/robots.txt", (req, res) => {
+  const protocol = req.headers["x-forwarded-proto"] || req.protocol || "https";
+  const host = req.get("host") || "lockyourideatech.com";
+  const baseUrl = `${protocol}://${host}`;
+
+  const content = `# Robots.txt for LockYourIdea Tech
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-dashboard
+Disallow: /admin-crm
+Disallow: /api/auth
+Disallow: /api/bookings
+
+# LLM & AI Search Engine Crawler Guidelines
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: ${baseUrl}/sitemap.xml
+`;
+  res.header("Content-Type", "text/plain; charset=utf-8");
+  res.send(content);
+});
+
 // Ensure any unknown /api/* route ALWAYS returns JSON (never HTML)
 app.all("/api/*", (req, res) => {
   res.status(404).json({ error: `API endpoint ${req.method} ${req.path} not found` });
 });
+
 
 // -------------------------------------------------------------
 // Vite middleware for Dev / Static fallback for Prod

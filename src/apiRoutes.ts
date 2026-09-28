@@ -12,12 +12,16 @@ import {
   AdminUser,
   Revision,
   CRMConfig,
-  MediaAsset
+  MediaAsset,
+  SeoConfig,
+  isMongoConnected
 } from "../serverModels.ts";
+import { DEFAULT_SEO_CONFIGS } from "./data/defaultSeoData.ts";
 import fs from "fs";
 import path from "path";
 
 export const apiRouter = Router();
+
 
 // Ensure dynamic CMS API routes are never cached by browser or CDN
 apiRouter.use((_req, res, next) => {
@@ -99,6 +103,29 @@ apiRouter.post("/auth/logout", (_req, res) => {
   res.json({ success: true, message: "Logged out" });
 });
 
+// Helper to get merged SEO configs (Defaults + DB Overrides)
+async function getMergedSeoConfigs(): Promise<Record<string, any>> {
+  const result: Record<string, any> = { ...DEFAULT_SEO_CONFIGS };
+  if (!isMongoConnected()) {
+    return result;
+  }
+  try {
+    const dbConfigs = await SeoConfig.find();
+    dbConfigs.forEach((item: any) => {
+      const obj = item.toObject();
+      if (obj.page) {
+        result[obj.page] = {
+          ...(result[obj.page] || {}),
+          ...obj,
+        };
+      }
+    });
+  } catch (err) {
+    console.warn("[SEO] Error reading SeoConfig collection, using defaults:", err);
+  }
+  return result;
+}
+
 // -------------------------------------------------------------
 // Aggregated App Data (High-Speed Initial Paint)
 // -------------------------------------------------------------
@@ -113,13 +140,14 @@ apiRouter.get("/site-data", async (_req, res) => {
     const industries = await Industry.find().sort({ order: 1 });
     const testimonials = await Testimonial.find().sort({ order: 1 });
     const caseStudies = await CaseStudy.find().sort({ order: 1 });
+    const seoConfigs = await getMergedSeoConfigs();
     
     const cmsPages: Record<string, any> = {};
-    pages.forEach(p => cmsPages[p.slug] = p);
+    pages.forEach((p: any) => cmsPages[p.slug] = p);
     
-    const confirmedCount = bookings.filter(b => b.status === "confirmed").length;
-    const inProgressCount = bookings.filter(b => b.status === "in-progress").length;
-    const completedCount = bookings.filter(b => b.status === "completed").length;
+    const confirmedCount = bookings.filter((b: any) => b.status === "confirmed").length;
+    const inProgressCount = bookings.filter((b: any) => b.status === "in-progress").length;
+    const completedCount = bookings.filter((b: any) => b.status === "completed").length;
     
     res.json({
       settings: { ...settings.toObject(), clientLogos: logos },
@@ -132,6 +160,7 @@ apiRouter.get("/site-data", async (_req, res) => {
       industries,
       testimonials,
       caseStudies,
+      seoConfigs,
       stats: {
         ...(settings.stats || {}),
         totalBookings: bookings.length,
@@ -151,6 +180,98 @@ apiRouter.get("/all-data", async (req, res) => {
   // Alias to site-data for backward compatibility
   return (apiRouter as any).handle(Object.assign(req, { url: '/site-data' }), res);
 });
+
+// -------------------------------------------------------------
+// SEO / GEO / LLM Optimization Endpoints
+// -------------------------------------------------------------
+apiRouter.get("/seo", async (_req, res) => {
+  try {
+    const seoConfigs = await getMergedSeoConfigs();
+    res.json({ success: true, seoConfigs });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to fetch SEO configs: " + err.message });
+  }
+});
+
+apiRouter.get("/seo/:page", async (req, res) => {
+  try {
+    const pageId = req.params.page;
+    const allConfigs = await getMergedSeoConfigs();
+    const config = allConfigs[pageId] || DEFAULT_SEO_CONFIGS[pageId] || {
+      page: pageId,
+      metaTitle: `${pageId.toUpperCase()} | LockYourIdea Tech`,
+      metaDescription: `SEO and GEO optimization settings for ${pageId} page at LockYourIdea Tech.`,
+      slug: `/#/${pageId}`,
+      canonicalUrl: `https://lockyourideatech.com/#/${pageId}`,
+      robots: "index, follow",
+      ogTitle: `${pageId.toUpperCase()} | LockYourIdea Tech`,
+      ogDescription: `Learn more about ${pageId} solutions at LockYourIdea Tech.`,
+      ogImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=85",
+      ogUrl: `https://lockyourideatech.com/#/${pageId}`,
+      twitterCard: "summary_large_image",
+      twitterTitle: `${pageId.toUpperCase()} | LockYourIdea Tech`,
+      twitterDescription: `Learn more about ${pageId} solutions at LockYourIdea Tech.`,
+      twitterImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=85",
+      images: [],
+      headings: { h1: "", h2s: [], h3s: [] },
+      schemaType: "WebPage",
+      customJsonLd: "",
+      faqs: [],
+      structuredLists: [],
+      structuredTables: [],
+      internalLinks: [],
+      entities: { primaryTopic: "", secondaryTopics: [], primaryEntity: "", relatedEntities: [], organizationName: "LockYourIdea Tech Pvt. Ltd.", services: [], industries: [], locationsServed: [], expertiseAreas: [] },
+      keywords: { primaryKeyword: "", secondaryKeywords: [], longTailQueries: [], relatedSearchTopics: [] },
+      geo: { primaryAnswer: "", keyFacts: [], definitions: [], importantFacts: [], commonQuestions: [], relatedTopics: [] },
+    };
+    res.json({ success: true, page: pageId, seoConfig: config });
+  } catch (err: any) {
+    res.status(500).json({ error: "Error fetching page SEO config: " + err.message });
+  }
+});
+
+apiRouter.put("/seo/:page", async (req, res) => {
+  try {
+    const pageId = req.params.page;
+    const updates = { ...req.body, page: pageId };
+
+    // Validate JSON-LD if provided
+    if (updates.customJsonLd && updates.customJsonLd.trim() !== "") {
+      try {
+        JSON.parse(updates.customJsonLd);
+      } catch (jsonErr: any) {
+        return res.status(400).json({
+          error: `Invalid Custom JSON-LD syntax: ${jsonErr.message}. Please correct the JSON syntax before saving.`
+        });
+      }
+    }
+
+    const savedDoc = await SeoConfig.findOneAndUpdate(
+      { page: pageId },
+      { $set: updates },
+      { new: true, upsert: true }
+    );
+
+    // Create revision snapshot for auditing
+    await createRevisionSnapshot("seo", pageId, savedDoc.toObject(), `Updated SEO/GEO settings for ${pageId}`);
+
+    res.json({ success: true, page: pageId, seoConfig: savedDoc });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to save SEO config: " + err.message });
+  }
+});
+
+apiRouter.delete("/seo/:page", async (req, res) => {
+  try {
+    const pageId = req.params.page;
+    await SeoConfig.findOneAndDelete({ page: pageId });
+    const defaultConfig = DEFAULT_SEO_CONFIGS[pageId] || null;
+    res.json({ success: true, message: `SEO config for ${pageId} reset to default`, defaultConfig });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 // Helper to keep individual Mongo collections (ClientLogo, Industry, Testimonial) 100% in sync with Settings
 async function syncSettingsWithCollections(updates: any) {

@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { PageRoute, BookingData, SiteSettings, PortfolioItem, ServiceItem } from './types.ts';
+import { PageRoute, BookingData, SiteSettings, PortfolioItem, ServiceItem, SeoConfig } from './types.ts';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
 import { RealTimeBookingModal } from './components/RealTimeBookingModal.tsx';
@@ -14,6 +14,8 @@ import { SEOHead } from './components/SEOHead.tsx';
 import { SiteLoadingScreen } from './components/SiteLoadingScreen.tsx';
 import { Check } from 'lucide-react';
 import { applyThemeToCssVariables, DEFAULT_ORIGINAL_THEME, DEFAULT_PURPLE_THEME } from './lib/themeEngine.ts';
+import { DEFAULT_SEO_CONFIGS } from './data/defaultSeoData.ts';
+
 
 // Pages
 import { HomePage } from './pages/HomePage.tsx';
@@ -222,6 +224,40 @@ export default function App() {
   const [selectedEmailId, setSelectedEmailId] = useState<string | null>(null);
   const [emailHtml, setEmailHtml] = useState<string | null>(null);
 
+  // Page-Based SEO & GEO Configurations State
+  const [seoConfigs, setSeoConfigs] = useState<Record<string, SeoConfig>>(() => DEFAULT_SEO_CONFIGS);
+
+  const handleSaveSeoConfig = async (page: string, config: SeoConfig) => {
+    const res = await fetch(`/api/seo/${page}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+    setSeoConfigs((prev) => ({
+      ...prev,
+      [page]: config,
+    }));
+  };
+
+  const handleResetSeoConfig = async (page: string) => {
+    const res = await fetch(`/api/seo/${page}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+    const defaultConf = DEFAULT_SEO_CONFIGS[page];
+    if (defaultConf) {
+      setSeoConfigs((prev) => ({
+        ...prev,
+        [page]: defaultConf,
+      }));
+    }
+  };
+
   useEffect(() => {
     if (selectedEmailId) {
       fetch(`/api/emails/${selectedEmailId}`)
@@ -235,6 +271,7 @@ export default function App() {
       setEmailHtml(null);
     }
   }, [selectedEmailId]);
+
 
   // Load site settings, services, and portfolio directly from MongoDB Atlas via aggregated Express API
   const loadSiteData = async () => {
@@ -279,6 +316,10 @@ export default function App() {
 
         if (Array.isArray(data.bookings)) {
           setBookingCount(data.bookings.length);
+        }
+
+        if (data.seoConfigs && typeof data.seoConfigs === 'object') {
+          setSeoConfigs((prev) => ({ ...DEFAULT_SEO_CONFIGS, ...data.seoConfigs }));
         }
       } else {
         // Fallback parallel fetch if aggregated route is unavailable
@@ -670,6 +711,9 @@ export default function App() {
           seoImage = cmsPage?.bgImage || siteSettings.heroBgImage;
         }
 
+        const activeSeoPageKey = currentRoute === 'service-detail' ? 'ai-hub' : currentRoute;
+        const currentSeoConfig = seoConfigs[activeSeoPageKey] || DEFAULT_SEO_CONFIGS[activeSeoPageKey] || null;
+
         return (
           <>
             <SEOHead
@@ -678,7 +722,9 @@ export default function App() {
               ogImage={seoImage}
               ogType={seoType}
               siteSettings={activeSiteSettings}
+              seoConfig={currentSeoConfig}
             />
+
             <Header
               currentRoute={currentRoute}
               onNavigate={handleNavigate}
@@ -824,7 +870,11 @@ export default function App() {
                 setIsAdminDashboardOpen(false);
                 handleOpenBooking();
               }}
+              seoConfigs={seoConfigs}
+              onSaveSeoConfig={handleSaveSeoConfig}
+              onResetSeoConfig={handleResetSeoConfig}
             />
+
           </>
         );
       })()}

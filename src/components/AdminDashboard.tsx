@@ -53,7 +53,7 @@ import {
   AlertCircle,
   HelpCircle
 } from 'lucide-react';
-import { BookingData, ServiceItem, PortfolioItem, SiteSettings, ServiceDivision, AiSubCategory, PageRoute, PageContentItem, TestimonialItem, ClientLogoItem, ThemeCustomization } from '../types.ts';
+import { BookingData, ServiceItem, PortfolioItem, SiteSettings, ServiceDivision, AiSubCategory, PageRoute, PageContentItem, TestimonialItem, ClientLogoItem, ThemeCustomization, SeoConfig } from '../types.ts';
 import { AI_SERVICES as INITIAL_AI_SERVICES, IP_SERVICES as INITIAL_IP_SERVICES } from '../data/services.ts';
 import { PORTFOLIO_ITEMS as INITIAL_PORTFOLIO, DEFAULT_TESTIMONIALS, DEFAULT_CLIENT_LOGOS } from '../data/generalData.ts';
 import { ImageSourceSelector } from './ImageSourceSelector.tsx';
@@ -61,6 +61,7 @@ import { AdminThemeCustomizer } from './AdminThemeCustomizer.tsx';
 import { AdminHeaderLogoManager } from './AdminHeaderLogoManager.tsx';
 import { AdminClientLogosManager } from './AdminClientLogosManager.tsx';
 import { AdminIndustriesManager } from './AdminIndustriesManager.tsx';
+import { AdminSeoGeoManager } from './AdminSeoGeoManager.tsx';
 import { AdminStyledField } from './AdminStyledField.tsx';
 import { applyFieldStyle, getFieldClassName } from '../lib/styleHelper.ts';
 import { INDUSTRIES_LIST } from '../data/generalData.ts';
@@ -85,6 +86,9 @@ interface AdminDashboardProps {
   onUpdatePortfolio?: (items: PortfolioItem[]) => void;
   services?: ServiceItem[];
   onUpdateServices?: (services: ServiceItem[]) => void;
+  seoConfigs?: Record<string, SeoConfig>;
+  onSaveSeoConfig?: (page: string, config: SeoConfig) => Promise<void>;
+  onResetSeoConfig?: (page: string) => Promise<void>;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -99,10 +103,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onUpdatePortfolio,
   services: initialServicesProp,
   onUpdateServices,
+  seoConfigs,
+  onSaveSeoConfig,
+  onResetSeoConfig,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'crm' | 'styling' | 'header-logo' | 'logos' | 'industries' | 'pages' | 'settings' | 'services' | 'portfolio' | 'testimonials' | 'emails'
+    'crm' | 'styling' | 'header-logo' | 'logos' | 'industries' | 'pages' | 'seo' | 'settings' | 'services' | 'portfolio' | 'testimonials' | 'emails'
   >('pages');
+
   const [isCmsDropdownOpen, setIsCmsDropdownOpen] = useState<boolean>(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
 
@@ -1514,12 +1522,35 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 )}
               </div>
 
+              {/* Option: SEO / GEO / LLM Optimization */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('seo');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'seo'
+                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Search className="w-4 h-4 text-purple-400" />
+                  <span>SEO / GEO / LLM Optimization</span>
+                </div>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-purple-950 text-purple-300 border border-purple-800 font-mono">
+                  CMS
+                </span>
+              </button>
+
               {/* Option 2: AI & IP Services Cards */}
               <button
                 type="button"
                 onClick={() => {
                   setActiveTab('services');
                   setIsMobileSidebarOpen(false);
+
                 }}
                 className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                   activeTab === 'services'
@@ -1981,8 +2012,18 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
             </div>
           )}
 
+          {/* TAB: SEO / GEO / LLM OPTIMIZATION CMS */}
+          {activeTab === 'seo' && (
+            <AdminSeoGeoManager
+              seoConfigs={seoConfigs || {}}
+              onSaveSeoConfig={onSaveSeoConfig || (async () => {})}
+              onResetSeoConfig={onResetSeoConfig || (async () => {})}
+            />
+          )}
+
           {/* TAB: THEME, COLORS & TYPOGRAPHY CUSTOMIZER */}
           {activeTab === 'styling' && (
+
             <AdminThemeCustomizer
               initialTheme={themeData}
               onSaveTheme={handleSaveTheme}

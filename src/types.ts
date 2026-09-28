@@ -287,6 +287,117 @@ export interface DispatchedEmail {
   htmlContent: string;
 }
 
+export interface ImageSeoItem {
+  id?: string;
+  url: string;
+  altText: string;
+  title?: string;
+  description?: string;
+}
+
+export interface FaqSeoItem {
+  id?: string;
+  question: string;
+  directAnswer: string;
+  detailedAnswer: string;
+}
+
+export interface StructuredListItem {
+  id?: string;
+  title: string;
+  listType: 'ordered' | 'unordered';
+  items: string[];
+}
+
+export interface StructuredTableItem {
+  id?: string;
+  title: string;
+  headers: string[];
+  rows: string[][];
+}
+
+export interface InternalLinkItem {
+  id?: string;
+  anchorText: string;
+  destination: string;
+  relationship?: string;
+}
+
+export interface KeyFactItem {
+  id?: string;
+  fact: string;
+  value: string;
+}
+
+export interface DefinitionItem {
+  id?: string;
+  term: string;
+  definition: string;
+}
+
+export interface EntityInfo {
+  primaryTopic: string;
+  secondaryTopics: string[];
+  primaryEntity: string;
+  relatedEntities: string[];
+  organizationName: string;
+  services: string[];
+  industries: string[];
+  locationsServed: string[];
+  expertiseAreas: string[];
+}
+
+export interface KeywordInfo {
+  primaryKeyword: string;
+  secondaryKeywords: string[];
+  longTailQueries: string[];
+  relatedSearchTopics: string[];
+}
+
+export interface GeoContent {
+  primaryAnswer: string;
+  keyFacts: KeyFactItem[];
+  definitions: DefinitionItem[];
+  importantFacts: KeyFactItem[];
+  commonQuestions: { question: string; answer: string }[];
+  relatedTopics: string[];
+}
+
+export interface SeoConfig {
+  page: string;
+  metaTitle: string;
+  metaDescription: string;
+  slug: string;
+  canonicalUrl: string;
+  robots: string;
+  customRobots?: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogImage: string;
+  ogUrl: string;
+  twitterCard: string;
+  twitterTitle: string;
+  twitterDescription: string;
+  twitterImage: string;
+  images: ImageSeoItem[];
+  headings: {
+    h1: string;
+    h2s: string[];
+    h3s: string[];
+  };
+  schemaType: string;
+  customJsonLd: string;
+  faqs: FaqSeoItem[];
+  structuredLists: StructuredListItem[];
+  structuredTables: StructuredTableItem[];
+  internalLinks: InternalLinkItem[];
+  entities: EntityInfo;
+  keywords: KeywordInfo;
+  geo: GeoContent;
+  updatedAt?: string;
+  updatedBy?: string;
+}
+
 export type PageRoute =
   | 'home'
   | 'about'
@@ -302,3 +413,4 @@ export type PageRoute =
   | 'privacy'
   | 'book-consultation'
   | 'admin-dashboard';
+
