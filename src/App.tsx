@@ -11,7 +11,6 @@ import { RealTimeBookingModal } from './components/RealTimeBookingModal.tsx';
 import { AdminDashboard } from './components/AdminDashboard.tsx';
 import { WhatsAppWidget } from './components/WhatsAppWidget.tsx';
 import { SEOHead } from './components/SEOHead.tsx';
-import { SiteLoadingScreen } from './components/SiteLoadingScreen.tsx';
 import { Check } from 'lucide-react';
 import { applyThemeToCssVariables, DEFAULT_ORIGINAL_THEME, DEFAULT_PURPLE_THEME } from './lib/themeEngine.ts';
 import { DEFAULT_SEO_CONFIGS } from './data/defaultSeoData.ts';
@@ -573,15 +572,6 @@ export default function App() {
     window.addEventListener('lyi-theme-toast', handleToastEvent);
     return () => window.removeEventListener('lyi-theme-toast', handleToastEvent);
   }, []);
-
-  if (!isDataLoaded) {
-    return (
-      <SiteLoadingScreen
-        companyName={siteSettings?.companyName}
-        logoUrl={siteSettings?.logoUrl}
-      />
-    );
-  }
 
   return (
     <div
