@@ -183,9 +183,9 @@ export const Header: React.FC<HeaderProps> = ({
                 alt={displayCompanyName}
                 style={{
                   height: `${logoHeight}px`,
-                  maxHeight: `${Math.max(logoHeight, 40)}px`,
+                  maxHeight: `${logoHeight}px`,
                   width: logoWidth ? `${logoWidth}px` : 'auto',
-                  maxWidth: logoWidth ? `${Math.max(logoWidth, 180)}px` : '320px',
+                  maxWidth: logoWidth ? `${logoWidth}px` : '400px',
                 }}
                 className="w-auto h-auto object-contain transition-transform group-hover:scale-105 shrink-0"
                 onError={(e) => {
@@ -195,8 +195,8 @@ export const Header: React.FC<HeaderProps> = ({
             ) : (
               <div
                 style={{
-                  height: `${Math.min(logoHeight, 60)}px`,
-                  width: `${Math.min(logoHeight, 60)}px`,
+                  height: `${logoHeight}px`,
+                  width: `${logoWidth || logoHeight}px`,
                 }}
                 className="rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform shrink-0"
               >

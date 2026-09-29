@@ -1667,6 +1667,45 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 <span>Theme, Colors &amp; Typography</span>
               </button>
 
+              {/* Option 8: Header Logo & Size Manager */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('header-logo');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'header-logo'
+                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Sliders className="w-4 h-4 text-purple-400" />
+                  <span>Header Logo &amp; Size</span>
+                </div>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-purple-950 text-purple-300 border border-purple-800 font-mono">
+                  {formData.logoHeight || 40}px
+                </span>
+              </button>
+
+              {/* Option 9: Website Info & Settings */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('settings');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'settings'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <Settings className="w-4 h-4 text-slate-400" />
+                <span>Website Info &amp; Settings</span>
+              </button>
+
               {/* Option 8: Real-Time Slots & CRM */}
               <button
                 type="button"
@@ -3917,63 +3956,122 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                       helperText="Displayed in the navigation bar and footer branding."
                     />
 
-                    {/* Logo Dimensions Controller (Height up to 200px) */}
+                    {/* Logo Dimensions Controller (Height Range up to 220px) */}
                     <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-800">Brand Logo Dimensions (Height Range up to 200px)</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setFormData((prev: any) => ({ ...prev, logoWidth: 40, logoHeight: 40 }));
-                            handleInstantSaveImage('logoHeight', 40 as any, 'Logo Height');
-                          }}
-                          className="text-[11px] font-bold text-purple-700 hover:underline cursor-pointer"
-                        >
-                          Undo to Default (40×40px)
-                        </button>
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <span className="text-xs font-bold text-slate-800">Brand Logo Dimensions (Increase or Decrease Size)</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveTab('header-logo');
+                            }}
+                            className="text-[11px] font-bold text-blue-600 hover:underline cursor-pointer"
+                          >
+                            Open Advanced Logo Studio →
+                          </button>
+                          <span className="text-slate-300">·</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData((prev: any) => ({ ...prev, logoWidth: 40, logoHeight: 40 }));
+                              onUpdateSettings({ logoHeight: 40, logoWidth: 40 });
+                              handleInstantSaveImage('logoHeight', 40 as any, 'Logo Height');
+                            }}
+                            className="text-[11px] font-bold text-purple-700 hover:underline cursor-pointer"
+                          >
+                            Reset to Default (40×40px)
+                          </button>
+                        </div>
                       </div>
+
+                      {/* Quick Presets */}
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[11px] font-semibold text-slate-400 mr-1">Presets:</span>
+                        {[
+                          { label: 'Tiny', h: 24, w: 24 },
+                          { label: 'Small', h: 32, w: 32 },
+                          { label: 'Default', h: 40, w: 40 },
+                          { label: 'Medium', h: 54, w: 54 },
+                          { label: 'Large', h: 72, w: 72 },
+                          { label: 'Extra Large', h: 96, w: 96 },
+                        ].map((preset) => (
+                          <button
+                            key={preset.label}
+                            type="button"
+                            onClick={() => {
+                              setFormData((prev: any) => ({ ...prev, logoHeight: preset.h, logoWidth: preset.w }));
+                              onUpdateSettings({ logoHeight: preset.h, logoWidth: preset.w });
+                            }}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                              (formData.logoHeight || 40) === preset.h && (formData.logoWidth || 40) === preset.w
+                                ? 'bg-purple-600 text-white shadow-xs'
+                                : 'bg-white hover:bg-slate-200 border border-slate-200 text-slate-700'
+                            }`}
+                          >
+                            {preset.label} ({preset.h}px)
+                          </button>
+                        ))}
+                      </div>
+
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <div className="flex items-center justify-between text-[11px] text-slate-600 mb-1">
-                            <span>Height: {formData.logoHeight || 40}px (Max 200px)</span>
+                            <span>Height: {formData.logoHeight || 40}px (16px to 220px)</span>
                             <input
                               type="number"
-                              min={20}
-                              max={200}
+                              min={16}
+                              max={220}
                               value={formData.logoHeight || 40}
-                              onChange={(e) => setFormData({ ...formData, logoHeight: Number(e.target.value) })}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setFormData({ ...formData, logoHeight: val });
+                                onUpdateSettings({ logoHeight: val });
+                              }}
                               className="w-16 px-1.5 py-0.5 text-right rounded border border-slate-200 text-xs font-mono font-bold text-purple-700"
                             />
                           </div>
                           <input
                             type="range"
-                            min={20}
-                            max={200}
+                            min={16}
+                            max={220}
                             step={2}
                             value={formData.logoHeight || 40}
-                            onChange={(e) => setFormData({ ...formData, logoHeight: Number(e.target.value) })}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setFormData({ ...formData, logoHeight: val });
+                              onUpdateSettings({ logoHeight: val });
+                            }}
                             className="w-full accent-purple-600 cursor-pointer"
                           />
                         </div>
                         <div>
                           <div className="flex items-center justify-between text-[11px] text-slate-600 mb-1">
-                            <span>Width: {formData.logoWidth || 40}px</span>
+                            <span>Width: {formData.logoWidth || 40}px (16px to 450px)</span>
                             <input
                               type="number"
-                              min={20}
-                              max={300}
+                              min={16}
+                              max={450}
                               value={formData.logoWidth || 40}
-                              onChange={(e) => setFormData({ ...formData, logoWidth: Number(e.target.value) })}
+                              onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setFormData({ ...formData, logoWidth: val });
+                                onUpdateSettings({ logoWidth: val });
+                              }}
                               className="w-16 px-1.5 py-0.5 text-right rounded border border-slate-200 text-xs font-mono font-bold text-purple-700"
                             />
                           </div>
                           <input
                             type="range"
-                            min={20}
-                            max={300}
+                            min={16}
+                            max={450}
                             step={2}
                             value={formData.logoWidth || 40}
-                            onChange={(e) => setFormData({ ...formData, logoWidth: Number(e.target.value) })}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setFormData({ ...formData, logoWidth: val });
+                              onUpdateSettings({ logoWidth: val });
+                            }}
                             className="w-full accent-purple-600 cursor-pointer"
                           />
                         </div>

@@ -240,9 +240,9 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
                   alt="Company Logo Preview"
                   style={{
                     height: `${logoHeight}px`,
-                    maxHeight: `${Math.max(logoHeight, 40)}px`,
+                    maxHeight: `${logoHeight}px`,
                     width: logoWidth ? `${logoWidth}px` : 'auto',
-                    maxWidth: logoWidth ? `${Math.max(logoWidth, 180)}px` : '320px',
+                    maxWidth: logoWidth ? `${logoWidth}px` : '400px',
                   }}
                   className="w-auto h-auto object-contain transition-all shrink-0"
                   onError={(e) => {
@@ -252,8 +252,8 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
               ) : (
                 <div
                   style={{
-                    height: `${Math.min(logoHeight, 60)}px`,
-                    width: `${Math.min(logoHeight, 60)}px`,
+                    height: `${logoHeight}px`,
+                    width: `${logoWidth || logoHeight}px`,
                   }}
                   className="rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-purple-500/20 shrink-0"
                 >
@@ -312,11 +312,14 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] font-semibold text-slate-400 mr-1">Presets:</span>
             {[
-              { label: 'Compact', h: 32, w: 32 },
+              { label: 'Tiny', h: 24, w: 24 },
+              { label: 'Small', h: 32, w: 32 },
               { label: 'Default', h: 40, w: 40 },
               { label: 'Medium', h: 54, w: 54 },
               { label: 'Large', h: 72, w: 72 },
-              { label: 'Extra Large', h: 90, w: 90 },
+              { label: 'Extra Large', h: 96, w: 96 },
+              { label: 'Banner 180w', h: 48, w: 180 },
+              { label: 'Banner 260w', h: 64, w: 260 },
             ].map((preset) => (
               <button
                 key={preset.label}
@@ -326,7 +329,7 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
                   setLogoWidth(preset.w);
                 }}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                  logoHeight === preset.h
+                  logoHeight === preset.h && logoWidth === preset.w
                     ? 'bg-purple-600 text-white shadow-xs'
                     : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                 }`}
@@ -345,10 +348,10 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
               <div className="flex items-center gap-1">
                 <input
                   type="number"
-                  min={20}
-                  max={140}
+                  min={16}
+                  max={220}
                   value={logoHeight}
-                  onChange={(e) => setLogoHeight(Math.max(20, Math.min(140, Number(e.target.value) || 20)))}
+                  onChange={(e) => setLogoHeight(Math.max(16, Math.min(220, Number(e.target.value) || 16)))}
                   className="w-16 px-2 py-0.5 text-right rounded-lg border border-slate-200 text-xs font-mono font-bold text-purple-700 bg-white"
                 />
                 <span className="text-[10px] text-slate-400 font-mono">px</span>
@@ -356,18 +359,19 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
             </div>
             <input
               type="range"
-              min={20}
-              max={140}
+              min={16}
+              max={220}
               step={2}
               value={logoHeight}
               onChange={(e) => setLogoHeight(Number(e.target.value))}
               className="w-full accent-purple-600 cursor-pointer h-2 bg-slate-200 rounded-lg"
             />
             <div className="flex justify-between text-[10px] text-slate-400">
-              <span>20px (Tiny)</span>
+              <span>16px (Tiny)</span>
               <span>40px (Default)</span>
               <span>80px (Big)</span>
-              <span>140px (Huge)</span>
+              <span>150px (Huge)</span>
+              <span>220px (Max)</span>
             </div>
           </div>
 
@@ -378,10 +382,10 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
               <div className="flex items-center gap-1">
                 <input
                   type="number"
-                  min={20}
-                  max={360}
+                  min={16}
+                  max={450}
                   value={logoWidth}
-                  onChange={(e) => setLogoWidth(Math.max(20, Math.min(360, Number(e.target.value) || 20)))}
+                  onChange={(e) => setLogoWidth(Math.max(16, Math.min(450, Number(e.target.value) || 16)))}
                   className="w-16 px-2 py-0.5 text-right rounded-lg border border-slate-200 text-xs font-mono font-bold text-purple-700 bg-white"
                 />
                 <span className="text-[10px] text-slate-400 font-mono">px</span>
@@ -389,18 +393,19 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
             </div>
             <input
               type="range"
-              min={20}
-              max={360}
+              min={16}
+              max={450}
               step={2}
               value={logoWidth}
               onChange={(e) => setLogoWidth(Number(e.target.value))}
               className="w-full accent-purple-600 cursor-pointer h-2 bg-slate-200 rounded-lg"
             />
             <div className="flex justify-between text-[10px] text-slate-400">
-              <span>20px (Compact)</span>
+              <span>16px (Mini)</span>
               <span>40px (Default)</span>
               <span>180px (Banner)</span>
-              <span>360px (Wide)</span>
+              <span>320px (Wide)</span>
+              <span>450px (Max)</span>
             </div>
           </div>
         </div>
