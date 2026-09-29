@@ -42,7 +42,7 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({
   return (
     <div className="space-y-0">
       {/* HERO SECTION WITH RELEVANT BACKGROUND IMAGE */}
-      <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b border-slate-200 text-slate-900 min-h-[380px] flex items-center">
+      <section className="relative overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-20 border-b border-slate-800 text-white min-h-[380px] sm:min-h-[420px] lg:min-h-[440px] flex items-center">
         {/* Background Image Layer */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <ImageWithEffects
@@ -51,40 +51,44 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({
             isStandalone={true}
             className="w-full h-full object-cover object-center"
             containerClassName="relative w-full h-full"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src =
+                'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=80';
+            }}
           />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
           <div className="max-w-3xl space-y-4">
-            <nav className="text-xs text-slate-600 flex items-center gap-2">
+            <nav className="text-xs text-slate-400 flex items-center gap-2">
               <button
                 onClick={() => onNavigate('home')}
-                className="hover:text-blue-700 transition-colors cursor-pointer"
+                className="hover:text-cyan-400 transition-colors cursor-pointer"
               >
                 Home
               </button>
               <span>/</span>
-              <span className="text-slate-950 font-bold">Industries</span>
+              <span className="text-white font-medium">Industries</span>
             </nav>
 
             <div
               style={applyFieldStyle(pageData?.badge_style)}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 border border-blue-300 text-xs font-extrabold tracking-widest text-blue-900 font-heading"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-xs font-medium tracking-widest text-cyan-300 font-heading"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
               <span>{badge}</span>
             </div>
 
             <h1
               style={applyFieldStyle(pageData?.headline_style)}
-              className="text-2xl xs:text-3xl sm:text-5xl font-normal text-slate-950 tracking-tight font-heading leading-tight drop-shadow-xs"
+              className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight font-heading leading-tight drop-shadow-sm"
             >
               {headline}
             </h1>
 
             <p
               style={applyFieldStyle(pageData?.subheadline_style)}
-              className="text-slate-800 text-base sm:text-lg leading-relaxed font-normal"
+              className="text-slate-200 text-sm sm:text-base leading-relaxed max-w-2xl font-normal"
             >
               {subheadline}
             </p>

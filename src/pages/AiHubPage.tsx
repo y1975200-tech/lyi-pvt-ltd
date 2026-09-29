@@ -50,7 +50,7 @@ export const AiHubPage: React.FC<AiHubPageProps> = ({
   return (
     <div className="space-y-0">
       {/* Hero with dynamic background image and homepage theme styling */}
-      <section className="relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b border-slate-800 text-white min-h-[460px] flex items-center">
+      <section className="relative overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-20 border-b border-slate-800 text-white min-h-[380px] sm:min-h-[420px] lg:min-h-[440px] flex items-center">
         {/* Background Image Layer */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <ImageWithEffects
@@ -84,14 +84,14 @@ export const AiHubPage: React.FC<AiHubPageProps> = ({
 
             <h1
               style={applyFieldStyle(pageData?.headline_style)}
-              className="text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-normal text-white tracking-tight leading-tight font-heading drop-shadow-sm"
+              className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-normal text-white tracking-tight leading-tight font-heading drop-shadow-sm"
             >
               {headline}
             </h1>
 
             <p
               style={applyFieldStyle(pageData?.subheadline_style)}
-              className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal"
+              className="text-slate-200 text-sm sm:text-base leading-relaxed max-w-2xl font-normal"
             >
               {subheadline}
             </p>

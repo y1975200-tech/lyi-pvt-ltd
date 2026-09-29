@@ -80,8 +80,8 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
       : 'text-left'
     : 'text-left';
 
-  const headlineSize = service.headlineSize || 'text-3xl sm:text-5xl';
-  const ledeSize = service.ledeSize || 'text-base sm:text-lg';
+  const headlineSize = service.headlineSize || 'text-2xl xs:text-3xl sm:text-4xl lg:text-5xl';
+  const ledeSize = service.ledeSize || 'text-sm sm:text-base';
 
   // Breadcrumbs & labels
   const breadcrumbCategory = service.breadcrumbText || service.categoryLabel || service.division;
@@ -98,9 +98,9 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
     <div className="space-y-0">
       {/* SERVICE HERO */}
       <section
-        className={`relative overflow-hidden pt-24 pb-16 sm:pt-32 sm:pb-24 border-b transition-colors duration-200 ${
+        className={`relative overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-20 border-b transition-colors duration-200 min-h-[380px] sm:min-h-[420px] lg:min-h-[440px] flex items-center ${
           isDarkHero
-            ? 'border-slate-800 text-white min-h-[440px] flex items-center bg-slate-950'
+            ? 'border-slate-800 text-white bg-slate-950'
             : isAi
             ? 'border-slate-200 bg-gradient-to-br from-blue-50/70 via-white to-slate-50 text-slate-900'
             : 'border-slate-200 bg-gradient-to-br from-cyan-50/70 via-white to-slate-50 text-slate-900'
