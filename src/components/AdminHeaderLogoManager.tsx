@@ -27,6 +27,8 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
 
   const [logoInputUrl, setLogoInputUrl] = useState<string>('');
   const [previewLogoUrl, setPreviewLogoUrl] = useState<string>(currentLogoUrl);
+  const [logoHeight, setLogoHeight] = useState<number>(siteSettings.logoHeight || 40);
+  const [logoWidth, setLogoWidth] = useState<number>(siteSettings.logoWidth || 40);
   const [savingLogo, setSavingLogo] = useState<boolean>(false);
   const [uploadingFile, setUploadingFile] = useState<boolean>(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -91,14 +93,22 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
       const res = await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ logoUrl: previewLogoUrl }),
+        body: JSON.stringify({
+          logoUrl: previewLogoUrl,
+          logoHeight,
+          logoWidth,
+        }),
       });
       const data = await res.json();
 
       // 2. Update React parent state
-      await onUpdateSettings({ logoUrl: previewLogoUrl });
+      await onUpdateSettings({
+        logoUrl: previewLogoUrl,
+        logoHeight,
+        logoWidth,
+      });
 
-      setSuccessMsg('Header logo applied successfully and saved to MongoDB!');
+      setSuccessMsg('Header logo & dimensions applied successfully and saved to database!');
       setTimeout(() => setSuccessMsg(null), 4000);
     } catch (err: any) {
       console.error('Error saving header logo:', err);
@@ -134,12 +144,22 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
       await fetch('/api/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ logoUrl: '/assets/logo.svg' }),
+        body: JSON.stringify({
+          logoUrl: '/assets/logo.svg',
+          logoHeight: 40,
+          logoWidth: 40,
+        }),
       });
-      await onUpdateSettings({ logoUrl: '/assets/logo.svg' });
+      await onUpdateSettings({
+        logoUrl: '/assets/logo.svg',
+        logoHeight: 40,
+        logoWidth: 40,
+      });
       setPreviewLogoUrl('/assets/logo.svg');
+      setLogoHeight(40);
+      setLogoWidth(40);
       setLogoInputUrl('');
-      setSuccessMsg('Restored original website header logo successfully!');
+      setSuccessMsg('Restored original website header logo & default dimensions (40px) successfully!');
       setTimeout(() => setSuccessMsg(null), 4000);
     } catch (err: any) {
       console.warn('Error resetting header logo:', err);
@@ -210,21 +230,33 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
         </div>
 
         {/* Miniature simulated website header */}
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-md p-3 sm:p-4 overflow-x-auto">
-          <div className="min-w-[640px] flex items-center justify-between gap-4">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-md p-3 sm:p-4 overflow-x-auto min-h-[5rem] flex items-center">
+          <div className="min-w-[640px] w-full flex items-center justify-between gap-4">
             {/* Logo + Company text */}
             <div className="flex items-center gap-3">
               {previewLogoUrl && previewLogoUrl !== '/assets/logo.svg' ? (
                 <img
                   src={previewLogoUrl}
                   alt="Company Logo Preview"
-                  className="max-h-10 max-w-[180px] w-auto h-auto object-contain"
+                  style={{
+                    height: `${logoHeight}px`,
+                    maxHeight: `${Math.max(logoHeight, 40)}px`,
+                    width: logoWidth ? `${logoWidth}px` : 'auto',
+                    maxWidth: logoWidth ? `${Math.max(logoWidth, 180)}px` : '320px',
+                  }}
+                  className="w-auto h-auto object-contain transition-all shrink-0"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = '/assets/logo.svg';
                   }}
                 />
               ) : (
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-purple-500/20">
+                <div
+                  style={{
+                    height: `${Math.min(logoHeight, 60)}px`,
+                    width: `${Math.min(logoHeight, 60)}px`,
+                  }}
+                  className="rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-purple-500/20 shrink-0"
+                >
                   LYI
                 </div>
               )}
@@ -257,7 +289,120 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
 
         <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-1">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-          <span>Clean integration: No card background, no white rectangle, and strictly constrained to 40px height to avoid navbar distortion.</span>
+          <span>Current Logo Size: <strong>{logoHeight}px height</strong> × <strong>{logoWidth}px width</strong>. Clean integration without cards or distortion.</span>
+        </div>
+      </div>
+
+      {/* LOGO SIZE CONTROLLER */}
+      <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-purple-600" />
+              <h3 className="text-sm font-extrabold text-slate-900 font-heading">
+                Logo Dimensions &amp; Size Controller
+              </h3>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Increase or decrease the logo size on the website header in real-time.
+            </p>
+          </div>
+
+          {/* Quick presets */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[11px] font-semibold text-slate-400 mr-1">Presets:</span>
+            {[
+              { label: 'Compact', h: 32, w: 32 },
+              { label: 'Default', h: 40, w: 40 },
+              { label: 'Medium', h: 54, w: 54 },
+              { label: 'Large', h: 72, w: 72 },
+              { label: 'Extra Large', h: 90, w: 90 },
+            ].map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => {
+                  setLogoHeight(preset.h);
+                  setLogoWidth(preset.w);
+                }}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                  logoHeight === preset.h
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                {preset.label} ({preset.h}px)
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Logo Height Controller */}
+          <div className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+              <span>Logo Height: <span className="text-purple-600 font-mono text-sm">{logoHeight}px</span></span>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={20}
+                  max={140}
+                  value={logoHeight}
+                  onChange={(e) => setLogoHeight(Math.max(20, Math.min(140, Number(e.target.value) || 20)))}
+                  className="w-16 px-2 py-0.5 text-right rounded-lg border border-slate-200 text-xs font-mono font-bold text-purple-700 bg-white"
+                />
+                <span className="text-[10px] text-slate-400 font-mono">px</span>
+              </div>
+            </div>
+            <input
+              type="range"
+              min={20}
+              max={140}
+              step={2}
+              value={logoHeight}
+              onChange={(e) => setLogoHeight(Number(e.target.value))}
+              className="w-full accent-purple-600 cursor-pointer h-2 bg-slate-200 rounded-lg"
+            />
+            <div className="flex justify-between text-[10px] text-slate-400">
+              <span>20px (Tiny)</span>
+              <span>40px (Default)</span>
+              <span>80px (Big)</span>
+              <span>140px (Huge)</span>
+            </div>
+          </div>
+
+          {/* Logo Width Controller */}
+          <div className="space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+              <span>Logo Width: <span className="text-purple-600 font-mono text-sm">{logoWidth}px</span></span>
+              <div className="flex items-center gap-1">
+                <input
+                  type="number"
+                  min={20}
+                  max={360}
+                  value={logoWidth}
+                  onChange={(e) => setLogoWidth(Math.max(20, Math.min(360, Number(e.target.value) || 20)))}
+                  className="w-16 px-2 py-0.5 text-right rounded-lg border border-slate-200 text-xs font-mono font-bold text-purple-700 bg-white"
+                />
+                <span className="text-[10px] text-slate-400 font-mono">px</span>
+              </div>
+            </div>
+            <input
+              type="range"
+              min={20}
+              max={360}
+              step={2}
+              value={logoWidth}
+              onChange={(e) => setLogoWidth(Number(e.target.value))}
+              className="w-full accent-purple-600 cursor-pointer h-2 bg-slate-200 rounded-lg"
+            />
+            <div className="flex justify-between text-[10px] text-slate-400">
+              <span>20px (Compact)</span>
+              <span>40px (Default)</span>
+              <span>180px (Banner)</span>
+              <span>360px (Wide)</span>
+            </div>
+          </div>
         </div>
       </div>
 

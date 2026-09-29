@@ -159,13 +159,16 @@ export const Header: React.FC<HeaderProps> = ({
     siteSettings?.tagline_style ||
     siteSettings?.headerSubtitle_style;
 
+  const logoHeight = siteSettings?.logoHeight || 40;
+  const logoWidth = siteSettings?.logoWidth;
+
   return (
     <>
       {/* Main Header (Overlay on Homepage Hero, Sticky on Scroll/Pages) */}
       <header className={headerContainerClass}>
         <div
           ref={dropdownContainerRef}
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4"
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[4.5rem] py-2 flex items-center justify-between gap-4"
         >
           {/* Brand Logo & Name */}
           <button
@@ -178,13 +181,25 @@ export const Header: React.FC<HeaderProps> = ({
                 key={siteSettings.logoUrl}
                 src={siteSettings.logoUrl}
                 alt={displayCompanyName}
-                className="max-h-8 sm:max-h-10 max-w-[120px] sm:max-w-[180px] w-auto h-auto object-contain transition-transform group-hover:scale-105"
+                style={{
+                  height: `${logoHeight}px`,
+                  maxHeight: `${Math.max(logoHeight, 40)}px`,
+                  width: logoWidth ? `${logoWidth}px` : 'auto',
+                  maxWidth: logoWidth ? `${Math.max(logoWidth, 180)}px` : '320px',
+                }}
+                className="w-auto h-auto object-contain transition-transform group-hover:scale-105 shrink-0"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src = '/assets/logo.svg';
                 }}
               />
             ) : (
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform shrink-0">
+              <div
+                style={{
+                  height: `${Math.min(logoHeight, 60)}px`,
+                  width: `${Math.min(logoHeight, 60)}px`,
+                }}
+                className="rounded-xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform shrink-0"
+              >
                 LYI
               </div>
             )}
