@@ -94,8 +94,8 @@ export const Header: React.FC<HeaderProps> = ({
   const isHeroOverlay = currentRoute === 'home' && !isScrolled;
 
   const headerContainerClass = isHeroOverlay
-    ? 'fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-950/90 via-slate-950/60 to-transparent backdrop-blur-[3px] border-b border-white/10 text-white transition-all duration-300'
-    : 'fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm text-slate-900 transition-all duration-300';
+    ? 'fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-slate-950/90 via-slate-950/60 to-transparent backdrop-blur-[3px] border-b-0 border-transparent text-white transition-all duration-300'
+    : 'fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b-0 border-transparent text-slate-900 transition-all duration-300';
 
   const brandTitleClass = isHeroOverlay
     ? 'block font-medium text-white tracking-tight text-lg leading-tight group-hover:text-cyan-300 transition-colors font-heading drop-shadow-sm'
