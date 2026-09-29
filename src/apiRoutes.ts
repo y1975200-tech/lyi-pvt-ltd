@@ -32,20 +32,82 @@ apiRouter.use((_req, res, next) => {
 });
 
 // -------------------------------------------------------------
+// Helper: Sanitize snapshotData to replace inline Base64 data with clean file references
+function sanitizeSnapshotBase64(data: any): any {
+  if (!data) return data;
+  if (typeof data === "string") {
+    if (data.startsWith("data:image/")) {
+      const match = data.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+      if (match) {
+        let ext = match[1].toLowerCase().replace("+xml", "").replace("jpeg", "jpg");
+        if (ext === "svg+xml" || ext === "svg") ext = "svg";
+        const base64Content = match[2];
+        const buffer = Buffer.from(base64Content, "base64");
+        // Hash buffer to reuse identical files
+        const crypto = require("crypto");
+        const hash = crypto.createHash("md5").update(buffer).digest("hex").slice(0, 12);
+        const safeFileName = `rev_img_${Date.now()}_${hash}.${ext}`;
+        const uploadsDir = path.join(process.cwd(), "public", "uploads");
+        if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+        const filePath = path.join(uploadsDir, safeFileName);
+        if (!fs.existsSync(filePath)) {
+          fs.writeFileSync(filePath, buffer);
+        }
+        return `/uploads/${safeFileName}`;
+      }
+    }
+    return data;
+  }
+  if (Array.isArray(data)) {
+    return data.map(sanitizeSnapshotBase64);
+  }
+  if (typeof data === "object") {
+    const cleaned: any = {};
+    for (const key of Object.keys(data)) {
+      if (key === "_id" || key === "__v" || key === "createdAt" || key === "updatedAt") continue;
+      cleaned[key] = sanitizeSnapshotBase64(data[key]);
+    }
+    return cleaned;
+  }
+  return data;
+}
+
 // Helper: Snapshot Creator for Versioning & Revisions
-// -------------------------------------------------------------
 async function createRevisionSnapshot(entityType: string, entityId: string, snapshotData: any, changeSummary = "Updated content", updatedBy = "admin") {
   try {
+    const sanitizedData = sanitizeSnapshotBase64(snapshotData);
+    const sanitizedJsonStr = JSON.stringify(sanitizedData || {});
+
     const lastRev = await Revision.findOne({ entityType, entityId }).sort({ version: -1 });
+
+    if (lastRev) {
+      const lastSanitizedData = sanitizeSnapshotBase64(lastRev.snapshotData);
+      const lastJsonStr = JSON.stringify(lastSanitizedData || {});
+      if (sanitizedJsonStr === lastJsonStr) {
+        console.log(`[Revision] Skipped duplicate revision snapshot for ${entityType}:${entityId}`);
+        return;
+      }
+    }
+
     const version = lastRev ? lastRev.version + 1 : 1;
     await Revision.create({
       entityType,
       entityId,
       version,
-      snapshotData,
+      snapshotData: sanitizedData,
       changeSummary,
       updatedBy,
     });
+
+    // Keep latest 15 revisions max per entity to prevent storage explosion
+    const count = await Revision.countDocuments({ entityType, entityId });
+    if (count > 15) {
+      const oldRevisions = await Revision.find({ entityType, entityId })
+        .sort({ version: 1 })
+        .limit(count - 15);
+      const idsToDelete = oldRevisions.map((r) => r._id);
+      await Revision.deleteMany({ _id: { $in: idsToDelete } });
+    }
   } catch (err) {
     console.warn("[Revision] Error saving revision snapshot:", err);
   }
@@ -556,7 +618,7 @@ apiRouter.delete("/cms/logos/:id", async (req, res) => {
 apiRouter.post("/upload-image", async (req, res) => {
   try {
     const { imageData, fileName, target, altText } = req.body;
-    if (!imageData) return res.status(400).json({ error: "No image data" });
+    if (!imageData) return res.status(400).json({ error: "No image data provided" });
 
     if (imageData.startsWith("data:")) {
       const match = imageData.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
@@ -564,12 +626,18 @@ apiRouter.post("/upload-image", async (req, res) => {
         let ext = match[1].toLowerCase().replace("+xml", "").replace("jpeg", "jpg");
         if (ext === "svg+xml" || ext === "svg") ext = "svg";
         const base64Content = match[2];
+        const buffer = Buffer.from(base64Content, "base64");
+
+        const MAX_BYTES = 2 * 1024 * 1024; // 2 MB strict limit
+        if (buffer.length > MAX_BYTES) {
+          return res.status(400).json({ error: "Image size must be 2 MB or smaller." });
+        }
+
         const safeTarget = (target || "photo").toLowerCase().replace(/[^a-z0-9]+/g, "-");
         const safeFileName = `${safeTarget}_${Date.now()}.${ext}`;
         const uploadsDir = path.join(process.cwd(), "public", "uploads");
         if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
         const filePath = path.join(uploadsDir, safeFileName);
-        const buffer = Buffer.from(base64Content, "base64");
         fs.writeFileSync(filePath, buffer);
         
         const finalUrl = `/uploads/${safeFileName}`;
@@ -585,7 +653,7 @@ apiRouter.post("/upload-image", async (req, res) => {
           altText: altText || fileName || "",
         });
 
-        return res.json({ success: true, url: finalUrl, fileName: safeFileName });
+        return res.json({ success: true, url: finalUrl, fileName: safeFileName, size: buffer.length });
       }
     }
     

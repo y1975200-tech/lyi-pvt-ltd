@@ -4,7 +4,6 @@ import { AI_SERVICES, IP_SERVICES } from '../data/services.ts';
 import { Send, CheckCircle2 } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
 import { ImageWithEffects } from './ImageWithEffects.tsx';
-import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface FooterProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -39,7 +38,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBooking, siteS
         <ImageWithEffects
           src={heroBg}
           alt=""
-          effects={getImageEffects(siteSettings, 'section_footer_bg')}
           className="w-full h-full object-cover object-bottom"
         />
       </div>

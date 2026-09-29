@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
 import { ImageWithEffects } from '../components/ImageWithEffects.tsx';
-import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface ServiceDetailPageProps {
   slug: string;
@@ -113,7 +112,6 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
             <ImageWithEffects
               src={bgImg}
               alt={service.title}
-              effects={getImageEffects(siteSettings, `service_card_${service.id}`)}
               className="w-full h-full object-cover object-center"
               containerClassName="relative w-full h-full"
               onError={(e) => {
@@ -318,12 +316,12 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {service.features.map((f, i) => (
-              <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-2">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 font-medium flex items-center justify-center text-xs">
+              <div key={i} className="card-ai-tech p-6 space-y-3 group">
+                <div className="w-8 h-8 rounded-lg bg-blue-600/30 border border-blue-500/40 text-cyan-300 font-medium flex items-center justify-center text-xs relative z-10">
                   0{i + 1}
                 </div>
-                <h3 className="text-base font-medium text-slate-900 font-heading">{f.title}</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">{f.desc}</p>
+                <h3 className="text-base font-medium text-white font-heading relative z-10">{f.title}</h3>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal relative z-10">{f.desc}</p>
               </div>
             ))}
           </div>
@@ -331,25 +329,25 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
       </section>
 
       {/* PROCESS STEPS */}
-      <section className="py-20 bg-white border-t border-slate-200">
+      <section className="py-20 bg-slate-950 border-t border-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className={`text-xs font-medium uppercase tracking-widest block mb-2 ${isAi ? 'text-blue-600' : 'text-cyan-600'}`}>
+            <span className={`text-xs font-semibold uppercase tracking-widest block mb-2 ${isAi ? 'text-blue-400' : 'text-cyan-400'}`}>
               EXECUTION PROCESS
             </span>
-            <h2 className="text-3xl font-normal text-slate-900 tracking-tight font-heading">
+            <h2 className="text-3xl font-normal text-white tracking-tight font-heading">
               How Implementation Works
             </h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {service.processSteps.map((step, i) => (
-              <div key={i} className="p-5 rounded-2xl border border-slate-200 bg-slate-50 space-y-2">
-                <span className="text-2xl font-normal text-blue-600 font-mono block">
+              <div key={i} className="card-ai-tech p-5 space-y-2 group">
+                <span className="text-2xl font-normal text-cyan-400 font-mono block relative z-10">
                   {step.step}
                 </span>
-                <h4 className="font-medium text-slate-900 text-sm font-heading">{step.title}</h4>
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">{step.desc}</p>
+                <h4 className="font-medium text-white text-sm font-heading relative z-10">{step.title}</h4>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal relative z-10">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -357,43 +355,43 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
       </section>
 
       {/* PRICING & SCOPING PACKAGES */}
-      <section className="py-20 bg-slate-50 border-t border-slate-200">
+      <section className="py-20 bg-slate-950 border-t border-slate-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-medium uppercase tracking-widest text-blue-600 mb-2 block">
+            <span className="text-xs font-semibold uppercase tracking-widest text-blue-400 mb-2 block">
               ENGAGEMENT MODELS
             </span>
-            <h2 className="text-3xl font-normal text-slate-900 tracking-tight font-heading">
+            <h2 className="text-3xl font-normal text-white tracking-tight font-heading">
               Consultation &amp; Pricing
             </h2>
-            <p className="text-xs text-slate-500 mt-2 font-normal">
+            <p className="text-xs text-slate-400 mt-2 font-normal">
               Every project begins with a 30-minute scoping call to map out technical architecture, legal claims, and milestones.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between text-center">
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Discovery</span>
-                <h3 className="text-xl font-normal text-slate-900 mt-2 mb-3 font-heading">Free Consultation</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+            <div className="card-ai-tech p-8 flex flex-col justify-between text-center group">
+              <div className="relative z-10">
+                <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">Discovery</span>
+                <h3 className="text-xl font-normal text-white mt-2 mb-3 font-heading">Free Consultation</h3>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">
                   30-minute scoping call with an architect or attorney to assess feasibility and roadmap.
                 </p>
               </div>
               <button
                 onClick={() => onOpenBooking(service.title)}
-                className="mt-6 w-full py-2.5 rounded-full border border-slate-300 hover:bg-slate-50 text-slate-900 font-medium text-xs cursor-pointer"
+                className="mt-6 w-full py-2.5 rounded-full border border-blue-500/40 bg-blue-600/20 hover:bg-blue-600 text-white font-medium text-xs cursor-pointer transition-all relative z-10"
               >
                 Book 30-Min Slot
               </button>
             </div>
 
-            <div className="bg-slate-900 text-white p-8 rounded-3xl border border-slate-800 shadow-2xl flex flex-col justify-between text-center relative -translate-y-2">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-[10px] font-medium uppercase tracking-wider rounded-full shadow">
+            <div className="card-ai-tech p-8 flex flex-col justify-between text-center relative -translate-y-2 border-cyan-400/60 shadow-2xl group">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-[10px] font-semibold uppercase tracking-wider rounded-full shadow-lg z-20">
                 Recommended
               </span>
-              <div>
-                <span className="text-xs font-medium text-cyan-400 uppercase tracking-wide">Custom Project</span>
+              <div className="relative z-10">
+                <span className="text-xs font-medium text-cyan-300 uppercase tracking-wide">Custom Project</span>
                 <h3 className="text-xl font-normal text-white mt-2 mb-3 font-heading">Custom Proposal</h3>
                 <p className="text-xs text-slate-300 leading-relaxed font-normal">
                   Detailed technical specification, milestones, SLA guarantees, and transparent fee schedule.
@@ -401,23 +399,23 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({
               </div>
               <button
                 onClick={() => onOpenBooking(service.title)}
-                className="mt-6 w-full py-2.5 rounded-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-medium text-xs shadow cursor-pointer"
+                className="mt-6 w-full py-2.5 rounded-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-semibold text-xs shadow-md shadow-cyan-400/25 cursor-pointer transition-all relative z-10"
               >
                 Request Proposal
               </button>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between text-center">
-              <div>
-                <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Institutional</span>
-                <h3 className="text-xl font-normal text-slate-900 mt-2 mb-3 font-heading">Enterprise / Government</h3>
-                <p className="text-xs text-slate-600 leading-relaxed font-normal">
+            <div className="card-ai-tech p-8 flex flex-col justify-between text-center group">
+              <div className="relative z-10">
+                <span className="text-xs font-medium text-slate-400 uppercase tracking-wide">Institutional</span>
+                <h3 className="text-xl font-normal text-white mt-2 mb-3 font-heading">Enterprise / Government</h3>
+                <p className="text-xs text-slate-300 leading-relaxed font-normal">
                   Dedicated squad, on-premise infrastructure, custom security audits, and formal public tender RFP support.
                 </p>
               </div>
               <button
                 onClick={() => onOpenBooking(service.title)}
-                className="mt-6 w-full py-2.5 rounded-full border border-slate-300 hover:bg-slate-50 text-slate-900 font-medium text-xs cursor-pointer"
+                className="mt-6 w-full py-2.5 rounded-full border border-blue-500/40 bg-blue-600/20 hover:bg-blue-600 text-white font-medium text-xs cursor-pointer transition-all relative z-10"
               >
                 Talk to Enterprise Team
               </button>

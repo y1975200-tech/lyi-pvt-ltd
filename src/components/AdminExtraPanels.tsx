@@ -281,6 +281,14 @@ export const AdminMediaLibrary: React.FC<{ onShowSuccess: (title: string, messag
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const MAX_SIZE = 2 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      alert('Image size must be 2 MB or smaller.');
+      e.target.value = '';
+      return;
+    }
+
     setUploading(true);
     const reader = new FileReader();
     reader.onload = async () => {
@@ -295,14 +303,17 @@ export const AdminMediaLibrary: React.FC<{ onShowSuccess: (title: string, messag
           }),
         });
         const data = await res.json();
-        if (res.ok) {
+        if (res.ok && data.url) {
           onShowSuccess('Image Uploaded!', `File saved to persistent media registry: ${data.url}`);
           fetchMedia();
+        } else {
+          alert(data.error || 'Image size must be 2 MB or smaller.');
         }
       } catch (err: any) {
-        alert('Upload failed: ' + err.message);
+        alert('Upload failed: ' + (err.message || 'Image size must be 2 MB or smaller.'));
       } finally {
         setUploading(false);
+        e.target.value = '';
       }
     };
     reader.readAsDataURL(file);

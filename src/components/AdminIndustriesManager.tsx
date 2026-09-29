@@ -139,18 +139,40 @@ export const AdminIndustriesManager: React.FC<AdminIndustriesManagerProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 3 * 1024 * 1024) {
-      alert('Selected image exceeds 3MB limit.');
+    const MAX_SIZE = 2 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      alert('Image size must be 2 MB or smaller.');
+      e.target.value = '';
       return;
     }
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       if (typeof reader.result === 'string') {
-        setBgImage(reader.result);
+        try {
+          const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              imageData: reader.result,
+              fileName: file.name,
+              target: 'industries-bg',
+            }),
+          });
+          const data = await res.json();
+          if (res.ok && data.url) {
+            setBgImage(data.url);
+            return;
+          } else {
+            alert(data.error || 'Image size must be 2 MB or smaller.');
+          }
+        } catch (err: any) {
+          alert('Upload failed: ' + (err.message || 'Image size must be 2 MB or smaller.'));
+        }
       }
     };
     reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   const handleSaveAll = async () => {

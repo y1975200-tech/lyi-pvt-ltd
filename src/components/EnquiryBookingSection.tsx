@@ -3,7 +3,6 @@ import { ALL_SERVICES } from '../data/services.ts';
 import { BookingData, SiteSettings } from '../types.ts';
 import { CheckCircle2, Sparkles, Clock, Mail, ExternalLink, Calendar } from 'lucide-react';
 import { ImageWithEffects } from './ImageWithEffects.tsx';
-import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface EnquiryBookingSectionProps {
   defaultService?: string;
@@ -201,7 +200,6 @@ Meeting Link: ${finalBooking.meetingLink}`,
         <ImageWithEffects
           src={heroBg}
           alt=""
-          effects={getImageEffects(siteSettings, 'section_enquiry_bg')}
           className="w-full h-full object-cover object-center"
         />
       </div>

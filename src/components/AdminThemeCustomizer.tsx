@@ -286,14 +286,29 @@ export const AdminThemeCustomizer: React.FC<AdminThemeCustomizerProps> = ({
   const handleThemeImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) {
-      alert('Selected image exceeds 8MB. Please choose a smaller image.');
+    const MAX_SIZE = 2 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      alert('Image size must be 2 MB or smaller.');
+      e.target.value = '';
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       if (typeof reader.result === 'string') {
         const dataUrl = reader.result;
+        try {
+          const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageData: dataUrl, fileName: file.name, target: 'theme-palette' }),
+          });
+          const data = await res.json();
+          if (res.ok && data.url) {
+            setImageReferenceSource(data.url);
+            handleAnalyzeImage(data.url, imageThemeAtmosphere);
+            return;
+          }
+        } catch (err) {}
         setImageReferenceSource(dataUrl);
         handleAnalyzeImage(dataUrl, imageThemeAtmosphere);
       }
@@ -380,20 +395,34 @@ export const AdminThemeCustomizer: React.FC<AdminThemeCustomizerProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 6 * 1024 * 1024) {
-      alert('Selected image exceeds 6MB limit. Please upload a smaller image file.');
+    const MAX_SIZE = 2 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      alert('Image size must be 2 MB or smaller.');
+      e.target.value = '';
       return;
     }
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       if (typeof reader.result === 'string') {
-        setTheme((prev) => ({
-          ...prev,
-          themeBgImage: reader.result as string,
-          themeBgOverlayOpacity: prev.themeBgOverlayOpacity ?? 75,
-          themeBgBlur: prev.themeBgBlur ?? 0,
-        }));
+        try {
+          const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageData: reader.result, fileName: file.name, target: 'theme-wallpaper' }),
+          });
+          const data = await res.json();
+          if (res.ok && data.url) {
+            setTheme((prev) => ({
+              ...prev,
+              themeBgImage: data.url,
+              themeBgOverlayOpacity: prev.themeBgOverlayOpacity ?? 75,
+              themeBgBlur: prev.themeBgBlur ?? 0,
+            }));
+            return;
+          }
+        } catch (err) {}
+        alert('Image upload failed. Image size must be 2 MB or smaller.');
       }
     };
     reader.readAsDataURL(file);

@@ -4,7 +4,6 @@ import { EnquiryBookingSection } from '../components/EnquiryBookingSection.tsx';
 import { Target, Compass, Sparkles, Award, MapPin, Building, ShieldCheck, Users } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
 import { ImageWithEffects } from '../components/ImageWithEffects.tsx';
-import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface AboutPageProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -84,7 +83,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({
             key={bgImage}
             src={bgImage}
             alt="About LockYourIdea Tech Pune"
-            effects={getImageEffects(siteSettings, 'page_about_hero')}
             className="w-full h-full object-cover object-center"
             containerClassName="relative w-full h-full"
             onError={(e) => {
@@ -144,30 +142,30 @@ export const AboutPage: React.FC<AboutPageProps> = ({
       </section>
 
       {/* Vision & Mission */}
-      <section className="py-16 bg-white border-b border-slate-200">
+      <section className="py-16 bg-slate-950 border-t border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 space-y-3 hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-medium">
+            <div className="card-ai-tech p-8 space-y-3.5 group">
+              <div className="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-500/40 text-blue-300 flex items-center justify-center font-medium shadow-md shadow-blue-500/20 relative z-10">
                 <Compass className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-normal text-slate-900 font-heading">Our Vision</h3>
+              <h3 className="text-xl font-medium text-white font-heading relative z-10">Our Vision</h3>
               <p
                 style={applyFieldStyle(pageData?.visionText_style)}
-                className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal"
+                className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal relative z-10"
               >
                 {pageData?.visionText || "To be India's most trusted partner for organizations that need to build with cutting-edge AI and protect what they build — treated as one continuous journey, not two fragmented vendors."}
               </p>
             </div>
 
-            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 space-y-3 hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center font-medium">
+            <div className="card-ip-tech p-8 space-y-3.5 group">
+              <div className="w-10 h-10 rounded-xl bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 flex items-center justify-center font-medium shadow-md shadow-cyan-500/20 relative z-10">
                 <Target className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-normal text-slate-900 font-heading">Our Mission</h3>
+              <h3 className="text-xl font-medium text-white font-heading relative z-10">Our Mission</h3>
               <p
                 style={applyFieldStyle(pageData?.missionText_style)}
-                className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal"
+                className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal relative z-10"
               >
                 {pageData?.missionText || "To equip Indian enterprise, startups, and public bodies with production-grade AI systems while securing defensible, high-value patent and trademark registrations from our central Pune base."}
               </p>
@@ -177,13 +175,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({
       </section>
 
       {/* Timeline Section */}
-      <section className="py-16 bg-slate-50 border-b border-slate-200">
+      <section className="py-16 bg-slate-950 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-medium uppercase tracking-widest text-blue-600 block mb-1 font-heading">
+            <span className="text-xs font-semibold uppercase tracking-widest text-blue-400 block mb-1 font-heading">
               {milestonesHeader}
             </span>
-            <h2 className="text-3xl font-normal text-slate-900 tracking-tight font-heading">
+            <h2 className="text-3xl font-normal text-white tracking-tight font-heading">
               {milestonesSubhead}
             </h2>
           </div>
@@ -192,16 +190,16 @@ export const AboutPage: React.FC<AboutPageProps> = ({
             {timeline.map((t, idx) => (
               <div
                 key={idx}
-                className="p-6 rounded-2xl bg-white border border-slate-200 flex flex-col justify-between hover:shadow-lg transition-shadow"
+                className="card-ai-tech p-6 flex flex-col justify-between group"
               >
-                <div>
-                  <span className="text-2xl font-normal text-blue-600/40 block mb-2 font-mono">
+                <div className="relative z-10">
+                  <span className="text-2xl font-normal text-cyan-400 block mb-2 font-mono">
                     {t.num}
                   </span>
-                  <h4 className="text-sm font-medium text-slate-900 mb-2 font-heading">
+                  <h4 className="text-sm font-medium text-white mb-2 font-heading">
                     {t.title}
                   </h4>
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">{t.desc}</p>
+                  <p className="text-xs text-slate-300 leading-relaxed font-normal">{t.desc}</p>
                 </div>
               </div>
             ))}
@@ -210,9 +208,9 @@ export const AboutPage: React.FC<AboutPageProps> = ({
       </section>
 
       {/* Pune HQ Spotlight Section */}
-      <section className="py-16 bg-white border-b border-slate-200">
+      <section className="py-16 bg-slate-950 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl bg-slate-900 text-white p-8 md:p-12 relative overflow-hidden border border-slate-800">
+          <div className="card-ai-tech p-8 md:p-12 relative overflow-hidden group">
             <div className="max-w-2xl space-y-4 relative z-10">
               <span className="text-xs font-medium text-cyan-400 uppercase tracking-widest font-heading">
                 {hqBadge}

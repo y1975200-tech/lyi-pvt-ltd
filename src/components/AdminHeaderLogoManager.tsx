@@ -36,8 +36,10 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Selected logo exceeds 10MB. Please choose a smaller image.');
+    const MAX_SIZE = 2 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      alert('Image size must be 2 MB or smaller.');
+      e.target.value = '';
       return;
     }
 
@@ -46,7 +48,6 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
     reader.onload = async () => {
       try {
         const base64 = reader.result as string;
-        setPreviewLogoUrl(base64);
 
         // Upload to server disk storage for a permanent clean URL
         const res = await fetch('/api/upload-image', {
@@ -62,9 +63,11 @@ export const AdminHeaderLogoManager: React.FC<AdminHeaderLogoManagerProps> = ({
         if (res.ok && data.url) {
           setPreviewLogoUrl(data.url);
           setLogoInputUrl(data.url);
+        } else {
+          alert(data.error || 'Image size must be 2 MB or smaller.');
         }
-      } catch (err) {
-        console.warn('Image upload fallback to data URL:', err);
+      } catch (err: any) {
+        alert('Image upload failed: ' + (err.message || 'Image size must be 2 MB or smaller.'));
       } finally {
         setUploadingFile(false);
       }

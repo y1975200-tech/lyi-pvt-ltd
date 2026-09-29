@@ -62,7 +62,6 @@ import { AdminHeaderLogoManager } from './AdminHeaderLogoManager.tsx';
 import { AdminClientLogosManager } from './AdminClientLogosManager.tsx';
 import { AdminIndustriesManager } from './AdminIndustriesManager.tsx';
 import { AdminSeoGeoManager } from './AdminSeoGeoManager.tsx';
-import { AdminImageEffectsManager } from './AdminImageEffectsManager.tsx';
 import { AdminStyledField } from './AdminStyledField.tsx';
 import { applyFieldStyle, getFieldClassName } from '../lib/styleHelper.ts';
 import { INDUSTRIES_LIST } from '../data/generalData.ts';
@@ -109,7 +108,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onResetSeoConfig,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'crm' | 'styling' | 'header-logo' | 'logos' | 'industries' | 'pages' | 'seo' | 'image-effects' | 'settings' | 'services' | 'portfolio' | 'testimonials' | 'emails'
+    'crm' | 'styling' | 'header-logo' | 'logos' | 'industries' | 'pages' | 'seo' | 'settings' | 'services' | 'portfolio' | 'testimonials' | 'emails'
   >('pages');
 
   const [isCmsDropdownOpen, setIsCmsDropdownOpen] = useState<boolean>(true);
@@ -1545,28 +1544,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 </span>
               </button>
 
-              {/* Option: Image Effects & Appearance */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('image-effects');
-                  setIsMobileSidebarOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  activeTab === 'image-effects'
-                    ? 'bg-gradient-to-r from-amber-600 to-rose-600 text-white shadow-md shadow-amber-500/25'
-                    : 'hover:bg-slate-800 text-slate-300'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Sliders className="w-4 h-4 text-amber-400" />
-                  <span>Image Effects / Appearance</span>
-                </div>
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-950 text-amber-300 border border-amber-800 font-mono">
-                  NEW
-                </span>
-              </button>
-
               {/* Option 2: AI & IP Services Cards */}
               <button
                 type="button"
@@ -2087,14 +2064,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
               seoConfigs={seoConfigs || {}}
               onSaveSeoConfig={onSaveSeoConfig || (async () => {})}
               onResetSeoConfig={onResetSeoConfig || (async () => {})}
-            />
-          )}
-
-          {/* TAB: IMAGE EFFECTS & APPEARANCE MANAGER */}
-          {activeTab === 'image-effects' && (
-            <AdminImageEffectsManager
-              siteSettings={siteSettings}
-              onSave={onUpdateSettings}
             />
           )}
 
@@ -5232,19 +5201,45 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={(e) => {
+                            onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
+                                const MAX_SIZE = 2 * 1024 * 1024;
+                                if (file.size > MAX_SIZE) {
+                                  alert('Image size must be 2 MB or smaller.');
+                                  e.target.value = '';
+                                  return;
+                                }
                                 const reader = new FileReader();
-                                reader.onload = () => {
-                                  const res = reader.result as string;
-                                  setEditingService({
-                                    ...editingService,
-                                    bgImage: res,
-                                    backgroundImageUrl: res,
-                                  });
+                                reader.onload = async () => {
+                                  const rawData = reader.result as string;
+                                  try {
+                                    const res = await fetch('/api/upload-image', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({
+                                        imageData: rawData,
+                                        fileName: file.name,
+                                        target: 'service-bg',
+                                      }),
+                                    });
+                                    const data = await res.json();
+                                    if (res.ok && data.url) {
+                                      setEditingService((prev: any) => ({
+                                        ...prev,
+                                        bgImage: data.url,
+                                        backgroundImageUrl: data.url,
+                                      }));
+                                      return;
+                                    } else {
+                                      alert(data.error || 'Image size must be 2 MB or smaller.');
+                                    }
+                                  } catch (err: any) {
+                                    alert('Upload failed: ' + (err.message || 'Image size must be 2 MB or smaller.'));
+                                  }
                                 };
                                 reader.readAsDataURL(file);
+                                e.target.value = '';
                               }
                             }}
                           />

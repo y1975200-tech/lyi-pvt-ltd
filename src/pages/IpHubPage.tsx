@@ -5,7 +5,6 @@ import { EnquiryBookingSection } from '../components/EnquiryBookingSection.tsx';
 import { Shield, ArrowRight } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
 import { ImageWithEffects } from '../components/ImageWithEffects.tsx';
-import { getImageEffects } from '../utils/imageEffectsHelper.ts';
 
 interface IpHubPageProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -58,7 +57,6 @@ export const IpHubPage: React.FC<IpHubPageProps> = ({
             key={bgImage}
             src={bgImage}
             alt="IP Hub"
-            effects={getImageEffects(siteSettings, 'page_ip_hub_hero')}
             className="w-full h-full object-cover object-center"
             containerClassName="relative w-full h-full"
             onError={(e) => {
@@ -111,21 +109,21 @@ export const IpHubPage: React.FC<IpHubPageProps> = ({
       </section>
 
       {/* Dedicated Service Lines */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-slate-950 border-t border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mb-12">
-            <span className="text-xs font-medium uppercase tracking-widest text-cyan-600 mb-2 block">
+            <span className="text-xs font-semibold uppercase tracking-widest text-cyan-400 mb-2 block">
               IP SERVICES
             </span>
             <h2
-              style={applyFieldStyle(pageData?.extraHeading1_style, { color: 'var(--color-heading, #0f172a)' })}
-              className="text-3xl font-normal text-slate-900 tracking-tight font-heading"
+              style={applyFieldStyle(pageData?.extraHeading1_style, { color: 'var(--color-heading, #ffffff)' })}
+              className="text-3xl font-normal text-white tracking-tight font-heading"
             >
               {extraHeading}
             </h2>
             <p
-              style={applyFieldStyle(pageData?.extraText1_style, { color: 'var(--color-muted-text, #64748b)' })}
-              className="text-xs sm:text-sm text-slate-500 mt-1 font-normal"
+              style={applyFieldStyle(pageData?.extraText1_style, { color: 'var(--color-muted-text, #94a3b8)' })}
+              className="text-xs sm:text-sm text-slate-400 mt-1 font-normal"
             >
               {extraText}
             </p>
@@ -135,37 +133,37 @@ export const IpHubPage: React.FC<IpHubPageProps> = ({
             {servicesToRender.map((s) => (
               <div
                 key={s.id}
-                className="p-6 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-cyan-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group"
+                className="card-ip-tech p-7 flex flex-col justify-between group"
               >
-                <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-medium shadow-sm">
+                <div className="space-y-4 relative z-10">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-medium shadow-md shadow-cyan-500/20">
                     <Shield className="w-5 h-5" />
                   </div>
                   <h3
-                    className="text-base font-medium text-slate-900 group-hover:text-cyan-600 transition-colors font-heading"
-                    style={applyFieldStyle(s.title_style, { color: 'var(--color-heading, #0f172a)' })}
+                    className="text-lg font-medium text-white group-hover:text-cyan-300 transition-colors font-heading"
+                    style={applyFieldStyle(s.title_style, { color: 'var(--color-heading, #ffffff)' })}
                   >
                     {s.title}
                   </h3>
                   <p
-                    className="text-xs text-slate-600 leading-relaxed font-normal"
-                    style={applyFieldStyle(s.shortDesc_style, { color: 'var(--color-body-text, #475569)' })}
+                    className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal"
+                    style={applyFieldStyle(s.shortDesc_style, { color: 'var(--color-body-text, #cbd5e1)' })}
                   >
                     {s.shortDesc}
                   </p>
                 </div>
 
-                <div className="pt-6 mt-4 border-t border-slate-100 flex items-center justify-between">
+                <div className="pt-6 mt-5 border-t border-slate-800/80 flex items-center justify-between relative z-10">
                   <button
                     onClick={() => onNavigate('service-detail', s.slug)}
-                    className="text-xs font-medium text-cyan-600 group-hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-medium text-cyan-400 group-hover:text-cyan-300 group-hover:underline flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <span>Full Details</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => onOpenBooking(s.title)}
-                    className="text-[11px] font-medium text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 cursor-pointer"
+                    className="text-[11px] font-medium text-cyan-200 hover:text-slate-950 px-3 py-1.5 rounded-full bg-cyan-500/20 hover:bg-cyan-400 border border-cyan-400/40 shadow-sm cursor-pointer transition-all"
                   >
                     Book Slot
                   </button>

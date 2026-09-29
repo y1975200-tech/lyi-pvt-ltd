@@ -208,44 +208,6 @@ export interface IndustryItem {
   [key: string]: any;
 }
 
-export interface ImageEffectsConfig {
-  blurEnabled?: boolean;
-  blurAmount?: number; // 0 to 20px
-  brightnessEnabled?: boolean;
-  brightnessAmount?: number; // 0 to 200%, default 100
-  contrastEnabled?: boolean;
-  contrastAmount?: number; // 0 to 200%, default 100
-  saturationEnabled?: boolean;
-  saturationAmount?: number; // 0 to 200%, default 100
-  grayscaleEnabled?: boolean;
-  grayscaleAmount?: number; // 0 to 100%, default 0
-  opacityEnabled?: boolean;
-  opacityAmount?: number; // 0 to 100%, default 100
-  
-  overlayEnabled?: boolean;
-  overlayColor?: string; // hex #000000
-  overlayOpacity?: number; // 0 to 100%
-
-  tintEnabled?: boolean;
-  tintColor?: string; // hex #000000
-  tintOpacity?: number; // 0 to 100%
-
-  shadowEnabled?: boolean;
-  shadowIntensity?: number; // 0 to 50px
-  shadowColor?: string;
-
-  zoomEnabled?: boolean;
-  zoomScale?: number; // 1.0 to 2.0
-
-  gradientEnabled?: boolean;
-  gradientColor1?: string;
-  gradientColor2?: string;
-  gradientOpacity?: number; // 0 to 100%
-  gradientDirection?: string; // 'to bottom', 'to right', '135deg', etc.
-}
-
-export type ImageEffectsMap = Record<string, ImageEffectsConfig>;
-
 export interface SiteSettings {
   companyName: string;
   tagline: string;
@@ -276,7 +238,6 @@ export interface SiteSettings {
   portfolio?: PortfolioItem[];
   cmsPages?: Record<string, CmsPage>;
   theme?: ThemeCustomization;
-  imageEffects?: ImageEffectsMap;
   stats: {
     aiProjects: string;
     ipRegistrations: string;

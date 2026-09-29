@@ -367,24 +367,46 @@ export const AdminClientLogosManager: React.FC<AdminClientLogosManagerProps> = (
     if (!file) return;
 
     // Check size limit (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      alert('Selected image exceeds 2MB limit. Please upload a smaller logo file.');
+    const MAX_SIZE = 2 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      alert('Image size must be 2 MB or smaller.');
+      e.target.value = '';
       return;
     }
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       if (typeof reader.result === 'string') {
         const cleanedName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-        setFormData((prev) => ({
-          ...prev,
-          logoUrl: reader.result as string,
-          name: prev.name && prev.name.trim().length > 0 ? prev.name : cleanedName,
-        }));
-        showNotification(`Loaded logo file: ${file.name}`);
+        try {
+          const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              imageData: reader.result,
+              fileName: file.name,
+              target: 'client-logo',
+            }),
+          });
+          const data = await res.json();
+          if (res.ok && data.url) {
+            setFormData((prev) => ({
+              ...prev,
+              logoUrl: data.url,
+              name: prev.name && prev.name.trim().length > 0 ? prev.name : cleanedName,
+            }));
+            showNotification(`Uploaded logo file: ${file.name}`);
+            return;
+          } else {
+            alert(data.error || 'Image size must be 2 MB or smaller.');
+          }
+        } catch (err: any) {
+          alert('Upload failed: ' + (err.message || 'Image size must be 2 MB or smaller.'));
+        }
       }
     };
     reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   // Undo / reset dimensions to default in modal

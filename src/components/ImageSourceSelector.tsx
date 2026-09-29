@@ -98,36 +98,43 @@ export const ImageSourceSelector: React.FC<ImageSourceSelectorProps> = ({
       return;
     }
 
+    const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
+    if (file.size > MAX_IMAGE_SIZE) {
+      setErrorMsg('Image size must be 2 MB or smaller.');
+      return;
+    }
+
     setIsUploading(true);
     setUploadFileName(file.name);
 
     try {
-      // 1. Compress image for efficient network transfer
-      const databaseReadyDataUrl = await compressImageForDatabase(file);
+      // Read raw file as data URL to pass to server upload endpoint
+      const rawDataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-      // 2. Upload to server storage first to obtain clean file URL
-      let finalUrl = databaseReadyDataUrl;
-      try {
-        const res = await fetch('/api/upload-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            imageData: databaseReadyDataUrl,
-            fileName: file.name,
-            target: label,
-          }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.url) {
-            finalUrl = data.url;
-          }
-        }
-      } catch (e) {
-        console.warn('Server image upload endpoint notice:', e);
+      // Upload to server storage to obtain clean persistent file URL
+      const res = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageData: rawDataUrl,
+          fileName: file.name,
+          target: label,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || 'Image size must be 2 MB or smaller.');
       }
 
-      // 3. Apply clean image URL and save
+      const finalUrl = data.url;
+
+      // Apply clean image URL and save
       onChange(finalUrl);
       if (onInstantSave) {
         onInstantSave(finalUrl);
@@ -135,8 +142,8 @@ export const ImageSourceSelector: React.FC<ImageSourceSelectorProps> = ({
         setTimeout(() => setJustApplied(false), 3500);
       }
     } catch (err: any) {
-      console.error('Failed to process image for database:', err);
-      setErrorMsg('Could not process image. Please try a different photo.');
+      console.error('Failed to process image:', err);
+      setErrorMsg(err.message || 'Image size must be 2 MB or smaller.');
     } finally {
       setIsUploading(false);
     }
@@ -349,7 +356,7 @@ export const ImageSourceSelector: React.FC<ImageSourceSelectorProps> = ({
                 {isUploading ? 'Uploading and processing photo...' : 'Click to browse files from your computer'}
               </div>
               <div className="text-[11px] text-slate-500">
-                {isUploading ? 'Saving image to server storage...' : 'or drag and drop your photo here (PNG, JPG, WebP up to 20MB)'}
+                {isUploading ? 'Saving image to server storage...' : 'or drag and drop your photo here (PNG, JPG, WebP up to 2MB)'}
               </div>
             </div>
           </div>
