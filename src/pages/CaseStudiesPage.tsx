@@ -44,6 +44,7 @@ export const CaseStudiesPage: React.FC<CaseStudiesPageProps> = ({
             key={bgImage}
             src={bgImage}
             alt="Real Client Outcomes & Case Studies"
+            isStandalone={true}
             className="w-full h-full object-cover object-center"
             containerClassName="relative w-full h-full"
             onError={(e) => {
@@ -104,7 +105,7 @@ export const CaseStudiesPage: React.FC<CaseStudiesPageProps> = ({
       </section>
 
       {/* Main Case Studies Grid */}
-      <section className="py-16 bg-slate-950 border-t border-b border-slate-800">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {CASE_STUDIES.map((c, i) => {
@@ -112,58 +113,56 @@ export const CaseStudiesPage: React.FC<CaseStudiesPageProps> = ({
               return (
                 <div
                   key={i}
-                  className="card-ai-tech p-8 flex flex-col justify-between group"
+                  className="rounded-3xl border border-slate-200 p-8 bg-slate-50/70 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
                 >
-                  <div className="space-y-4 relative z-10">
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium font-heading border ${
-                          isAi
-                            ? 'bg-blue-500/20 text-blue-300 border-blue-400/30'
-                            : 'bg-cyan-500/20 text-cyan-300 border-cyan-400/30'
+                        className={`px-3 py-1 rounded-full text-xs font-medium font-heading ${
+                          isAi ? 'bg-blue-100 text-blue-700' : 'bg-cyan-100 text-cyan-800'
                         }`}
                       >
                         {c.division}
                       </span>
-                      <span className="text-xs font-medium text-slate-400">{c.client}</span>
+                      <span className="text-xs font-medium text-slate-500">{c.client}</span>
                     </div>
 
-                    <h3 className="text-xl font-medium text-white leading-snug font-heading group-hover:text-cyan-300 transition-colors">
+                    <h3 className="text-xl font-medium text-slate-900 leading-snug font-heading group-hover:text-blue-600 transition-colors">
                       {c.title}
                     </h3>
 
-                    <div className="space-y-2.5 text-xs text-slate-300 leading-relaxed">
-                      <div className="p-3.5 bg-slate-900/80 rounded-2xl border border-slate-800">
-                        <span className="text-white block font-medium mb-1">The Challenge:</span>
-                        <span className="text-slate-300">{c.challenge}</span>
+                    <div className="space-y-2 text-xs text-slate-600 leading-relaxed">
+                      <div className="p-3 bg-white rounded-xl border border-slate-200">
+                        <span className="text-slate-900 block font-medium mb-0.5">The Challenge:</span>
+                        <span>{c.challenge}</span>
                       </div>
-                      <div className="p-3.5 bg-slate-900/80 rounded-2xl border border-slate-800">
-                        <span className="text-white block font-medium mb-1">The Solution:</span>
-                        <span className="text-slate-300">{c.solution}</span>
+                      <div className="p-3 bg-white rounded-xl border border-slate-200">
+                        <span className="text-slate-900 block font-medium mb-0.5">The Solution:</span>
+                        <span>{c.solution}</span>
                       </div>
                     </div>
 
                     {/* Results Metrics */}
-                    <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30">
-                      <span className="text-[11px] font-medium text-emerald-400 uppercase tracking-wider block mb-1 font-heading">
+                    <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200">
+                      <span className="text-[11px] font-medium text-emerald-800 uppercase tracking-wider block mb-1 font-heading">
                         Measured Client Outcomes:
                       </span>
-                      <div className="flex items-start gap-2 text-xs font-normal text-emerald-200">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <div className="flex items-start gap-2 text-xs font-normal text-emerald-950">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                         <span className="leading-relaxed">{c.result}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-6 mt-4 border-t border-slate-800/80 flex items-center justify-between relative z-10">
+                  <div className="pt-6 mt-4 border-t border-slate-200/80 flex items-center justify-between">
                     <button
                       onClick={() => onOpenBooking(c.title)}
-                      className="text-xs font-medium text-cyan-400 hover:text-cyan-300 flex items-center gap-1.5 cursor-pointer transition-colors"
+                      className="text-xs font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1.5 cursor-pointer"
                     >
                       <span>Request Scope Like This</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
-                    <span className="text-[11px] text-slate-500 font-mono">Pune HQ Delivery</span>
+                    <span className="text-[11px] text-slate-400 font-mono">Pune HQ Delivery</span>
                   </div>
                 </div>
               );

@@ -14,8 +14,6 @@ export const SiteLoadingScreen: React.FC<SiteLoadingScreenProps> = ({
       id="site-global-loader"
       className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center p-6 select-none overflow-hidden"
     >
-      {/* Subtle Background Radial Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center space-y-5 max-w-sm mx-auto">

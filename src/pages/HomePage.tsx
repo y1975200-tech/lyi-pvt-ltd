@@ -331,10 +331,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <img
                   src={aiCardBg}
                   alt="AI Hub"
-                  className="w-full h-full object-cover object-center opacity-30 group-hover:scale-105 transition-transform duration-700 filter saturate-150"
+                  className="w-full h-full object-cover object-center opacity-30"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-900/90 to-[#0e2246]/85 backdrop-blur-[2px]" />
-                <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
               </div>
 
               {/* Glowing corner orb */}
@@ -384,10 +383,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <img
                   src={ipCardBg}
                   alt="IP Hub"
-                  className="w-full h-full object-cover object-center opacity-30 group-hover:scale-105 transition-transform duration-700 filter saturate-150"
+                  className="w-full h-full object-cover object-center opacity-30"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-900/90 to-[#082a3d]/85 backdrop-blur-[2px]" />
-                <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
               </div>
 
               {/* Glowing corner orb */}

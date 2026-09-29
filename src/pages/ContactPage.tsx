@@ -67,6 +67,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
             key={bgImage}
             src={bgImage}
             alt="Contact LockYourIdea Tech Pune Office"
+            isStandalone={true}
             className="w-full h-full object-cover object-center"
             containerClassName="relative w-full h-full"
             onError={(e) => {
@@ -123,88 +124,80 @@ export const ContactPage: React.FC<ContactPageProps> = ({
       </section>
 
       {/* Contact Cards & Office Location Details */}
-      <section className="py-16 bg-slate-950 border-t border-b border-slate-800">
+      <section className="py-16 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Prominent Pune Location Banner */}
-          <div className="mb-10 p-7 card-ai-tech flex flex-col sm:flex-row sm:items-center justify-between gap-5 group">
-            <div className="flex items-start gap-4 relative z-10">
-              <div className="w-12 h-12 rounded-2xl bg-blue-600/30 border border-blue-500/40 text-blue-300 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
-                <Building className="w-6 h-6" />
+          <div className="mb-10 p-6 rounded-2xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                <Building className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-cyan-400 block font-heading">
+                <span className="text-[11px] font-medium uppercase tracking-wider text-blue-700 block font-heading">
                   {officeBadge}
                 </span>
-                <h3 className="text-lg font-medium text-white font-heading mt-0.5">
+                <h3 className="text-base font-normal text-slate-900 font-heading">
                   {officeHeadline}
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-300 mt-1 font-normal">
-                  {officeAddress} · <span className="font-normal text-cyan-300">{officeNote}</span>
+                <p className="text-xs text-slate-600 mt-0.5 font-normal">
+                  {officeAddress} · <span className="font-normal text-slate-800">{officeNote}</span>
                 </p>
               </div>
             </div>
             <button
               onClick={() => onOpenBooking('In-Person HQ Consultation')}
-              className="self-start sm:self-auto px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs shadow-md shadow-blue-500/25 transition-all shrink-0 cursor-pointer relative z-10"
+              className="self-start sm:self-auto px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-md shadow-blue-500/20 transition-all shrink-0 cursor-pointer"
             >
               {officeCtaText}
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-            <div className="card-ai-tech p-6 space-y-3 group">
-              <div className="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-500/40 text-blue-300 flex items-center justify-center font-medium relative z-10">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 hover:shadow-md transition-shadow">
+              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-medium">
                 <Phone className="w-5 h-5" />
               </div>
-              <div className="relative z-10">
-                <h3 className="font-medium text-white text-sm font-heading">{phoneTitle}</h3>
-                <a href={`tel:${phone}`} className="text-xs text-cyan-400 font-medium hover:underline block mt-1">
-                  {phone}
-                </a>
-                <p className="text-[11px] text-slate-400 mt-0.5">{phoneNote}</p>
-              </div>
+              <h3 className="font-medium text-slate-900 text-sm font-heading">{phoneTitle}</h3>
+              <a href={`tel:${phone}`} className="text-xs text-blue-600 font-medium hover:underline block">
+                {phone}
+              </a>
+              <p className="text-[11px] text-slate-500">{phoneNote}</p>
             </div>
 
-            <div className="card-ai-tech p-6 space-y-3 group">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 flex items-center justify-center font-medium relative z-10">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 hover:shadow-md transition-shadow">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-medium">
                 <MessageSquare className="w-5 h-5" />
               </div>
-              <div className="relative z-10">
-                <h3 className="font-medium text-white text-sm font-heading">{whatsappTitle}</h3>
-                <a
-                  href={`https://wa.me/${(phone || '917558631355').replace(/\D/g, '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-emerald-400 font-medium hover:underline block mt-1"
-                >
-                  {whatsappText}
-                </a>
-                <p className="text-[11px] text-slate-400 mt-0.5">{whatsappNote}</p>
-              </div>
+              <h3 className="font-medium text-slate-900 text-sm font-heading">{whatsappTitle}</h3>
+              <a
+                href={`https://wa.me/${(phone || '917558631355').replace(/\D/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-emerald-600 font-medium hover:underline block"
+              >
+                {whatsappText}
+              </a>
+              <p className="text-[11px] text-slate-500">{whatsappNote}</p>
             </div>
 
-            <div className="card-ai-tech p-6 space-y-3 group">
-              <div className="w-10 h-10 rounded-xl bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 flex items-center justify-center font-medium relative z-10">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 hover:shadow-md transition-shadow">
+              <div className="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center font-medium">
                 <Mail className="w-5 h-5" />
               </div>
-              <div className="relative z-10">
-                <h3 className="font-medium text-white text-sm font-heading">{emailTitle}</h3>
-                <a href={`mailto:${contactEmail}`} className="text-xs text-cyan-400 font-medium hover:underline block mt-1 truncate">
-                  {contactEmail}
-                </a>
-                <p className="text-[11px] text-slate-400 mt-0.5">{emailNote}</p>
-              </div>
+              <h3 className="font-medium text-slate-900 text-sm font-heading">{emailTitle}</h3>
+              <a href={`mailto:${contactEmail}`} className="text-xs text-cyan-700 font-medium hover:underline block">
+                {contactEmail}
+              </a>
+              <p className="text-[11px] text-slate-500">{emailNote}</p>
             </div>
 
-            <div className="card-ai-tech p-6 space-y-3 group">
-              <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center font-medium relative z-10">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 hover:shadow-md transition-shadow">
+              <div className="w-10 h-10 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-medium">
                 <Clock className="w-5 h-5" />
               </div>
-              <div className="relative z-10">
-                <h3 className="font-medium text-white text-sm font-heading">{hoursTitle}</h3>
-                <p className="text-xs text-slate-300 font-normal mt-1">{hoursText}</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">{hoursNote}</p>
-              </div>
+              <h3 className="font-medium text-slate-900 text-sm font-heading">{hoursTitle}</h3>
+              <p className="text-xs text-slate-800 font-normal">{hoursText}</p>
+              <p className="text-[11px] text-slate-500">{hoursNote}</p>
             </div>
           </div>
 
