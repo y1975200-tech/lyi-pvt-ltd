@@ -108,7 +108,10 @@ export const CaseStudiesPage: React.FC<CaseStudiesPageProps> = ({
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {CASE_STUDIES.map((c, i) => {
+            {(siteSettings?.caseStudies && siteSettings.caseStudies.length > 0
+              ? siteSettings.caseStudies
+              : CASE_STUDIES
+            ).map((c, i) => {
               const isAi = c.division === 'AI Hub';
               return (
                 <div

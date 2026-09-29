@@ -30,6 +30,8 @@ import {
   Briefcase,
   Users,
   ArrowRight,
+  ArrowUp,
+  ArrowDown,
   Bell,
   Key,
   EyeOff,
@@ -53,9 +55,9 @@ import {
   AlertCircle,
   HelpCircle
 } from 'lucide-react';
-import { BookingData, ServiceItem, PortfolioItem, SiteSettings, ServiceDivision, AiSubCategory, PageRoute, PageContentItem, TestimonialItem, ClientLogoItem, ThemeCustomization, SeoConfig } from '../types.ts';
+import { BookingData, ServiceItem, PortfolioItem, SiteSettings, ServiceDivision, AiSubCategory, PageRoute, PageContentItem, TestimonialItem, ClientLogoItem, ThemeCustomization, SeoConfig, CaseStudyItem } from '../types.ts';
 import { AI_SERVICES as INITIAL_AI_SERVICES, IP_SERVICES as INITIAL_IP_SERVICES } from '../data/services.ts';
-import { PORTFOLIO_ITEMS as INITIAL_PORTFOLIO, DEFAULT_TESTIMONIALS, DEFAULT_CLIENT_LOGOS } from '../data/generalData.ts';
+import { PORTFOLIO_ITEMS as INITIAL_PORTFOLIO, DEFAULT_TESTIMONIALS, DEFAULT_CLIENT_LOGOS, CASE_STUDIES } from '../data/generalData.ts';
 import { ImageSourceSelector } from './ImageSourceSelector.tsx';
 import { AdminThemeCustomizer } from './AdminThemeCustomizer.tsx';
 import { AdminHeaderLogoManager } from './AdminHeaderLogoManager.tsx';
@@ -315,6 +317,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       setPortfolioItems(initialPortfolioProp);
     }
   }, [initialPortfolioProp]);
+
+  // Case Studies State
+  const [caseStudies, setCaseStudies] = useState<CaseStudyItem[]>(
+    siteSettings.caseStudies && siteSettings.caseStudies.length > 0
+      ? siteSettings.caseStudies
+      : CASE_STUDIES
+  );
+  const [editingCaseStudy, setEditingCaseStudy] = useState<CaseStudyItem | null>(null);
+  const [editingCaseStudyIndex, setEditingCaseStudyIndex] = useState<number | null>(null);
+  const [isAddCaseStudyModalOpen, setIsAddCaseStudyModalOpen] = useState<boolean>(false);
+  const [newCaseStudy, setNewCaseStudy] = useState<CaseStudyItem>({
+    division: 'AI Hub',
+    title: '',
+    client: '',
+    challenge: '',
+    solution: '',
+    result: '',
+  });
+
+  useEffect(() => {
+    if (siteSettings.caseStudies && siteSettings.caseStudies.length > 0) {
+      setCaseStudies(siteSettings.caseStudies);
+    }
+  }, [siteSettings.caseStudies]);
 
   // Dispatched Emails State
   const [dispatchedEmails, setDispatchedEmails] = useState<any[]>([]);
@@ -978,6 +1004,217 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
     }
   };
 
+  // Handle Portfolio Reordering
+  const handleMovePortfolioUp = async (index: number) => {
+    if (index === 0) return;
+    const updated = [...portfolioItems];
+    const temp = updated[index - 1];
+    updated[index - 1] = updated[index];
+    updated[index] = temp;
+    setPortfolioItems(updated);
+    if (onUpdatePortfolio) onUpdatePortfolio(updated);
+    try {
+      await fetch(`/api/portfolio/${updated[index - 1].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: index - 1 }),
+      });
+      await fetch(`/api/portfolio/${updated[index].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: index }),
+      });
+    } catch (e) {
+      console.error('Reorder portfolio error:', e);
+    }
+  };
+
+  const handleMovePortfolioDown = async (index: number) => {
+    if (index >= portfolioItems.length - 1) return;
+    const updated = [...portfolioItems];
+    const temp = updated[index + 1];
+    updated[index + 1] = updated[index];
+    updated[index] = temp;
+    setPortfolioItems(updated);
+    if (onUpdatePortfolio) onUpdatePortfolio(updated);
+    try {
+      await fetch(`/api/portfolio/${updated[index + 1].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: index + 1 }),
+      });
+      await fetch(`/api/portfolio/${updated[index].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: index }),
+      });
+    } catch (e) {
+      console.error('Reorder portfolio error:', e);
+    }
+  };
+
+  // Handle Service Reordering
+  const handleMoveServiceUp = async (serviceId: string) => {
+    const index = allServices.findIndex((s) => s.id === serviceId);
+    if (index <= 0) return;
+    const updated = [...allServices];
+    const temp = updated[index - 1];
+    updated[index - 1] = updated[index];
+    updated[index] = temp;
+    setAllServices(updated);
+    if (onUpdateServices) onUpdateServices(updated);
+    setFormData((prev) => ({ ...prev, services: updated }));
+    try {
+      await fetch(`/api/services/${updated[index - 1].slug || updated[index - 1].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: index - 1 }),
+      });
+      await fetch(`/api/services/${updated[index].slug || updated[index].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: index }),
+      });
+    } catch (e) {
+      console.error('Reorder service error:', e);
+    }
+  };
+
+  const handleMoveServiceDown = async (serviceId: string) => {
+    const index = allServices.findIndex((s) => s.id === serviceId);
+    if (index === -1 || index >= allServices.length - 1) return;
+    const updated = [...allServices];
+    const temp = updated[index + 1];
+    updated[index + 1] = updated[index];
+    updated[index] = temp;
+    setAllServices(updated);
+    if (onUpdateServices) onUpdateServices(updated);
+    setFormData((prev) => ({ ...prev, services: updated }));
+    try {
+      await fetch(`/api/services/${updated[index + 1].slug || updated[index + 1].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: index + 1 }),
+      });
+      await fetch(`/api/services/${updated[index].slug || updated[index].id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: index }),
+      });
+    } catch (e) {
+      console.error('Reorder service error:', e);
+    }
+  };
+
+  // Handle Case Study CRUD & Reordering
+  const handleSaveCaseStudy = async (cs: CaseStudyItem, index?: number | null) => {
+    if (!cs.title || !cs.client) {
+      alert('Please provide title and client name for the case study.');
+      return;
+    }
+    try {
+      let updatedList: CaseStudyItem[];
+      if (index !== null && index !== undefined && index >= 0) {
+        updatedList = caseStudies.map((item, idx) => (idx === index ? cs : item));
+      } else {
+        updatedList = [cs, ...caseStudies];
+      }
+      setCaseStudies(updatedList);
+      setFormData((prev) => ({ ...prev, caseStudies: updatedList }));
+
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caseStudies: updatedList }),
+      });
+      if (!res.ok) throw new Error(`Server returned HTTP ${res.status}`);
+
+      await onUpdateSettings({ caseStudies: updatedList });
+
+      setIsAddCaseStudyModalOpen(false);
+      setEditingCaseStudy(null);
+      setEditingCaseStudyIndex(null);
+      setNewCaseStudy({
+        division: 'AI Hub',
+        title: '',
+        client: '',
+        challenge: '',
+        solution: '',
+        result: '',
+      });
+
+      setSuccessPopup({
+        isOpen: true,
+        title: 'Case Study Saved Successfully!',
+        message: `"${cs.title}" has been saved to MongoDB and updated live on the website.`,
+        targetPage: 'case-studies',
+      });
+    } catch (err: any) {
+      console.error('Failed to save case study:', err);
+      alert('Error saving case study: ' + (err.message || err));
+    }
+  };
+
+  const handleDeleteCaseStudy = async (index: number, title: string) => {
+    if (!window.confirm(`Are you sure you want to remove the case study "${title}"?`)) return;
+    try {
+      const updatedList = caseStudies.filter((_, idx) => idx !== index);
+      setCaseStudies(updatedList);
+      setFormData((prev) => ({ ...prev, caseStudies: updatedList }));
+
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caseStudies: updatedList }),
+      });
+      if (!res.ok) throw new Error(`Server returned HTTP ${res.status}`);
+
+      await onUpdateSettings({ caseStudies: updatedList });
+
+      setSuccessPopup({
+        isOpen: true,
+        title: 'Case Study Removed',
+        message: `"${title}" was removed from MongoDB.`,
+        targetPage: 'case-studies',
+      });
+    } catch (err: any) {
+      console.error('Failed to delete case study:', err);
+      alert('Error deleting case study: ' + (err.message || err));
+    }
+  };
+
+  const handleMoveCaseStudyUp = async (index: number) => {
+    if (index === 0) return;
+    const updatedList = [...caseStudies];
+    const temp = updatedList[index - 1];
+    updatedList[index - 1] = updatedList[index];
+    updatedList[index] = temp;
+    setCaseStudies(updatedList);
+    setFormData((prev) => ({ ...prev, caseStudies: updatedList }));
+    await onUpdateSettings({ caseStudies: updatedList });
+    await fetch('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caseStudies: updatedList }),
+    });
+  };
+
+  const handleMoveCaseStudyDown = async (index: number) => {
+    if (index >= caseStudies.length - 1) return;
+    const updatedList = [...caseStudies];
+    const temp = updatedList[index + 1];
+    updatedList[index + 1] = updatedList[index];
+    updatedList[index] = temp;
+    setCaseStudies(updatedList);
+    setFormData((prev) => ({ ...prev, caseStudies: updatedList }));
+    await onUpdateSettings({ caseStudies: updatedList });
+    await fetch('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ caseStudies: updatedList }),
+    });
+  };
+
   // Handle Saving Testimonial (Add or Edit)
   const handleSaveTestimonial = async (t: TestimonialItem) => {
     if (!t.author || !t.quote) {
@@ -1522,91 +1759,37 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 )}
               </div>
 
-              {/* Option: SEO / GEO / LLM Optimization */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('seo');
-                  setIsMobileSidebarOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  activeTab === 'seo'
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/25'
-                    : 'hover:bg-slate-800 text-slate-300'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Search className="w-4 h-4 text-purple-400" />
-                  <span>SEO / GEO / LLM Optimization</span>
+              {/* Divider */}
+              <div className="pt-2 pb-1">
+                <div className="border-t border-slate-800/80 my-1" />
+                <div className="px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-slate-500 font-mono">
+                  GLOBAL MANAGEMENT
                 </div>
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-purple-950 text-purple-300 border border-purple-800 font-mono">
-                  CMS
-                </span>
-              </button>
+              </div>
 
-              {/* Option 2: AI & IP Services Cards */}
+              {/* 1. Services & Products Manager */}
               <button
                 type="button"
                 onClick={() => {
                   setActiveTab('services');
                   setIsMobileSidebarOpen(false);
-
                 }}
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                   activeTab === 'services'
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
                     : 'hover:bg-slate-800 text-slate-300'
                 }`}
               >
-                <Layers className="w-4 h-4 text-blue-400" />
-                <span>AI &amp; IP Services Cards</span>
-              </button>
-
-              {/* Option 3: Portfolios Cards */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('portfolio');
-                  setIsMobileSidebarOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  activeTab === 'portfolio'
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                    : 'hover:bg-slate-800 text-slate-300'
-                }`}
-              >
                 <div className="flex items-center gap-2.5">
-                  <ImageIcon className="w-4 h-4 text-purple-400" />
-                  <span>Portfolios Cards</span>
+                  <Layers className="w-4 h-4 text-blue-400" />
+                  <span>Services &amp; Products Manager</span>
                 </div>
                 <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono">
-                  {portfolioItems.length}
+                  {allServices.length}
                 </span>
               </button>
 
-              {/* Option 4: Industries Cards */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('industries');
-                  setIsMobileSidebarOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  activeTab === 'industries'
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                    : 'hover:bg-slate-800 text-slate-300'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Building2 className="w-4 h-4 text-cyan-400" />
-                  <span>Industries Cards</span>
-                </div>
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono">
-                  {(formData.industries || INDUSTRIES_LIST).length}
-                </span>
-              </button>
-
-              {/* Option 5: Client Logos Scroller */}
+              {/* 2. Client Logos Scroller */}
               <button
                 type="button"
                 onClick={() => {
@@ -1628,7 +1811,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 </span>
               </button>
 
-              {/* Option 6: Client Testimonials */}
+              {/* 3. Client Testimonials */}
               <button
                 type="button"
                 onClick={() => {
@@ -1650,7 +1833,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 </span>
               </button>
 
-              {/* Option 7: Theme, Colors & Typography */}
+              {/* 4. Theme, Colors & Typography */}
               <button
                 type="button"
                 onClick={() => {
@@ -1667,46 +1850,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 <span>Theme, Colors &amp; Typography</span>
               </button>
 
-              {/* Option 8: Header Logo & Size Manager */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('header-logo');
-                  setIsMobileSidebarOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  activeTab === 'header-logo'
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/25'
-                    : 'hover:bg-slate-800 text-slate-300'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Sliders className="w-4 h-4 text-purple-400" />
-                  <span>Header Logo &amp; Size</span>
-                </div>
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-purple-950 text-purple-300 border border-purple-800 font-mono">
-                  {formData.logoHeight || 40}px
-                </span>
-              </button>
-
-              {/* Option 9: Website Info & Settings */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('settings');
-                  setIsMobileSidebarOpen(false);
-                }}
-                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  activeTab === 'settings'
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                    : 'hover:bg-slate-800 text-slate-300'
-                }`}
-              >
-                <Settings className="w-4 h-4 text-slate-400" />
-                <span>Website Info &amp; Settings</span>
-              </button>
-
-              {/* Option 8: Real-Time Slots & CRM */}
+              {/* 5. Real-Time Slots & CRM */}
               <button
                 type="button"
                 onClick={() => {
@@ -1728,7 +1872,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 </span>
               </button>
 
-              {/* Option 9: Email Dispatch Audit */}
+              {/* 6. Email Dispatch Audit */}
               <button
                 type="button"
                 onClick={() => {
@@ -1743,6 +1887,28 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
               >
                 <Mail className="w-4 h-4 text-indigo-400" />
                 <span>Email Dispatch Audit</span>
+              </button>
+
+              {/* 7. SEO / GEO / LLM Optimization */}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('seo');
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  activeTab === 'seo'
+                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-500/25'
+                    : 'hover:bg-slate-800 text-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Search className="w-4 h-4 text-purple-400" />
+                  <span>SEO / GEO / LLM Optimization</span>
+                </div>
+                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-purple-950 text-purple-300 border border-purple-800 font-mono">
+                  SEO
+                </span>
               </button>
             </div>
           </aside>
@@ -2224,6 +2390,16 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                   sub: 'Manage page text and images',
                 };
 
+                if (selectedCmsPage === 'industries') {
+                  return (
+                    <AdminIndustriesManager
+                      siteSettings={formData}
+                      onSaveIndustries={handleSaveIndustries}
+                      saving={savingIndustries}
+                    />
+                  );
+                }
+
                 return (
                   <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
                     {/* Header with live preview button */}
@@ -2438,21 +2614,11 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                             />
                           </div>
 
-                          {/* Company Logo Image Selector & Upload */}
+                          {/* Full Header Brand Logo & Size Controls */}
                           <div className="pt-2 border-t border-slate-200">
-                            <ImageSourceSelector
-                              label="Company Brand Logo (Header & Footer)"
-                              value={cur.logoUrl || formData.logoUrl || '/assets/logo.svg'}
-                              onChange={(newUrl) => {
-                                updateCurField('logoUrl', newUrl);
-                                setFormData((prev) => ({ ...prev, logoUrl: newUrl }));
-                              }}
-                              onInstantSave={(url) => {
-                                updateCurField('logoUrl', url);
-                                setFormData((prev) => ({ ...prev, logoUrl: url }));
-                                onUpdateSettings({ logoUrl: url });
-                              }}
-                              helperText="Upload or enter image link for company logo. Appears in header and footer."
+                            <AdminHeaderLogoManager
+                              siteSettings={siteSettings}
+                              onUpdateSettings={onUpdateSettings}
                             />
                           </div>
                         </div>
@@ -3149,6 +3315,524 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                             isTextarea
                             rows={2}
                           />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* AI HUB CMS: Page-Centric AI Services & Solutions Cards */}
+                    {selectedCmsPage === 'ai-hub' && (
+                      <div className="pt-6 border-t border-slate-200 space-y-4">
+                        <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-blue-100 text-blue-700">
+                                AI Hub Services
+                              </span>
+                              <span className="text-xs font-mono text-slate-400">
+                                {allServices.filter((s) => s.division === 'AI Hub').length} services configured
+                              </span>
+                            </div>
+                            <h4 className="font-extrabold text-base text-slate-900 font-heading mt-1">
+                              AI Hub Dedicated Services &amp; Solution Cards
+                            </h4>
+                            <p className="text-xs text-slate-500">
+                              Manage all AI service lines, photos, problem points, deliverables, and display order directly from this page.
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewService({
+                                division: 'AI Hub',
+                                subCategory: 'LYI Services',
+                                title: '',
+                                shortDesc: '',
+                                fullDesc: '',
+                                deliverables: [],
+                                technologies: [],
+                                imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80',
+                                iconName: 'Cpu',
+                              });
+                              setIsAddServiceModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer shrink-0"
+                          >
+                            <Plus className="w-4 h-4" />
+                            <span>Add AI Service</span>
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {allServices
+                            .filter((s) => s.division === 'AI Hub')
+                            .map((s, idx) => (
+                              <div
+                                key={s.id}
+                                className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between group hover:border-blue-300 transition-all"
+                              >
+                                <div>
+                                  <div className="relative h-40 overflow-hidden bg-slate-100">
+                                    <img
+                                      src={s.imageUrl || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80'}
+                                      alt={s.title}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-900/80 text-white backdrop-blur-sm">
+                                      {s.subCategory || 'AI Practice'}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingService(s)}
+                                      className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-white/90 hover:bg-white text-slate-900 text-[11px] font-bold shadow flex items-center gap-1 cursor-pointer"
+                                    >
+                                      <Edit3 className="w-3 h-3 text-blue-600" /> Change Photo / Info
+                                    </button>
+                                  </div>
+
+                                  <div className="p-4">
+                                    <h5 className="font-extrabold text-sm text-slate-900 font-heading mb-1 line-clamp-1">
+                                      {s.title}
+                                    </h5>
+                                    <p className="text-xs text-slate-500 line-clamp-2 mb-2">
+                                      {s.shortDesc || s.fullDesc}
+                                    </p>
+                                    {s.deliverables && s.deliverables.length > 0 && (
+                                      <div className="text-[11px] text-slate-400">
+                                        ✓ {s.deliverables.length} core deliverables
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+                                  <div className="flex items-center gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleMoveServiceUp(s.id)}
+                                      disabled={idx === 0}
+                                      className="p-1 rounded bg-slate-200 hover:bg-slate-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                      title="Move Up"
+                                    >
+                                      <ArrowUp className="w-3 h-3 text-slate-700" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleMoveServiceDown(s.id)}
+                                      className="p-1 rounded bg-slate-200 hover:bg-slate-300 cursor-pointer"
+                                      title="Move Down"
+                                    >
+                                      <ArrowDown className="w-3 h-3 text-slate-700" />
+                                    </button>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingService(s)}
+                                      className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer text-xs"
+                                    >
+                                      Edit Details →
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteService(s.id, s.title)}
+                                      className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+                                      title="Delete Service"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* IP HUB CMS: Page-Centric IP Practices & Legal Services Cards */}
+                    {selectedCmsPage === 'ip-hub' && (
+                      <div className="pt-6 border-t border-slate-200 space-y-4">
+                        <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-cyan-100 text-cyan-800">
+                                IP Hub Practices
+                              </span>
+                              <span className="text-xs font-mono text-slate-400">
+                                {allServices.filter((s) => s.division === 'IP Hub').length} practices configured
+                              </span>
+                            </div>
+                            <h4 className="font-extrabold text-base text-slate-900 font-heading mt-1">
+                              IP Hub Dedicated Practices &amp; Legal Services
+                            </h4>
+                            <p className="text-xs text-slate-500">
+                              Manage all patent drafting, search, trademark, copyright, litigation practices, and ordering directly from this page.
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewService({
+                                division: 'IP Hub',
+                                subCategory: 'LYI Services',
+                                title: '',
+                                shortDesc: '',
+                                fullDesc: '',
+                                deliverables: [],
+                                technologies: [],
+                                imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
+                                iconName: 'ShieldCheck',
+                              });
+                              setIsAddServiceModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer shrink-0"
+                          >
+                            <Plus className="w-4 h-4" />
+                            <span>Add IP Practice</span>
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {allServices
+                            .filter((s) => s.division === 'IP Hub')
+                            .map((s, idx) => (
+                              <div
+                                key={s.id}
+                                className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between group hover:border-cyan-300 transition-all"
+                              >
+                                <div>
+                                  <div className="relative h-40 overflow-hidden bg-slate-100">
+                                    <img
+                                      src={s.imageUrl || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80'}
+                                      alt={s.title}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-950/80 text-white backdrop-blur-sm">
+                                      {s.subCategory || 'IP Practice'}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingService(s)}
+                                      className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-white/90 hover:bg-white text-slate-900 text-[11px] font-bold shadow flex items-center gap-1 cursor-pointer"
+                                    >
+                                      <Edit3 className="w-3 h-3 text-cyan-700" /> Change Photo / Info
+                                    </button>
+                                  </div>
+
+                                  <div className="p-4">
+                                    <h5 className="font-extrabold text-sm text-slate-900 font-heading mb-1 line-clamp-1">
+                                      {s.title}
+                                    </h5>
+                                    <p className="text-xs text-slate-500 line-clamp-2 mb-2">
+                                      {s.shortDesc || s.fullDesc}
+                                    </p>
+                                    {s.deliverables && s.deliverables.length > 0 && (
+                                      <div className="text-[11px] text-slate-400">
+                                        ✓ {s.deliverables.length} core deliverables
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+                                  <div className="flex items-center gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleMoveServiceUp(s.id)}
+                                      disabled={idx === 0}
+                                      className="p-1 rounded bg-slate-200 hover:bg-slate-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                      title="Move Up"
+                                    >
+                                      <ArrowUp className="w-3 h-3 text-slate-700" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleMoveServiceDown(s.id)}
+                                      className="p-1 rounded bg-slate-200 hover:bg-slate-300 cursor-pointer"
+                                      title="Move Down"
+                                    >
+                                      <ArrowDown className="w-3 h-3 text-slate-700" />
+                                    </button>
+                                  </div>
+
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingService(s)}
+                                      className="text-cyan-700 hover:text-cyan-800 font-bold cursor-pointer text-xs"
+                                    >
+                                      Edit Details →
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteService(s.id, s.title)}
+                                      className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+                                      title="Delete Service"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* PORTFOLIO CMS: Page-Centric Portfolio Projects & Card Photos */}
+                    {selectedCmsPage === 'portfolio' && (
+                      <div className="pt-6 border-t border-slate-200 space-y-4">
+                        <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-blue-100 text-blue-700">
+                                Portfolio Projects
+                              </span>
+                              <span className="text-xs font-mono text-slate-400">
+                                {portfolioItems.length} project cards configured
+                              </span>
+                            </div>
+                            <h4 className="font-extrabold text-base text-slate-900 font-heading mt-1">
+                              Portfolio Projects &amp; Card Photos
+                            </h4>
+                            <p className="text-xs text-slate-500">
+                              Manage all portfolio project cards, photos, metrics, and display ordering directly on the Portfolio page.
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => setIsAddPortfolioModalOpen(true)}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer shrink-0"
+                          >
+                            <Plus className="w-4 h-4" />
+                            <span>Add Portfolio Project</span>
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {portfolioItems.map((p, idx) => (
+                            <div
+                              key={p.id}
+                              className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between group hover:border-blue-300 transition-all"
+                            >
+                              <div>
+                                <div className="relative h-44 overflow-hidden bg-slate-100">
+                                  <img
+                                    src={p.imageUrl}
+                                    alt={p.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/70 text-white backdrop-blur-sm">
+                                    {p.category}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingPortfolioItem(p)}
+                                    className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-white/90 hover:bg-white text-slate-900 text-[11px] font-bold shadow flex items-center gap-1 cursor-pointer"
+                                  >
+                                    <Edit3 className="w-3 h-3 text-blue-600" /> Change Photo
+                                  </button>
+                                </div>
+
+                                <div className="p-4">
+                                  <h5 className="font-extrabold text-sm text-slate-900 font-heading mb-1 line-clamp-1">
+                                    {p.title}
+                                  </h5>
+                                  <p className="text-xs text-slate-500 line-clamp-2 mb-2">
+                                    {p.description}
+                                  </p>
+                                  {p.client && (
+                                    <div className="text-[11px] text-slate-400">
+                                      <strong>Client:</strong> {p.client}
+                                    </div>
+                                  )}
+                                  {p.result && (
+                                    <div className="text-[11px] text-emerald-600 font-bold mt-0.5">
+                                      ★ {p.result}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMovePortfolioUp(idx)}
+                                    disabled={idx === 0}
+                                    className="p-1 rounded bg-slate-200 hover:bg-slate-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                    title="Move Up"
+                                  >
+                                    <ArrowUp className="w-3 h-3 text-slate-700" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMovePortfolioDown(idx)}
+                                    disabled={idx === portfolioItems.length - 1}
+                                    className="p-1 rounded bg-slate-200 hover:bg-slate-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                    title="Move Down"
+                                  >
+                                    <ArrowDown className="w-3 h-3 text-slate-700" />
+                                  </button>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingPortfolioItem(p)}
+                                    className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer text-xs"
+                                  >
+                                    Edit Details →
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeletePortfolioItem(p.id, p.title)}
+                                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+                                    title="Delete Project Card"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* CASE STUDIES CMS: Page-Centric Case Study Cards & Client Outcomes */}
+                    {selectedCmsPage === 'case-studies' && (
+                      <div className="pt-6 border-t border-slate-200 space-y-4">
+                        <div className="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700">
+                                Case Studies
+                              </span>
+                              <span className="text-xs font-mono text-slate-400">
+                                {caseStudies.length} client stories configured
+                              </span>
+                            </div>
+                            <h4 className="font-extrabold text-base text-slate-900 font-heading mt-1">
+                              Case Studies &amp; Outcomes Cards
+                            </h4>
+                            <p className="text-xs text-slate-500">
+                              Manage all client transformation case studies, metrics, outcomes, and images.
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingCaseStudy(null);
+                              setIsAddCaseStudyModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer shrink-0"
+                          >
+                            <Plus className="w-4 h-4" />
+                            <span>Add Case Study Card</span>
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {caseStudies.map((cs, idx) => (
+                            <div
+                              key={cs.id || idx}
+                              className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between group hover:border-emerald-300 transition-all"
+                            >
+                              <div>
+                                <div className="relative h-44 overflow-hidden bg-slate-100">
+                                  <img
+                                    src={cs.imageUrl || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80'}
+                                    alt={cs.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                  <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-950/70 text-white backdrop-blur-sm">
+                                    {cs.category}
+                                  </span>
+                                  {cs.readTime && (
+                                    <span className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md text-[10px] font-medium bg-black/60 text-slate-200 backdrop-blur-sm">
+                                      {cs.readTime}
+                                    </span>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingCaseStudy(cs);
+                                      setIsAddCaseStudyModalOpen(true);
+                                    }}
+                                    className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-white/90 hover:bg-white text-slate-900 text-[11px] font-bold shadow flex items-center gap-1 cursor-pointer"
+                                  >
+                                    <Edit3 className="w-3 h-3 text-emerald-600" /> Edit Photo / Info
+                                  </button>
+                                </div>
+
+                                <div className="p-4">
+                                  <div className="text-[11px] font-bold text-blue-600 uppercase tracking-wider mb-1">
+                                    {cs.client}
+                                  </div>
+                                  <h5 className="font-extrabold text-sm text-slate-900 font-heading mb-1 line-clamp-1">
+                                    {cs.title}
+                                  </h5>
+                                  <p className="text-xs text-slate-500 line-clamp-2 mb-2">
+                                    {cs.description}
+                                  </p>
+                                  {cs.results && (
+                                    <div className="text-[11px] text-emerald-600 font-bold mt-1 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100">
+                                      ★ {cs.results}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs">
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMoveCaseStudyUp(idx)}
+                                    disabled={idx === 0}
+                                    className="p-1 rounded bg-slate-200 hover:bg-slate-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                    title="Move Up"
+                                  >
+                                    <ArrowUp className="w-3 h-3 text-slate-700" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMoveCaseStudyDown(idx)}
+                                    disabled={idx === caseStudies.length - 1}
+                                    className="p-1 rounded bg-slate-200 hover:bg-slate-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                    title="Move Down"
+                                  >
+                                    <ArrowDown className="w-3 h-3 text-slate-700" />
+                                  </button>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingCaseStudy(cs);
+                                      setIsAddCaseStudyModalOpen(true);
+                                    }}
+                                    className="text-emerald-600 hover:text-emerald-700 font-bold cursor-pointer text-xs"
+                                  >
+                                    Edit Details →
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteCaseStudy(idx, cs.title)}
+                                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+                                    title="Delete Case Study"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -6264,6 +6948,147 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                   Save Changes
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Add / Edit Case Study */}
+      {isAddCaseStudyModalOpen && (
+        <div className="fixed inset-0 z-60 bg-slate-950/80 backdrop-blur-sm flex justify-center items-center p-4">
+          <div className="bg-white w-full max-w-xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div>
+                <h3 className="font-extrabold text-base text-slate-900 font-heading">
+                  {editingCaseStudyIndex !== null ? 'Edit Case Study' : 'Add New Case Study'}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Configure audited client challenge, solution, and measured outcomes.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAddCaseStudyModalOpen(false);
+                  setEditingCaseStudy(null);
+                  setEditingCaseStudyIndex(null);
+                }}
+                className="text-slate-400 hover:text-slate-600 text-lg cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Division</label>
+                <select
+                  value={editingCaseStudy ? editingCaseStudy.division : newCaseStudy.division}
+                  onChange={(e) => {
+                    const val = e.target.value as 'AI Hub' | 'IP Hub';
+                    if (editingCaseStudy) setEditingCaseStudy({ ...editingCaseStudy, division: val });
+                    else setNewCaseStudy({ ...newCaseStudy, division: val });
+                  }}
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 font-medium"
+                >
+                  <option value="AI Hub">AI Hub</option>
+                  <option value="IP Hub">IP Hub</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Case Study Title</label>
+                <input
+                  type="text"
+                  value={editingCaseStudy ? editingCaseStudy.title : newCaseStudy.title}
+                  onChange={(e) => {
+                    if (editingCaseStudy) setEditingCaseStudy({ ...editingCaseStudy, title: e.target.value });
+                    else setNewCaseStudy({ ...newCaseStudy, title: e.target.value });
+                  }}
+                  placeholder="e.g. Agentic CRM & Quotation Automation for Manufacturing"
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Client / Company Name</label>
+                <input
+                  type="text"
+                  value={editingCaseStudy ? editingCaseStudy.client : newCaseStudy.client}
+                  onChange={(e) => {
+                    if (editingCaseStudy) setEditingCaseStudy({ ...editingCaseStudy, client: e.target.value });
+                    else setNewCaseStudy({ ...newCaseStudy, client: e.target.value });
+                  }}
+                  placeholder="e.g. Industrial Equipment Manufacturer, Pune"
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">The Challenge</label>
+                <textarea
+                  rows={2}
+                  value={editingCaseStudy ? editingCaseStudy.challenge : newCaseStudy.challenge}
+                  onChange={(e) => {
+                    if (editingCaseStudy) setEditingCaseStudy({ ...editingCaseStudy, challenge: e.target.value });
+                    else setNewCaseStudy({ ...newCaseStudy, challenge: e.target.value });
+                  }}
+                  placeholder="Describe client's initial bottleneck or problem..."
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">The Solution</label>
+                <textarea
+                  rows={2}
+                  value={editingCaseStudy ? editingCaseStudy.solution : newCaseStudy.solution}
+                  onChange={(e) => {
+                    if (editingCaseStudy) setEditingCaseStudy({ ...editingCaseStudy, solution: e.target.value });
+                    else setNewCaseStudy({ ...newCaseStudy, solution: e.target.value });
+                  }}
+                  placeholder="Describe technical implementation or legal filing roadmap..."
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Measured Outcome / Result</label>
+                <textarea
+                  rows={2}
+                  value={editingCaseStudy ? editingCaseStudy.result : newCaseStudy.result}
+                  onChange={(e) => {
+                    if (editingCaseStudy) setEditingCaseStudy({ ...editingCaseStudy, result: e.target.value });
+                    else setNewCaseStudy({ ...newCaseStudy, result: e.target.value });
+                  }}
+                  placeholder="e.g. Lead conversion improved by 28% within 90 days..."
+                  className="w-full p-2.5 text-xs rounded-xl border border-slate-200 font-medium text-emerald-900"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAddCaseStudyModalOpen(false);
+                  setEditingCaseStudy(null);
+                  setEditingCaseStudyIndex(null);
+                }}
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const item = editingCaseStudy || newCaseStudy;
+                  handleSaveCaseStudy(item, editingCaseStudyIndex);
+                }}
+                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md cursor-pointer"
+              >
+                {editingCaseStudyIndex !== null ? 'Save Changes' : 'Publish Case Study'}
+              </button>
             </div>
           </div>
         </div>

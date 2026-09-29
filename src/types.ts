@@ -208,6 +208,18 @@ export interface IndustryItem {
   [key: string]: any;
 }
 
+export interface CaseStudyItem {
+  id?: string;
+  division: 'AI Hub' | 'IP Hub';
+  title: string;
+  client: string;
+  challenge: string;
+  solution: string;
+  result: string;
+  order?: number;
+  [key: string]: any;
+}
+
 export interface SiteSettings {
   companyName: string;
   tagline: string;
@@ -234,6 +246,7 @@ export interface SiteSettings {
   testimonials?: TestimonialItem[];
   clientLogos?: ClientLogoItem[];
   industries?: IndustryItem[];
+  caseStudies?: CaseStudyItem[];
   services?: ServiceItem[];
   portfolio?: PortfolioItem[];
   cmsPages?: Record<string, CmsPage>;
