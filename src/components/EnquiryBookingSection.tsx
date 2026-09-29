@@ -194,19 +194,20 @@ Meeting Link: ${finalBooking.meetingLink}`,
     'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=85';
 
   return (
-    <div id="enquiry" className="rounded-3xl bg-slate-950 text-white p-6 sm:p-10 border border-cyan-500/30 shadow-2xl relative overflow-hidden">
-      {/* Homepage Theme Background Image Layer */}
+    <div id="enquiry" className="rounded-3xl bg-slate-950 text-white p-6 sm:p-10 border border-cyan-500/35 shadow-2xl relative overflow-hidden">
+      {/* Background Image Layer with deep navy gradient overlay (No dot matrix) */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <ImageWithEffects
+        <img
           src={heroBg}
           alt=""
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-center opacity-30 select-none pointer-events-none"
         />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-900/90 to-[#0e2246]/85 backdrop-blur-[2px]" />
       </div>
 
-      {/* Glow decorations */}
-      <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/25 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none" />
+      {/* Glowing corner orbs */}
+      <div className="absolute -top-16 -right-16 w-96 h-96 bg-blue-500/25 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-16 -left-16 w-96 h-96 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-3xl mx-auto">
         <div className="text-center mb-8">
@@ -305,7 +306,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                   placeholder="Your full name"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                 />
               </div>
               <div>
@@ -318,7 +319,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                   placeholder="you@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                 />
               </div>
             </div>
@@ -334,7 +335,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                   placeholder="+91 98765 43210"
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                 />
               </div>
               <div>
@@ -344,7 +345,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                   placeholder="Company / Institution"
                   value={organization}
                   onChange={(e) => setOrganization(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                 />
               </div>
               <div>
@@ -354,7 +355,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                   placeholder="e.g. Founder, VP, Director"
                   value={designation}
                   onChange={(e) => setDesignation(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                 />
               </div>
             </div>
@@ -365,7 +366,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                 <select
                   value={orgType}
                   onChange={(e) => setOrgType(e.target.value as any)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                 >
                   <option>Startup</option>
                   <option>MSME</option>
@@ -381,7 +382,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                   placeholder="Your city"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                 />
               </div>
               <div>
@@ -389,7 +390,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                 <select
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                 >
                   <option>Under ₹1 Lakh</option>
                   <option>₹1–5 Lakh</option>
@@ -406,7 +407,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                 <select
                   value={service}
                   onChange={(e) => setService(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                 >
                   <optgroup label="AI Hub">
                     <option>Custom AI Solutions</option>
@@ -446,7 +447,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                     min={new Date().toISOString().split('T')[0]}
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full px-2.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs focus:outline-none focus:border-cyan-400"
+                    className="w-full px-2.5 py-2 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-xs focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                   />
                 </div>
                 <div>
@@ -454,7 +455,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                   <select
                     value={timeSlot}
                     onChange={(e) => setTimeSlot(e.target.value)}
-                    className="w-full px-2.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-xs focus:outline-none focus:border-cyan-400"
+                    className="w-full px-2.5 py-2 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-xs focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                   >
                     <option>10:00 AM IST</option>
                     <option>11:30 AM IST</option>
@@ -474,7 +475,7 @@ Meeting Link: ${finalBooking.meetingLink}`,
                 placeholder="Tell us briefly about your requirement or project scope..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-cyan-400"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
               />
             </div>
 

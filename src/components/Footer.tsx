@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { PageRoute, SiteSettings } from '../types.ts';
 import { AI_SERVICES, IP_SERVICES } from '../data/services.ts';
-import { Send, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { applyFieldStyle } from '../lib/styleHelper.ts';
-import { ImageWithEffects } from './ImageWithEffects.tsx';
 
 interface FooterProps {
   onNavigate: (route: PageRoute, slug?: string) => void;
@@ -32,15 +31,20 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBooking, siteS
     'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=2400&q=85';
 
   return (
-    <footer className="relative overflow-hidden bg-slate-950 text-slate-300 pt-16 pb-8 border-t border-slate-800">
-      {/* Homepage Theme Background Image Layer */}
+    <footer className="relative overflow-hidden bg-slate-950 text-slate-300 pt-16 pb-8 border-t border-cyan-500/30 shadow-2xl">
+      {/* Background Image Layer with deep navy gradient overlay (No dot matrix) */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <ImageWithEffects
+        <img
           src={heroBg}
           alt=""
-          className="w-full h-full object-cover object-bottom"
+          className="w-full h-full object-cover object-bottom opacity-25 select-none pointer-events-none"
         />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/95 via-slate-900/90 to-[#0e2246]/85 backdrop-blur-[2px]" />
       </div>
+
+      {/* Glowing ambient corner orbs */}
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800/80">
@@ -51,7 +55,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBooking, siteS
                 <img
                   src={siteSettings.logoUrl}
                   alt={companyName}
-                  className="w-10 h-10 rounded-xl object-contain bg-slate-900 border border-slate-800 p-1"
+                  className="w-10 h-10 rounded-xl object-contain bg-slate-900/80 border border-slate-700/80 p-1 backdrop-blur-xs"
                 />
               ) : (
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 flex items-center justify-center text-white font-medium text-sm shadow">
@@ -76,7 +80,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBooking, siteS
 
             {/* Newsletter */}
             <div className="pt-2 max-w-sm">
-              <span className="block text-xs font-medium text-slate-200 mb-2 font-heading">Subscribe to AI &amp; IP Briefs</span>
+              <span className="block text-xs font-semibold uppercase tracking-widest text-cyan-400 mb-2 font-heading">
+                Subscribe to AI &amp; IP Briefs
+              </span>
               {subscribed ? (
                 <div className="p-2.5 rounded-xl bg-emerald-900/40 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4" />
@@ -90,11 +96,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBooking, siteS
                     placeholder="Your work email"
                     value={newsletterEmail}
                     onChange={(e) => setNewsletterEmail(e.target.value)}
-                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400"
+                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30 backdrop-blur-xs transition-colors"
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-medium text-xs shadow transition-colors cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs shadow-md shadow-cyan-400/20 transition-all cursor-pointer"
                   >
                     Subscribe
                   </button>
@@ -110,7 +116,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenBooking, siteS
 
           {/* AI Hub links */}
           <div>
-            <h4 className="text-white font-medium text-xs tracking-wider uppercase mb-3 text-blue-400 font-heading">
+            <h4 className="text-white font-medium text-xs tracking-wider uppercase mb-3 text-cyan-400 font-heading">
               AI Hub Solutions
             </h4>
             <ul className="space-y-1.5 text-xs text-slate-400">
