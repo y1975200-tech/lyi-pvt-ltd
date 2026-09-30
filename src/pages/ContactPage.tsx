@@ -90,8 +90,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({
               <span className="text-white font-medium">Contact</span>
             </nav>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-xs font-medium tracking-widest text-cyan-300 font-heading">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 border border-purple-400/30 text-xs font-medium tracking-widest text-purple-300 font-heading">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
               <span style={applyFieldStyle(pageData?.badge_style)}>{badgeText}</span>
             </div>
 
@@ -127,16 +127,16 @@ export const ContactPage: React.FC<ContactPageProps> = ({
       <section className="py-16 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Prominent Pune Location Banner */}
-          <div className="mb-10 p-6 rounded-2xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="mb-10 p-6 rounded-2xl bg-purple-50/80 border border-purple-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md">
+              <div className="w-11 h-11 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 shadow-sm">
                 <Building className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[11px] font-medium uppercase tracking-wider text-blue-700 block font-heading">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-purple-700 block font-heading">
                   {officeBadge}
                 </span>
-                <h3 className="text-base font-normal text-slate-900 font-heading">
+                <h3 className="text-base font-semibold text-slate-900 font-heading">
                   {officeHeadline}
                 </h3>
                 <p className="text-xs text-slate-600 mt-0.5 font-normal">
@@ -146,7 +146,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
             </div>
             <button
               onClick={() => onOpenBooking('In-Person HQ Consultation')}
-              className="self-start sm:self-auto px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-md shadow-blue-500/20 transition-all shrink-0 cursor-pointer"
+              className="self-start sm:self-auto px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-medium text-xs shadow-sm transition-all shrink-0 cursor-pointer"
             >
               {officeCtaText}
             </button>

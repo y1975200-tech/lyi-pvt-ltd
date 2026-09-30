@@ -83,10 +83,9 @@ export const WhatsAppWidget: React.FC<WhatsAppWidgetProps> = ({ onOpenBooking })
         id="whatsapp-floating-fab-btn"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Chat on WhatsApp / Book Consultation"
-        className="relative w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-lg shadow-emerald-500/35 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+        className="relative w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-md hover:shadow-lg transition-all cursor-pointer"
       >
-        <span className="absolute inset-0 rounded-full border-2 border-[#25D366] animate-ping opacity-30" />
-        <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
+        <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
           1
         </span>
         <svg viewBox="0 0 32 32" fill="white" className="w-7 h-7">
