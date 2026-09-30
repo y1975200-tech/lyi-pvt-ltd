@@ -1767,29 +1767,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 </div>
               </div>
 
-              {/* 1. Services & Products Manager */}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('services');
-                  setIsMobileSidebarOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  activeTab === 'services'
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                    : 'hover:bg-slate-800 text-slate-300'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Layers className="w-4 h-4 text-blue-400" />
-                  <span>Services &amp; Products Manager</span>
-                </div>
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono">
-                  {allServices.length}
-                </span>
-              </button>
-
-              {/* 2. Client Logos Scroller */}
+              {/* 1. Client Logos Scroller */}
               <button
                 type="button"
                 onClick={() => {
@@ -1811,7 +1789,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 </span>
               </button>
 
-              {/* 3. Client Testimonials */}
+              {/* 2. Client Testimonials */}
               <button
                 type="button"
                 onClick={() => {
@@ -1833,7 +1811,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 </span>
               </button>
 
-              {/* 4. Theme, Colors & Typography */}
+              {/* 3. Theme, Colors & Typography */}
               <button
                 type="button"
                 onClick={() => {
@@ -1850,7 +1828,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 <span>Theme, Colors &amp; Typography</span>
               </button>
 
-              {/* 5. Real-Time Slots & CRM */}
+              {/* 4. Real-Time Slots & CRM */}
               <button
                 type="button"
                 onClick={() => {
@@ -1872,7 +1850,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 </span>
               </button>
 
-              {/* 6. Email Dispatch Audit */}
+              {/* 5. Email Dispatch Audit */}
               <button
                 type="button"
                 onClick={() => {
@@ -1889,7 +1867,7 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
                 <span>Email Dispatch Audit</span>
               </button>
 
-              {/* 7. SEO / GEO / LLM Optimization */}
+              {/* 6. SEO / GEO / LLM Optimization */}
               <button
                 type="button"
                 onClick={() => {
@@ -2263,14 +2241,6 @@ Phone: ${formData.phone} | Email: ${formData.email}`,
             />
           )}
 
-          {/* TAB: SEO / GEO / LLM OPTIMIZATION */}
-          {activeTab === 'seo' && (
-            <AdminSeoGeoManager
-              seoConfigs={seoConfigs || {}}
-              onSaveSeoConfig={onSaveSeoConfig || (async () => {})}
-              onResetSeoConfig={onResetSeoConfig || (async () => {})}
-            />
-          )}
 
           {/* TAB: ALL PAGES CONTENT & IMAGES CMS */}
           {activeTab === 'pages' && (

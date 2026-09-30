@@ -414,7 +414,7 @@ export const AdminSeoGeoManager: React.FC<AdminSeoGeoManagerProps> = ({
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-800 no-scrollbar">
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-2 shadow-xl flex items-center gap-2 overflow-x-auto no-scrollbar">
         {[
           { id: 'basic', label: 'Basic SEO', icon: Globe },
           { id: 'social', label: 'Social (OG/Twitter)', icon: Share2 },
@@ -433,14 +433,16 @@ export const AdminSeoGeoManager: React.FC<AdminSeoGeoManagerProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveSubTab(tab.id as any)}
-              className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer ${
+              className={`group px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-purple-600/20 text-purple-300 border border-purple-500/40 shadow-sm'
-                  : 'bg-slate-900/50 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-slate-800/80'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/30 border border-purple-400/50'
+                  : 'bg-slate-800/90 hover:bg-slate-700 text-slate-100 hover:text-white border border-slate-700/80'
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-purple-400' : 'text-slate-400'}`} />
-              <span>{tab.label}</span>
+              <Icon className={`w-4 h-4 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-purple-300 group-hover:text-white'}`} />
+              <span className={`tracking-wide ${isActive ? 'text-white' : 'text-slate-100 group-hover:text-white'}`}>
+                {tab.label}
+              </span>
             </button>
           );
         })}
