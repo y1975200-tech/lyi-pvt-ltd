@@ -65,8 +65,17 @@
   }
 
   h1, h2, h3, h4, h5, h6, .font-heading {
-    font-family: 'Poppins', sans-serif !important;
+    font-family: 'Poppins', sans-serif;
   }
+}
+
+.font-display {
+  font-family: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  letter-spacing: -0.02em;
+}
+
+.font-figtree {
+  font-family: 'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
 /* Primary Button Theming */

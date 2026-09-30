@@ -29,6 +29,7 @@ import { AboutPage } from './pages/AboutPage.tsx';
 import { ContactPage } from './pages/ContactPage.tsx';
 import { ResourcesPage } from './pages/ResourcesPage.tsx';
 import { PrivacyPage } from './pages/PrivacyPage.tsx';
+import { BookConsultationPage } from './pages/BookConsultationPage.tsx';
 import { PORTFOLIO_ITEMS as DEFAULT_PORTFOLIO, DEFAULT_TESTIMONIALS, INDUSTRIES_LIST, DEFAULT_CLIENT_LOGOS } from './data/generalData.ts';
 import { ALL_SERVICES } from './data/services.ts';
 
@@ -822,6 +823,14 @@ export default function App() {
               )}
               {currentRoute === 'privacy' && (
                 <PrivacyPage onNavigate={handleNavigate} />
+              )}
+              {currentRoute === 'book-consultation' && (
+                <BookConsultationPage
+                  onNavigate={handleNavigate}
+                  onBookingSuccess={handleBookingConfirmed}
+                  onViewEmailPreview={(emailId) => setSelectedEmailId(emailId)}
+                  siteSettings={activeSiteSettings}
+                />
               )}
             </main>
 
